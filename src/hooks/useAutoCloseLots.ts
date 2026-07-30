@@ -27,7 +27,7 @@ export function useAutoCloseLots(onClosed?: () => void) {
       // Find all lots that should be closed (open/closing status, past closes_at)
       const { data: expiredLots, error: fetchError } = await supabase
         .from('lots')
-        .select('id, current_bid, reserve_price')
+        .select('id, current_bid, reserve_price, vehicle_id')
         .in('status', ['open', 'closing'])
         .lt('closes_at', now)
 
@@ -49,22 +49,30 @@ export function useAutoCloseLots(onClosed?: () => void) {
         }
       }
 
-      // Batch update sold lots
+      // Sync vehicle status for sold lots
       if (soldIds.length > 0) {
+        const soldVehicles = expiredLots.filter(l => soldIds.includes(l.id)).map(l => l.vehicle_id)
         const { error: soldError } = await supabase
           .from('lots')
           .update({ status: 'sold' })
           .in('id', soldIds)
         if (soldError) console.error('[useAutoCloseLots] Failed to mark sold:', soldError.message)
+        if (soldVehicles.length > 0) {
+          await supabase.from('vehicles').update({ status: 'sold' }).in('id', soldVehicles)
+        }
       }
 
-      // Batch update unsold lots
+      // Sync vehicle status for unsold lots
       if (unsoldIds.length > 0) {
+        const unsoldVehicles = expiredLots.filter(l => unsoldIds.includes(l.id)).map(l => l.vehicle_id)
         const { error: unsoldError } = await supabase
           .from('lots')
           .update({ status: 'unsold' })
           .in('id', unsoldIds)
         if (unsoldError) console.error('[useAutoCloseLots] Failed to mark unsold:', unsoldError.message)
+        if (unsoldVehicles.length > 0) {
+          await supabase.from('vehicles').update({ status: 'published' }).in('id', unsoldVehicles)
+        }
       }
 
       console.log(`[useAutoCloseLots] Auto-closed ${soldIds.length} sold + ${unsoldIds.length} unsold lot(s)`)

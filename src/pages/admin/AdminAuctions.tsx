@@ -106,14 +106,23 @@ export function AdminAuctions() {
   }, [expandedLot, fetchBids])
 
   const updateStatus = async (id: string, status: string) => {
+    const { data: lot } = await supabase.from('lots').select('vehicle_id').eq('id', id).single()
     await supabase.from('lots').update({ status }).eq('id', id)
+    if (lot) {
+      const vehicleStatus = status === 'sold' ? 'sold' : ['closed', 'unsold'].includes(status) ? 'published' : 'in-auction'
+      await supabase.from('vehicles').update({ status: vehicleStatus }).eq('id', lot.vehicle_id)
+    }
     fetchLots()
   }
 
   const handleDelete = async () => {
     if (!deleteId) return
     setSaving(true)
+    const { data: lot } = await supabase.from('lots').select('vehicle_id').eq('id', deleteId).single()
     await supabase.from('lots').delete().eq('id', deleteId)
+    if (lot) {
+      await supabase.from('vehicles').update({ status: 'published' }).eq('id', lot.vehicle_id)
+    }
     setSaving(false)
     setDeleteId(null)
     fetchLots()
