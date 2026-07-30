@@ -125,9 +125,10 @@ CREATE POLICY "Admins can manage pre_orders" ON pre_orders FOR ALL
 
 -- BLOG POSTS
 DROP POLICY IF EXISTS "Public can view published blog posts" ON blog_posts;
+DROP POLICY IF EXISTS "Public can view published posts" ON blog_posts;
 DROP POLICY IF EXISTS "Admins can manage blog posts" ON blog_posts;
 CREATE POLICY "Public can view published blog posts" ON blog_posts FOR SELECT
-  USING (published = true);
+  USING (published_at IS NOT NULL AND published_at <= now());
 CREATE POLICY "Admins can manage blog posts" ON blog_posts FOR ALL
   USING (public.is_staff_or_admin())
   WITH CHECK (public.is_staff_or_admin());
