@@ -95,7 +95,6 @@ export function Nav() {
         <div className={styles.inner}>
           <Link to="/" className={styles.logo} aria-label="Empathon Autos home">
             <LogoSvg />
-            <span className={styles.wordmark}>Empathon <span className={styles.accent}>Autos</span></span>
           </Link>
 
           <div className={styles.links}>
