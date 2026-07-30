@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Button } from './Button'
 import styles from './Nav.module.css'
@@ -14,12 +14,26 @@ const links = [
 
 /** Premium SVG logo mark — used in Nav */
 function LogoSvg() {
+  const [imgErr, setImgErr] = useState(false)
+  const onErr = useCallback(() => setImgErr(true), [])
+  if (imgErr) {
+    return (
+      <svg width="34" height="34" viewBox="0 0 34 34" fill="none" aria-hidden="true" style={{ flexShrink: 0 }}>
+        <rect width="34" height="34" rx="6" fill="var(--navy)" />
+        <text x="17" y="22" textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize="16" fontWeight="800" fill="white" letterSpacing="-0.02">EA</text>
+        <path d="M6 26 Q17 30 28 26" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.3" />
+      </svg>
+    )
+  }
   return (
-    <svg width="34" height="34" viewBox="0 0 34 34" fill="none" aria-hidden="true" style={{ flexShrink: 0 }}>
-      <rect width="34" height="34" rx="6" fill="var(--navy)" />
-      <text x="17" y="22" textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize="16" fontWeight="800" fill="white" letterSpacing="-0.02">EA</text>
-      <path d="M6 26 Q17 30 28 26" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.3" />
-    </svg>
+    <img
+      src="/Empathon logo.png"
+      alt="Empathon Autos"
+      width="34"
+      height="34"
+      style={{ borderRadius: 6, flexShrink: 0, objectFit: 'contain' }}
+      onError={onErr}
+    />
   )
 }
 

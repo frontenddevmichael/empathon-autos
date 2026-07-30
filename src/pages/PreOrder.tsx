@@ -4,10 +4,10 @@ import { Input, TextArea } from '@/components/ui/Input'
 import { Section } from '@/components/PageLayout'
 import { DecoMark } from '@/components/DecoMark'
 import { useToast } from '@/context/ToastContext'
-import { CarKey, ShieldCheck, HandDots } from '@/components/DecoSvgs'
+import { ShieldCheck, HandDots } from '@/components/DecoSvgs'
 import { SplitHeading } from '@/components/SplitHeading'
 import { RippleButton } from '@/components/RippleButton'
-import { ParallaxSection } from '@/components/ParallaxSection'
+import { HeroSection } from '@/components/HeroSection'
 
 const steps = [
   { icon: 'shield', title: '1. Tell Us What You Want', desc: 'Make, model, trim, colour, year, budget — the more specific you are, the better we can hunt.' },
@@ -44,19 +44,16 @@ export function PreOrder() {
 
   return (
     <>
-      <ParallaxSection>
-        <Section dark style={{ paddingBottom: 0, minHeight: '50vh', display: 'flex', alignItems: 'center', position: 'relative' }}>
-          <CarKey className="deco-positioned" style={{ position: 'absolute', top: '15%', right: '8%', opacity: 0.08 }} size={72} />
-          <div>
-            <p style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.35)', marginBottom: 'var(--space-1)' }}>Pre-Order</p>
-            <SplitHeading as="h1" style={{ color: 'white', fontSize: 'clamp(2rem, 4vw, var(--text-5xl))', letterSpacing: '-0.04em' }}>Order the Vehicle<br />You Really Want</SplitHeading>
-            <div className="section-divider" />
-            <p style={{ color: 'rgba(255,255,255,0.45)', maxWidth: 480, marginTop: 'var(--space-1)' }}>
-              The exact colour, trim, and spec you want — not whatever happens to be on the lot. Tell us what you're looking for and we'll track it down.
-            </p>
-          </div>
-        </Section>
-      </ParallaxSection>
+      <HeroSection
+        images={[
+          { url: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1400&q=90&fit=crop' },
+          { url: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=1400&q=90&fit=crop' },
+        ]}
+        label="Pre-Order"
+        title="Order the Vehicle You Really Want"
+        subtitle="Can't find that exact spec on the lot? Tell us what you want and we'll track it down through our global network."
+        deco="circle"
+      />
 
       <Section style={{ position: 'relative' }}>
         <ShieldCheck className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', opacity: 0.04 }} size={48} />

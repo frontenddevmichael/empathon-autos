@@ -8,11 +8,9 @@ import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { AuctionTimer } from '@/components/ui/AuctionTimer'
 import { Section } from '@/components/PageLayout'
-import { Speedometer, HandCircle } from '@/components/DecoSvgs'
 import styles from './Auctions.module.css'
-import { SplitHeading } from '@/components/SplitHeading'
 import { RippleButton } from '@/components/RippleButton'
-import { ParallaxSection } from '@/components/ParallaxSection'
+import { HeroSection } from '@/components/HeroSection'
 
 interface AuctionVehicle {
   id: string
@@ -59,15 +57,16 @@ export function Auctions() {
 
   return (
     <Section style={{ position: 'relative' }}>
-      <ParallaxSection>
-        <Speedometer className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-2)', right: 'var(--space-2)', opacity: 0.04 }} size={56} />
-        <HandCircle className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', left: 'var(--space-3)', opacity: 0.08 }} size={48} />
-        <div className={styles.header}>
-          <p className={styles.headerLabel}>Auction</p>
-          <SplitHeading as="h2">Live Auctions</SplitHeading>
-          <p>Bid on premium vehicles in real-time. Place your bid and drive away with the best deal.</p>
-        </div>
-      </ParallaxSection>
+      <HeroSection
+        images={[
+          { url: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1400&q=90&fit=crop' },
+          { url: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1400&q=90&fit=crop' },
+        ]}
+        label="Auction"
+        title="Live Auctions"
+        subtitle="Real-time bidding on premium vehicles. Place your bid, win your drive."
+        deco="circle"
+      />
       <div className="section-divider" />
 
       {loading ? (

@@ -1,5 +1,6 @@
 ﻿import { useState } from 'react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { HeroSection } from '@/components/HeroSection'
 import { SplitHeading } from '@/components/SplitHeading'
 import { RippleButton } from '@/components/RippleButton'
 import { ParallaxSection } from '@/components/ParallaxSection'
@@ -8,7 +9,7 @@ import { Section } from '@/components/PageLayout'
 import { DecoMark } from '@/components/DecoMark'
 import { useToast } from '@/context/ToastContext'
 import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
-import { Handshake, ShieldCheck, CarSilhouette } from '@/components/DecoSvgs'
+import { ShieldCheck } from '@/components/DecoSvgs'
 
 interface Client {
   name: string
@@ -50,20 +51,16 @@ export function Corporate() {
 
   return (
     <>
-      <ParallaxSection>
-      <Section dark style={{ paddingBottom: 0, minHeight: '50vh', display: 'flex', alignItems: 'center', position: 'relative' }}>
-        <Handshake className="deco-positioned" style={{ position: 'absolute', top: '15%', right: '10%', opacity: 0.06 }} size={80} />
-        <CarSilhouette className="deco-positioned" style={{ position: 'absolute', bottom: '8%', left: '6%', opacity: 0.04 }} size={120} />
-        <div>
-          <p style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)', marginBottom: 'var(--space-1)' }}>Corporate Sales</p>
-          <SplitHeading as="h1" style={{ color: 'white', fontSize: 'clamp(2rem, 4vw, var(--text-5xl))' }}>Fleet Solutions for<br />Nigeria's Leading Organisations</SplitHeading>
-          <div className="section-divider" />
-          <p style={{ color: 'rgba(255,255,255,0.5)', maxWidth: 480, marginTop: 'var(--space-1)' }}>
-            One person handles your account. Better pricing on volume. After-sales support that doesn't vanish after the cheque clears.
-          </p>
-        </div>
-      </Section>
-      </ParallaxSection>
+      <HeroSection
+        images={[
+          { url: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1400&q=90&fit=crop' },
+          { url: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1400&q=90&fit=crop' },
+        ]}
+        label="Corporate Sales"
+        title="Fleet Solutions for Nigeria's Leading Organisations"
+        subtitle="Better pricing on bulk orders, a dedicated account manager, and after-sales support that actually shows up."
+        deco="dots"
+      />
 
       <ParallaxSection>
       <Section>

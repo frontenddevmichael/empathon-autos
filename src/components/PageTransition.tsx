@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { type ReactNode } from 'react'
 
 interface PageTransitionProps {
   children: ReactNode
@@ -7,7 +7,13 @@ interface PageTransitionProps {
 
 export function PageTransition({ children, className = '' }: PageTransitionProps) {
   return (
-    <div className={`page-transition ${className}`}>
+    <div
+      className={`page-transition ${className}`}
+      style={{
+        animation: 'scaleInUp 500ms var(--ease-out) forwards',
+        transformOrigin: 'center top',
+      }}
+    >
       {children}
     </div>
   )

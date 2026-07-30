@@ -12,6 +12,7 @@ import { Footer } from '@/components/ui/Footer'
 import { AdminGuard } from '@/components/admin/AdminGuard'
 import { AdminLayout } from '@/pages/admin/AdminLayout'
 import { ScrollProgress } from '@/components/ScrollProgress'
+import { MouseGlow } from '@/components/MouseGlow'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
 import { useScrollToTop } from '@/hooks/useScrollToTop'
 import { usePageTitle } from '@/hooks/usePageTitle'
@@ -73,6 +74,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
   const [leadOpen, setLeadOpen] = useState(false)
   return (
     <PageLayout>
+      <MouseGlow />
       <Nav />
       <PageTransition>{children}</PageTransition>
       <Footer />

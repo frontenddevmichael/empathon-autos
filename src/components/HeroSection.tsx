@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, type ReactNode } from 'react'
-import { Squiggle, HandCircle, HandDots } from '@/components/DecoSvgs'
+import { Squiggle, HandCircle, HandDots, CarSilhouette } from '@/components/DecoSvgs'
+import { SplitHeading } from '@/components/SplitHeading'
 
 interface HeroImage {
   url: string
@@ -9,7 +10,7 @@ interface HeroImage {
 interface HeroSectionProps {
   images: HeroImage[]
   label?: string
-  title: string
+  title: string | ReactNode
   subtitle?: string
   children?: ReactNode
   deco?: 'car' | 'dots' | 'circle' | 'none'
@@ -35,21 +36,21 @@ export function HeroSection({
     return () => clearInterval(id)
   }, [nextImage])
 
-  const overlayGradient = gradient === 'dark-to-right'
-    ? 'linear-gradient(to right, rgba(5,10,20,0.92) 0%, rgba(5,10,20,0.7) 40%, rgba(5,10,20,0.3) 70%, transparent 100%), linear-gradient(to top, rgba(5,10,20,0.4) 0%, transparent 40%)'
-    : gradient === 'center-dark'
-    ? 'linear-gradient(to right, rgba(12,30,58,0.85) 0%, rgba(12,30,58,0.5) 50%, rgba(12,30,58,0.85) 100%), linear-gradient(to top, rgba(12,30,58,0.3) 0%, transparent 40%)'
-    : 'linear-gradient(to right, var(--navy) 0%, rgba(12,30,58,0.95) 30%, rgba(12,30,58,0.6) 55%, transparent 75%), linear-gradient(to top, rgba(12,30,58,0.4) 0%, transparent 40%)'
+  const isCenterDark = gradient === 'center-dark'
 
   return (
-    <section className={`hero-root ${className}`} style={{
-      minHeight: '100vh',
-      background: 'var(--navy)',
-      display: 'flex',
-      alignItems: 'center',
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
+    <section
+      className={className}
+      style={{
+        minHeight: '100vh',
+        background: 'var(--navy)',
+        display: 'flex',
+        alignItems: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Full-width crossfading background images */}
       {images.map((img, i) => (
         <img
           key={i}
@@ -59,89 +60,169 @@ export function HeroSection({
           fetchPriority={i === 0 ? 'high' : 'low'}
           style={{
             position: 'absolute',
-            right: 0,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            width: gradient === 'center-dark' ? '100%' : '55%',
+            top: 0,
+            left: 0,
+            width: '100%',
             height: '100%',
             objectFit: 'cover',
             objectPosition: 'center',
             zIndex: 0,
             opacity: i === currentIndex ? 1 : 0,
-            transition: 'opacity 1s ease-in-out',
-            maskImage: gradient === 'center-dark'
-              ? 'linear-gradient(to bottom, black 60%, transparent 100%)'
-              : 'linear-gradient(to left, black 60%, transparent 100%)',
-            WebkitMaskImage: gradient === 'center-dark'
-              ? 'linear-gradient(to bottom, black 60%, transparent 100%)'
-              : 'linear-gradient(to left, black 60%, transparent 100%)',
+            transition: 'opacity 1.2s ease-in-out',
+            transform: i === currentIndex ? 'scale(1)' : 'scale(1.05)',
+            transitionProperty: 'opacity, transform',
+            transitionDuration: '1.2s, 4s',
+            transitionTimingFunction: 'ease-in-out, ease-out',
           }}
         />
       ))}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        zIndex: 1,
-        background: overlayGradient,
-        pointerEvents: 'none',
-      }} />
-      {deco === 'circle' && <HandCircle className="deco-positioned" style={{ position: 'absolute', top: '12%', right: '8%', opacity: 0.4 }} size={80} />}
-      {deco === 'dots' && <HandDots className="deco-positioned" style={{ position: 'absolute', bottom: '18%', right: '15%', opacity: 0.5 }} />}
-      {deco === 'car' && <HandCircle className="deco-positioned" style={{ position: 'absolute', top: '12%', right: '8%', opacity: 0.4 }} size={80} />}
-      <div style={{
-        maxWidth: 'var(--container-max)',
-        margin: '0 auto',
-        padding: '0 var(--space-4)',
-        width: '100%',
-        position: 'relative',
-        zIndex: 2,
-      }}>
+
+      {/* Gradient overlay */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 1,
+          background: isCenterDark
+            ? 'linear-gradient(to right, rgba(12,30,58,0.85) 0%, rgba(12,30,58,0.5) 50%, rgba(12,30,58,0.85) 100%), linear-gradient(to top, rgba(12,30,58,0.3) 0%, transparent 40%)'
+            : 'linear-gradient(to right, var(--navy) 0%, rgba(12,30,58,0.92) 35%, rgba(12,30,58,0.5) 65%, transparent 100%), linear-gradient(to top, rgba(12,30,58,0.4) 0%, transparent 40%)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Noise texture overlay */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 1,
+          opacity: 0.025,
+          backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Empathon logo watermark */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '12%',
+          right: '6%',
+          zIndex: 2,
+          opacity: 0.06,
+          pointerEvents: 'none',
+          animation: 'float 6s ease-in-out infinite',
+        }}
+      >
+        <svg width="80" height="80" viewBox="0 0 34 34" fill="none">
+          <rect width="34" height="34" rx="6" fill="white" />
+          <text x="17" y="22" textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize="16" fontWeight="800" fill="var(--navy)" letterSpacing="-0.02">EA</text>
+          <path d="M6 26 Q17 30 28 26" stroke="var(--navy)" strokeWidth="1.2" strokeLinecap="round" opacity="0.3" />
+        </svg>
+      </div>
+
+      {/* Decorative elements */}
+      {deco === 'circle' && (
+        <HandCircle
+          style={{ position: 'absolute', top: '12%', right: '8%', opacity: 0.35, zIndex: 2 }}
+          size={80}
+        />
+      )}
+      {deco === 'dots' && (
+        <HandDots
+          style={{ position: 'absolute', bottom: '18%', right: '15%', opacity: 0.4, zIndex: 2 }}
+        />
+      )}
+      {deco === 'car' && (
+        <CarSilhouette
+          style={{ position: 'absolute', bottom: '10%', left: '6%', opacity: 0.08, zIndex: 2 }}
+          size={160}
+        />
+      )}
+
+      {/* Hero content */}
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 3,
+          maxWidth: 'var(--container-max)',
+          margin: '0 auto',
+          padding: '0 var(--space-4)',
+          width: '100%',
+        }}
+      >
         {label && (
-          <p style={{
-            fontSize: 'var(--text-xs)',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.2em',
-            color: 'rgba(255,255,255,0.35)',
-            marginBottom: 'var(--space-3)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--space-1-5)',
-          }}>
+          <p
+            style={{
+              fontSize: 'var(--text-xs)',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.2em',
+              color: 'rgba(255,255,255,0.35)',
+              marginBottom: 'var(--space-3)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--space-1-5)',
+              animation: 'fadeInDown 600ms var(--ease-out) forwards',
+            }}
+          >
             <span style={{ width: 24, height: 1, background: 'rgba(255,255,255,0.2)' }} />
             {label}
           </p>
         )}
-        <h1 style={{
-          fontSize: 'clamp(2.5rem, 7vw, 5rem)',
-          fontWeight: 800,
-          letterSpacing: '-0.045em',
-          lineHeight: 0.92,
-          color: 'white',
-          marginBottom: 'var(--space-2)',
-          maxWidth: 700,
-        }}>{title}</h1>
-        <Squiggle style={{ marginTop: '-4px', marginBottom: 'var(--space-1)' }} />
-        {subtitle && (
-          <p style={{
-            fontSize: 'var(--text-lg)',
-            color: 'rgba(255,255,255,0.4)',
-            maxWidth: 460,
-            lineHeight: 1.8,
-            marginBottom: 'var(--space-4)',
-          }}>{subtitle}</p>
+
+        {typeof title === 'string' ? (
+          <SplitHeading
+            as="h1"
+            style={{
+              color: 'white',
+              marginBottom: 'var(--space-2)',
+              maxWidth: 700,
+              animation: 'fadeInUp 600ms 150ms var(--ease-out) both',
+            }}
+          >
+            {title}
+          </SplitHeading>
+        ) : (
+          title
         )}
-        {children}
+
+        <div style={{ animation: 'fadeInUp 600ms 250ms var(--ease-out) both' }}>
+          <Squiggle />
+        </div>
+
+        {subtitle && (
+          <p
+            style={{
+              fontSize: 'var(--text-lg)',
+              color: 'rgba(255,255,255,0.4)',
+              maxWidth: 460,
+              lineHeight: 1.8,
+              marginBottom: 'var(--space-4)',
+              animation: 'fadeInUp 600ms 350ms var(--ease-out) both',
+            }}
+          >
+            {subtitle}
+          </p>
+        )}
+
+        <div style={{ animation: 'fadeInUp 600ms 450ms var(--ease-out) both' }}>
+          {children}
+        </div>
       </div>
+
+      {/* Image dot indicators */}
       {images.length > 1 && (
-        <div style={{
-          position: 'absolute',
-          bottom: 32,
-          left: 'var(--space-4)',
-          zIndex: 3,
-          display: 'flex',
-          gap: 10,
-        }}>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 32,
+            left: 'var(--space-4)',
+            zIndex: 3,
+            display: 'flex',
+            gap: 10,
+          }}
+        >
           {images.map((_, i) => (
             <button
               key={i}
@@ -155,22 +236,13 @@ export function HeroSection({
                 background: i === currentIndex ? 'white' : 'transparent',
                 cursor: 'pointer',
                 padding: 0,
-                transition: 'all 300ms ease',
+                transition: 'all 300ms var(--ease-out)',
               }}
             />
           ))}
         </div>
       )}
-      <div style={{
-        height: 120,
-        background: 'linear-gradient(to bottom, var(--navy) 0%, #1a2f4e 25%, #3a4f6e 50%, #8a9bb0 75%, var(--paper-light) 100%)',
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1,
-        pointerEvents: 'none',
-      }} />
+
     </section>
   )
 }

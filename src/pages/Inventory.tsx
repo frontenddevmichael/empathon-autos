@@ -8,12 +8,10 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { VehicleCard } from '@/components/ui/VehicleCard'
 import { VehicleCardSkeleton } from '@/components/ui/Skeleton'
-import { Section } from '@/components/PageLayout'
-import { CarSilhouette, SteeringWheel, Sparkle, Compass, ChatBubble } from '@/components/DecoSvgs'
+import { HeroSection } from '@/components/HeroSection'
+import { CarSilhouette, Sparkle, Compass, ChatBubble } from '@/components/DecoSvgs'
 import styles from './Inventory.module.css'
-import { SplitHeading } from '@/components/SplitHeading'
 import { RippleButton } from '@/components/RippleButton'
-import { ParallaxSection } from '@/components/ParallaxSection'
 
 const PAGE_SIZE = 12
 const MAX_WITH_FILTERS = 200
@@ -89,19 +87,19 @@ export function Inventory() {
   const hasMore = !loadedAll && vehicles.length < total
 
   return (
-    <Section style={{ position: 'relative' }}>
-      <SteeringWheel className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-2)', right: 'var(--space-2)', opacity: 0.04 }} size={64} />
-      <ParallaxSection>
-        <div className={styles.header}>
-          <p className={styles.headerLabel}>Inventory</p>
-          <SplitHeading as="h2">Browse Our Collection</SplitHeading>
-          <p style={{ color: 'var(--stone)' }}>
-            {loading ? 'Searching...' : `${total} vehicle${total !== 1 ? 's' : ''} available`}
-          </p>
-        </div>
-        <div className="section-divider" />
-      </ParallaxSection>
+    <>
+      <HeroSection
+        images={[
+          { url: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1400&q=90&fit=crop' },
+          { url: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1400&q=90&fit=crop' },
+        ]}
+        label="Inventory"
+        title="Browse Our Collection"
+        subtitle="Real cars. Real prices. Ready to drive."
+        deco="car"
+      />
 
+      <div style={{ position: 'relative' }}>
       <div className={styles.toolbar}>
         <div className={styles.searchRow}>
           <div className={styles.searchInput}>
@@ -230,6 +228,7 @@ export function Inventory() {
           </div>
         </div>
       </div>
-    </Section>
+    </div>
+    </>
   )
 }

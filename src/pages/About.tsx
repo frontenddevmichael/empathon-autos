@@ -4,7 +4,8 @@ import { Section } from '@/components/PageLayout'
 import { SplitHeading } from '@/components/SplitHeading'
 import { RippleButton } from '@/components/RippleButton'
 import { ParallaxSection } from '@/components/ParallaxSection'
-import { Squiggle, HandCircle, HandDots, HandBracket, CarSilhouette, SteeringWheel, Speedometer, ShieldCheck, Handshake, Sparkle, Compass, ChatBubble } from '@/components/DecoSvgs'
+import { HeroSection } from '@/components/HeroSection'
+import { Squiggle, HandCircle, HandDots, HandBracket, SteeringWheel, Speedometer, ShieldCheck, Handshake, Sparkle, Compass, ChatBubble } from '@/components/DecoSvgs'
 import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
 
 interface TeamMember {
@@ -22,20 +23,16 @@ export function About() {
   ])
   return (
     <>
-      <ParallaxSection><Section dark style={{ paddingBottom: 0, minHeight: '50vh', display: 'flex', alignItems: 'center' }}>
-        <CarSilhouette className="deco-positioned" style={{ position: 'absolute', bottom: '8%', right: '12%', opacity: 0.06, width: 120 }} size={120} />
-        <div>
-          <p style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.35)', marginBottom: 'var(--space-1)' }}>About</p>
-          <SplitHeading as="h1" style={{ color: 'white', fontSize: 'clamp(2rem, 4vw, var(--text-5xl))', letterSpacing: '-0.04em' }}>Trust . Fit . Drive.<br />Since 2019.</SplitHeading>
-          <div className="section-divider" />
-          <Squiggle style={{ marginTop: 'var(--space-1)' }} />
-          <p style={{ color: 'rgba(255,255,255,0.45)', maxWidth: 480, marginTop: 'var(--space-1)' }}>
-            We sell cars in Lagos. Not much more complicated than that. Since 2019 we've been importing, pre-ordering, and putting people behind the wheel of vehicles they actually want.
-          </p>
-        </div>
-        <HandCircle className="deco-positioned" style={{ position: 'absolute', top: '15%', right: '8%' }} size={80} />
-        <HandDots className="deco-positioned" style={{ position: 'absolute', bottom: '12%', right: '12%' }} />
-      </Section></ParallaxSection>
+      <HeroSection
+        images={[
+          { url: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1400&q=90&fit=crop' },
+          { url: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1400&q=90&fit=crop' },
+        ]}
+        label="About"
+        title="Trust . Fit . Drive. Since 2019."
+        subtitle="We sell cars in Lagos. Not much more complicated than that. Since 2019 we've been importing, pre-ordering, and putting people behind the wheel of vehicles they actually want."
+        deco="car"
+      />
 
       <ParallaxSection><Section style={{ position: 'relative' }}>
         <Speedometer className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.05 }} size={64} />
