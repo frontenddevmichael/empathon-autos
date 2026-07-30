@@ -1,0 +1,357 @@
+.hero {
+  min-height: 100vh;
+  background: var(--navy);
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Single hero car image — positioned on the right */
+.heroImage {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 55%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  mask-image: linear-gradient(to left, black 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to left, black 60%, transparent 100%);
+}
+
+/* Dark gradient overlay on left side for text readability */
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to right,
+    var(--navy) 0%,
+    rgba(12,30,58,0.95) 30%,
+    rgba(12,30,58,0.6) 55%,
+    transparent 75%
+  ),
+  linear-gradient(
+    to top,
+    rgba(12,30,58,0.4) 0%,
+    transparent 40%
+  );
+  pointer-events: none;
+}
+
+.heroContent {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.heroTag {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1-5);
+}
+.heroTag::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: rgba(255,255,255,0.2);
+}
+
+.heroTitle {
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.92;
+  color: white;
+  margin-bottom: var(--space-2);
+  max-width: 700px;
+}
+
+.heroSub {
+  font-size: var(--text-lg);
+  color: rgba(255,255,255,0.4);
+  max-width: 460px;
+  line-height: 1.8;
+  margin-bottom: var(--space-4);
+}
+
+.heroCtas {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.heroSecondary {
+  color: rgba(255,255,255,0.6);
+  font-size: var(--text-sm);
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.heroSecondary a {
+  color: rgba(255,255,255,0.35);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  padding-bottom: 2px;
+  transition: all 200ms var(--ease-out);
+}
+.heroSecondary a:hover { color: white; border-color: rgba(255,255,255,0.4); }
+
+/* Smooth gradient transition from navy hero to next section */
+.heroTransition {
+  height: 120px;
+  /* Fallback: solid transition color */
+  background: linear-gradient(
+    to bottom,
+    var(--navy) 0%,
+    #1a2f4e 25%,
+    #3a4f6e 50%,
+    #8a9bb0 75%,
+    var(--paper-light) 100%
+  );
+  position: relative;
+  z-index: 1;
+  margin-top: -1px;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .heroImage {
+    width: 80%;
+    opacity: 0.35;
+    mask-image: linear-gradient(to left, black 40%, transparent 90%);
+    -webkit-mask-image: linear-gradient(to left, black 40%, transparent 90%);
+  }
+  .heroOverlay {
+    background: linear-gradient(
+      to right,
+      var(--navy) 0%,
+      rgba(12,30,58,0.85) 40%,
+      rgba(12,30,58,0.3) 70%,
+      transparent 100%
+    );
+  }
+  .heroTransition {
+    height: 60px;
+  }
+}
+
+.section {
+  padding: var(--space-9) var(--space-4);
+  position: relative;
+}
+.sectionInner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+}
+.sectionLabel {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--navy);
+  margin-bottom: var(--space-1);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+.sectionLabel::before {
+  content: '';
+  width: 16px;
+  height: 2px;
+  background: var(--navy);
+  border-radius: 1px;
+}
+.sectionTitle {
+  margin-bottom: var(--space-1);
+  letter-spacing: -0.035em;
+}
+.sectionDesc {
+  color: var(--stone);
+  margin-bottom: var(--space-5);
+  max-width: 520px;
+  line-height: 1.8;
+}
+
+.explainerGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.explainerCard {
+  padding: var(--space-5);
+  border: 1px solid rgba(10,10,10,0.06);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  transition: all 350ms var(--ease-out);
+  box-shadow: 0 1px 3px rgba(10,10,10,0.03);
+}
+.explainerCard:hover {
+  border-color: rgba(12,30,58,0.1);
+  box-shadow: 0 8px 24px rgba(10,10,10,0.06);
+  transform: translateY(-2px);
+}
+.explainerCard h3 {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-1);
+  letter-spacing: -0.02em;
+}
+.explainerCard p {
+  color: var(--stone);
+  font-size: var(--text-sm);
+  line-height: 1.8;
+}
+.explainerCta { margin-top: var(--space-3); }
+
+.featuredGrid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.trustStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4) 0;
+}
+
+.trustItem {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--stone);
+  padding: var(--space-1-5) var(--space-3);
+  border: 1px solid rgba(10,10,10,0.06);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  transition: all 200ms var(--ease-out);
+}
+.trustItem:hover {
+  border-color: rgba(12,30,58,0.12);
+  color: var(--navy);
+}
+
+.ctaSection {
+  background: linear-gradient(135deg, var(--navy) 0%, #0a1628 50%, #0c1e3a 100%);
+  text-align: center;
+  padding: var(--space-9) var(--space-4);
+  position: relative;
+  overflow: hidden;
+}
+.ctaSection::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(184,148,31,0.1) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 50%, rgba(12,30,58,0.4) 0%, transparent 50%);
+}
+.ctaSection h2 {
+  color: white;
+  margin-bottom: var(--space-1);
+  position: relative;
+  z-index: 1;
+}
+.ctaSection p {
+  color: rgba(255,255,255,0.45);
+  margin-bottom: var(--space-4);
+  position: relative;
+  z-index: 1;
+}
+.ctaCtas {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.testimonialGrid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.testimonialCard {
+  padding: var(--space-4);
+  border: 1px solid rgba(10,10,10,0.06);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  transition: all 300ms var(--ease-out);
+}
+.testimonialCard:hover {
+  border-color: rgba(12,30,58,0.08);
+}
+.testimonialQuote {
+  font-size: var(--text-sm);
+  line-height: 1.8;
+  font-style: italic;
+  color: var(--ink);
+  margin-bottom: var(--space-3);
+}
+.testimonialAuthorRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1-5);
+}
+.testimonialAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+}
+.testimonialAvatarFallback {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-hover, #162d52) 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: var(--text-xs);
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+.testimonialAuthor {
+  font-weight: 700;
+  font-size: var(--text-sm);
+  letter-spacing: -0.01em;
+}
+.testimonialCompany { font-size: var(--text-xs); color: var(--stone); }
+.stars { display: flex; gap: 3px; margin-bottom: var(--space-1-5); }
+.star { width: 14px; height: 14px; }
+
+@media (max-width: 900px) {
+  .section { padding: var(--space-7) var(--space-4); }
+  .ctaSection { padding: var(--space-7) var(--space-4); }
+}
+
+@media (max-width: 768px) {
+  .explainerGrid { grid-template-columns: 1fr; }
+  .heroSecondary { flex-direction: column; gap: var(--space-1-5); }
+  .featuredGrid { grid-template-columns: 1fr; }
+  .testimonialGrid { grid-template-columns: 1fr; }
+  .trustStrip { gap: var(--space-1-5); }
+  .section { padding: var(--space-6) var(--space-3); }
+  .ctaSection { padding: var(--space-6) var(--space-3); }
+}

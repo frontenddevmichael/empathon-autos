@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+*.local
+.freebuff/
+supabase/.temp/
+**/desktop*.db
+**/desktop*.db-shm
+**/desktop*.db-wal

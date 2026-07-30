@@ -1,0 +1,22 @@
+.card {
+  background: var(--surface);
+  border: 1px solid rgba(10,10,10,0.06);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(10,10,10,0.04), 0 4px 12px rgba(10,10,10,0.03);
+  transition: all 350ms var(--ease-out);
+}
+
+.hoverable {
+  cursor: default;
+}
+
+.hoverable:hover {
+  border-color: rgba(12,30,58,0.12);
+  box-shadow:
+    0 4px 8px rgba(10,10,10,0.04),
+    0 12px 24px rgba(10,10,10,0.05),
+    0 24px 48px rgba(10,10,10,0.03);
+  transform: translateY(-4px) translateZ(0);
+  will-change: transform, box-shadow;
+}

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0c1e3a"/>
+      <stop offset="100%" style="stop-color:#162d52"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#b8941f"/>
+      <stop offset="100%" style="stop-color:#d4a843"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <!-- Decorative car silhouette -->
+  <path d="M 150 420 Q 130 420 130 400 Q 130 370 160 370 Q 180 340 210 330 Q 240 320 280 320 Q 340 320 380 340 Q 420 350 450 370 Q 470 380 470 400 Q 470 420 440 420 L 150 420 Z" fill="rgba(184,148,31,0.12)" stroke="rgba(184,148,31,0.3)" stroke-width="2"/>
+  <circle cx="220" cy="440" r="30" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+  <circle cx="400" cy="440" r="30" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+  <!-- Empathon Autos text -->
+  <text x="160" y="240" font-family="system-ui,-apple-system,sans-serif" font-size="72" font-weight="800" fill="white" letter-spacing="-0.03">Trust . Fit . Drive.</text>
+  <text x="160" y="300" font-family="system-ui,-apple-system,sans-serif" font-size="28" fill="rgba(255,255,255,0.45)" font-weight="400">Premium vehicle imports and sales in Lagos, Nigeria.</text>
+  <!-- Gold accent line -->
+  <line x1="160" y1="320" x2="400" y2="320" stroke="url(#gold)" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
+  <!-- EA Mark -->
+  <rect x="160" y="140" width="60" height="60" rx="10" fill="url(#gold)" opacity="0.9"/>
+  <text x="190" y="180" font-family="system-ui,-apple-system,sans-serif" font-size="30" font-weight="800" fill="#0c1e3a" text-anchor="middle">EA</text>
+</svg>

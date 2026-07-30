@@ -1,0 +1,217 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  height: var(--nav-height);
+  background: var(--navy);
+  color: white;
+  transition: all 400ms var(--ease-out);
+}
+.nav .wordmark { color: white; }
+.nav .accent { color: var(--gold, #b8941f); }
+.nav .link {
+  color: rgba(255,255,255,0.85);
+}
+.nav .link:hover {
+  color: white;
+  background: rgba(255,255,255,0.12);
+}
+.nav .active {
+  color: white;
+  font-weight: 600;
+}
+.nav .hamburger {
+  color: white;
+  background: rgba(255,255,255,0.08);
+}
+.nav .hamburger:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+/* When scrolled — add blur + shadow */
+.scrolled {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+
+/* Contact button — always white bg, navy text
+   .nav .navContact beats Button's .primary via higher specificity (0,2,0) */
+.nav .navContact {
+  background: white;
+  color: var(--navy);
+  border-color: white;
+}
+.nav .navContact:hover {
+  background: rgba(255,255,255,0.9);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-1px);
+}
+
+
+
+.inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  letter-spacing: -0.02em;
+  transition: opacity 200ms var(--ease-out);
+}
+.logo:hover { opacity: 0.75; }
+.wordmark { color: var(--ink); letter-spacing: -0.03em; }
+.accent { color: var(--navy); }
+
+.links { display: flex; align-items: center; gap: 2px; }
+.link {
+  padding: 6px 14px;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--stone);
+  border-radius: var(--radius-md);
+  transition: all 150ms var(--ease-out);
+}
+.link:hover { color: var(--ink); background: rgba(12,30,58,0.04); }
+.active { color: var(--navy); font-weight: 600; }
+
+.cta { margin-left: var(--space-2); }
+
+/* ── Animated Hamburger ── */
+.hamburger {
+  display: none;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--ink);
+  background: rgba(12,30,58,0.04);
+  transition: all 150ms var(--ease-out);
+}
+.hamburger:hover { background: rgba(12,30,58,0.08); }
+
+.hamburgerInner {
+  width: 18px;
+  height: 14px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.hamburgerLine,
+.hamburgerLine::before,
+.hamburgerLine::after {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: all 250ms var(--ease-out);
+  position: absolute;
+}
+
+.hamburgerLine {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.hamburgerLine::before,
+.hamburgerLine::after {
+  content: '';
+  left: 0;
+}
+
+.hamburgerLine::before {
+  top: -6px;
+}
+
+.hamburgerLine::after {
+  top: 6px;
+}
+
+.hamburgerOpen {
+  background: transparent;
+}
+
+.hamburgerOpen::before {
+  top: 0;
+  transform: rotate(45deg);
+}
+
+.hamburgerOpen::after {
+  top: 0;
+  transform: rotate(-45deg);
+}
+
+/* ── Mobile Menu ── */
+.mobileMenu {
+  position: fixed;
+  top: var(--nav-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3) var(--space-4);
+  z-index: 99;
+  transform: translateY(-8px);
+  opacity: 0;
+  transition: all 300ms var(--ease-out);
+  pointer-events: none;
+}
+.mobileOpen {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobileLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.mobileLink {
+  display: flex;
+  align-items: center;
+  padding: 16px var(--space-3);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  border-radius: var(--radius-lg);
+  color: var(--ink);
+  transition: all 200ms var(--ease-out);
+  opacity: 0;
+  transform: translateY(4px);
+  animation: mobileLinkIn 300ms var(--ease-out) forwards;
+}
+.mobileLink:hover { background: var(--navy-light); }
+
+@keyframes mobileLinkIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobileCta { margin-top: var(--space-2); }
+
+@media (max-width: 768px) {
+  .links { display: none; }
+  .hamburger { display: flex; }
+}

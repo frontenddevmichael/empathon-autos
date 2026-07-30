@@ -1,0 +1,186 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background: var(--ink);
+  color: rgba(255,255,255,0.7);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  z-index: 110;
+}
+
+.brand {
+  padding: var(--space-3) var(--space-3);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  letter-spacing: -0.02em;
+}
+
+.closeBtn {
+  display: none;
+  margin-left: auto;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  color: rgba(255,255,255,0.4);
+  align-items: center;
+  justify-content: center;
+  transition: all 150ms var(--ease-out);
+}
+.closeBtn:hover { background: rgba(255,255,255,0.08); color: white; }
+
+.nav {
+  flex: 1;
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1-5) var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: rgba(255,255,255,0.4);
+  transition: all 150ms var(--ease-out);
+}
+.link:hover { background: rgba(255,255,255,0.06); color: white; }
+.active {
+  background: rgba(255,255,255,0.08);
+  color: white;
+  font-weight: 600;
+}
+
+.spacer { flex: 1; }
+
+.logout {
+  margin: var(--space-2);
+  padding: var(--space-1-5) var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: rgba(255,255,255,0.3);
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: all 150ms var(--ease-out);
+}
+.logout:hover { background: rgba(255,255,255,0.06); color: white; }
+
+.main {
+  flex: 1;
+  padding: var(--space-5);
+  overflow-x: hidden;
+  min-width: 0;
+  background: var(--paper);
+}
+
+/* Mobile header bar */
+.mobileBar {
+  display: none;
+  align-items: center;
+  gap: var(--space-1-5);
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.hamburger {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--navy-light);
+  cursor: pointer;
+  color: var(--navy);
+  transition: all 150ms var(--ease-out);
+}
+.hamburger:hover { background: rgba(12,30,58,0.12); }
+
+/* Mobile overlay */
+.mobileOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10,10,10,0.5);
+  z-index: 109;
+}
+
+/* Bottom navigation (mobile) */
+.bottomNav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  z-index: 100;
+  padding: 6px 0;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: max(6px, env(safe-area-inset-bottom, 6px));
+}
+
+.bottomLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--stone);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 150ms var(--ease-out);
+}
+.bottomActive { color: var(--navy); font-weight: 600; }
+.bottomLogout:hover { color: var(--error); }
+
+@media (max-width: 900px) {
+  .sidebar { width: 200px; }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    height: 100vh;
+    width: 260px;
+    transition: left 250ms var(--ease-out);
+    display: flex;
+  }
+  .sidebarOpen { left: 0; }
+  .closeBtn { display: flex; }
+  .mobileOverlay { display: block; }
+  .mobileBar { display: flex; }
+  .bottomNav { display: flex; }
+  .main {
+    padding: var(--space-3);
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+  .logout { display: none; }
+}
