@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { Phone, Mail, MapPin, Clock, MessageCircle } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
 import { Input, TextArea } from '@/components/ui/Input'
 import { Section } from '@/components/PageLayout'
 import { useToast } from '@/context/ToastContext'
 import { Squiggle, HandDots, Handshake } from '@/components/DecoSvgs'
+import { SplitHeading } from '@/components/SplitHeading'
+import { RippleButton } from '@/components/RippleButton'
+import { ParallaxSection } from '@/components/ParallaxSection'
 
 const contactDetails = [
   { icon: MapPin, label: 'Address', value: '123 Ajao Road, Ikeja, Lagos' },
@@ -41,16 +43,19 @@ export function Contact() {
 
   return (
     <>
-      <Section dark style={{ paddingBottom: 0, minHeight: '50vh', display: 'flex', alignItems: 'center' }}>
-        <div>
-          <p style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)', marginBottom: 'var(--space-1)' }}>Contact</p>
-          <h1 style={{ color: 'white', fontSize: 'clamp(2rem, 4vw, var(--text-5xl))' }}>Get in Touch</h1>
-          <Squiggle style={{ marginTop: 'var(--space-1)' }} />
-          <p style={{ color: 'rgba(255,255,255,0.5)', maxWidth: 480, marginTop: 'var(--space-1)' }}>
-            Visit our showroom, give us a call, or send a message.
-          </p>
-        </div>
-      </Section>
+      <ParallaxSection>
+        <Section dark style={{ paddingBottom: 0, minHeight: '50vh', display: 'flex', alignItems: 'center' }}>
+          <div>
+            <p style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)', marginBottom: 'var(--space-1)' }}>Contact</p>
+            <SplitHeading as="h1" style={{ color: 'white', fontSize: 'clamp(2rem, 4vw, var(--text-5xl))' }}>Get in Touch</SplitHeading>
+            <div className="section-divider" />
+            <Squiggle style={{ marginTop: 'var(--space-1)' }} />
+            <p style={{ color: 'rgba(255,255,255,0.5)', maxWidth: 480, marginTop: 'var(--space-1)' }}>
+              Visit our showroom, give us a call, or send a message.
+            </p>
+          </div>
+        </Section>
+      </ParallaxSection>
 
       <Section style={{ position: 'relative' }}>
         <Handshake className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-3)', left: 'var(--space-3)', opacity: 0.04 }} size={64} />
@@ -87,7 +92,7 @@ export function Contact() {
               <Input label="Email *" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required />
               <Input label="Phone" type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} />
               <TextArea label="Message *" value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} rows={4} required />
-              <Button type="submit" loading={saving}>Send Message</Button>
+              <RippleButton type="submit" loading={saving}>Send Message</RippleButton>
             </form>
           </div>
         </div>

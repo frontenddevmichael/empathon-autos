@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
 import { MessageCircle, ArrowRight } from 'lucide-react'
 import { Section } from '@/components/PageLayout'
-import { Button } from '@/components/ui/Button'
+import { SplitHeading } from '@/components/SplitHeading'
+import { RippleButton } from '@/components/RippleButton'
+import { ParallaxSection } from '@/components/ParallaxSection'
 import { Squiggle, HandCircle, HandDots, HandBracket, CarSilhouette, SteeringWheel, Speedometer, ShieldCheck, Handshake, Sparkle, Compass, ChatBubble } from '@/components/DecoSvgs'
 import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
 
@@ -20,11 +22,12 @@ export function About() {
   ])
   return (
     <>
-      <Section dark style={{ paddingBottom: 0, minHeight: '50vh', display: 'flex', alignItems: 'center' }}>
+      <ParallaxSection><Section dark style={{ paddingBottom: 0, minHeight: '50vh', display: 'flex', alignItems: 'center' }}>
         <CarSilhouette className="deco-positioned" style={{ position: 'absolute', bottom: '8%', right: '12%', opacity: 0.06, width: 120 }} size={120} />
         <div>
           <p style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.35)', marginBottom: 'var(--space-1)' }}>About</p>
-          <h1 style={{ color: 'white', fontSize: 'clamp(2rem, 4vw, var(--text-5xl))', letterSpacing: '-0.04em' }}>Trust . Fit . Drive.<br />Since 2019.</h1>
+          <SplitHeading as="h1" style={{ color: 'white', fontSize: 'clamp(2rem, 4vw, var(--text-5xl))', letterSpacing: '-0.04em' }}>Trust . Fit . Drive.<br />Since 2019.</SplitHeading>
+          <div className="section-divider" />
           <Squiggle style={{ marginTop: 'var(--space-1)' }} />
           <p style={{ color: 'rgba(255,255,255,0.45)', maxWidth: 480, marginTop: 'var(--space-1)' }}>
             We sell cars in Lagos. Not much more complicated than that. Since 2019 we've been importing, pre-ordering, and putting people behind the wheel of vehicles they actually want.
@@ -32,9 +35,9 @@ export function About() {
         </div>
         <HandCircle className="deco-positioned" style={{ position: 'absolute', top: '15%', right: '8%' }} size={80} />
         <HandDots className="deco-positioned" style={{ position: 'absolute', bottom: '12%', right: '12%' }} />
-      </Section>
+      </Section></ParallaxSection>
 
-      <Section style={{ position: 'relative' }}>
+      <ParallaxSection><Section style={{ position: 'relative' }}>
         <Speedometer className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.05 }} size={64} />
         <HandBracket className="deco-positioned" position="top-right" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', opacity: 0.3 }} />
         {aboutError && !aboutContent.length && (
@@ -42,7 +45,7 @@ export function About() {
             <p style={{ color: 'var(--error, #dc2626)', fontSize: 'var(--text-sm)' }}>Could not load page content. Showing defaults.</p>
           </div>
         )}
-        <div className="scroll-reveal responsive-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+        <div className="scroll-reveal responsive-grid-2 stagger-fade-in" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
           <div className="scroll-reveal-child">
             <p style={{ fontSize: 'var(--text-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--navy)', marginBottom: 'var(--space-1)' }}>What We're About</p>
             <p style={{ fontSize: 'var(--text-lg)', lineHeight: 1.7 }}>
@@ -56,14 +59,15 @@ export function About() {
             </p>
           </div>
         </div>
-      </Section>
+      </Section></ParallaxSection>
 
-      <Section className="scroll-reveal" style={{ background: 'var(--paper-light)', position: 'relative' }}>
+      <ParallaxSection><Section className="scroll-reveal" style={{ background: 'var(--paper-light)', position: 'relative' }}>
         <ShieldCheck className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', left: 'var(--space-3)', opacity: 0.04 }} size={48} />
         <HandDots className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.35 }} />
-        <h2 style={{ marginBottom: 'var(--space-3)' }}>Core Values</h2>
+        <SplitHeading as="h2" style={{ marginBottom: 'var(--space-3)' }}>Core Values</SplitHeading>
+        <div className="section-divider" />
         <Squiggle style={{ marginTop: '-4px', marginBottom: 'var(--space-2)' }} />
-        <div className="responsive-grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-3)' }}>
+        <div className="responsive-grid-4 stagger-fade-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-3)' }}>
           {[
             { title: 'No Nonsense', desc: 'Clear pricing. No bait-and-switch. What you see is what you pay.' },
             { title: 'Your Side, Always', desc: "We're not here to push a sale. We're here to find the right fit." },
@@ -76,14 +80,15 @@ export function About() {
             </div>
           ))}
         </div>
-      </Section>
+      </Section></ParallaxSection>
 
-      <Section className="scroll-reveal" style={{ position: 'relative' }}>
+      <ParallaxSection><Section className="scroll-reveal" style={{ position: 'relative' }}>
         <SteeringWheel className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-2)', left: 'var(--space-3)', opacity: 0.04 }} size={56} />
         <HandCircle className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', left: 'var(--space-3)', opacity: 0.2 }} size={48} />
-        <h2 style={{ marginBottom: 'var(--space-3)' }}>Our Services</h2>
+        <SplitHeading as="h2" style={{ marginBottom: 'var(--space-3)' }}>Our Services</SplitHeading>
+        <div className="section-divider" />
         <Squiggle style={{ marginTop: '-4px', marginBottom: 'var(--space-2)' }} />
-        <div className="responsive-grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-3)' }}>
+        <div className="responsive-grid-4 stagger-fade-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-3)' }}>
           {[
             { title: 'Car Sales', desc: 'Quality vehicles sourced from Japan, Dubai, Europe, and the US.' },
             { title: 'Pre-Orders', desc: "Want something specific? We'll hunt it down for you." },
@@ -96,16 +101,17 @@ export function About() {
             </div>
           ))}
         </div>
-      </Section>
+      </Section></ParallaxSection>
 
       {leadership.length > 0 && (
-        <Section className="scroll-reveal" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
+        <ParallaxSection><Section className="scroll-reveal" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
           <Handshake className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.04 }} size={56} />
           <HandDots className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', left: 'var(--space-3)', opacity: 0.3 }} />
           <HandBracket className="deco-positioned" position="bottom-right" style={{ position: 'absolute', bottom: 'var(--space-2)', right: 'var(--space-2)', opacity: 0.25 }} />
-          <h2 style={{ marginBottom: 'var(--space-3)', textAlign: 'center' }}>The Team</h2>
+          <SplitHeading as="h2" style={{ marginBottom: 'var(--space-3)', textAlign: 'center' }}>The Team</SplitHeading>
+          <div className="section-divider" />
           <Squiggle style={{ margin: '-4px auto var(--space-2)', display: 'block' }} />
-          <div className="responsive-grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-3)' }}>
+          <div className="responsive-grid-4 stagger-fade-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-3)' }}>
             {leadership.map((person, i) => (
               <div key={person.name} className="scroll-reveal-child" style={{ padding: 'var(--space-3)', borderRadius: 'var(--radius-xl)', background: 'var(--surface)', border: '1px solid rgba(10,10,10,0.06)', textAlign: 'center', ['--reveal-delay' as string]: `${i * 80}ms` }}>
                 <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--navy-light)', margin: '0 auto var(--space-1-5)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--navy)', fontWeight: 700, fontSize: 'var(--text-lg)' }}>
@@ -116,34 +122,35 @@ export function About() {
               </div>
             ))}
           </div>
-        </Section>
+        </Section></ParallaxSection>
       )}
 
       {/* ── Get in Touch / Lead CTA ── */}
-      <Section style={{ position: 'relative', textAlign: 'center' }}>
+      <ParallaxSection><Section style={{ position: 'relative', textAlign: 'center' }}>
         <Compass className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', left: 'var(--space-2)', opacity: 0.05 }} size={56} />
         <ChatBubble className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.04 }} size={48} />
         <Sparkle className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-3)', right: '15%', opacity: 0.06 }} size={24} />
         <p style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--navy)', marginBottom: 'var(--space-1)' }}>Let&rsquo;s Talk</p>
-        <h2 style={{ marginBottom: 'var(--space-1)' }}>Ready to Get Started?</h2>
+        <SplitHeading as="h2" style={{ marginBottom: 'var(--space-1)' }}>Ready to Get Started?</SplitHeading>
+        <div className="section-divider" />
         <p style={{ color: 'var(--stone)', maxWidth: 420, margin: '0 auto var(--space-3)' }}>
           Whether you&rsquo;re buying your first car or building a fleet, we&rsquo;re here to help. No pressure &mdash; just honest guidance.
         </p>
         <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'center', flexWrap: 'wrap' }}>
           <Link to="/contact">
-            <Button size="md">Send an Enquiry <ArrowRight size={15} /></Button>
+            <RippleButton size="md">Send an Enquiry <ArrowRight size={15} /></RippleButton>
           </Link>
           <a
             href="https://wa.me/2348023392388?text=Hi%20Empathon%20Autos!%20I%27d%20like%20to%20know%20more%20about%20your%20services."
             target="_blank" rel="noopener noreferrer"
           >
-            <Button variant="secondary" size="md">
+            <RippleButton variant="secondary" size="md">
               <MessageCircle size={15} style={{ marginRight: 4 }} />
               WhatsApp Us
-            </Button>
+            </RippleButton>
           </a>
         </div>
-      </Section>
+      </Section></ParallaxSection>
     </>
   )
 }

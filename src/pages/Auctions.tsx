@@ -6,11 +6,13 @@ import { useAutoCloseLots } from '@/hooks/useAutoCloseLots'
 import { formatPrice, formatMileage } from '@/lib/format'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
-import { Button } from '@/components/ui/Button'
 import { AuctionTimer } from '@/components/ui/AuctionTimer'
 import { Section } from '@/components/PageLayout'
 import { Speedometer, HandCircle } from '@/components/DecoSvgs'
 import styles from './Auctions.module.css'
+import { SplitHeading } from '@/components/SplitHeading'
+import { RippleButton } from '@/components/RippleButton'
+import { ParallaxSection } from '@/components/ParallaxSection'
 
 interface AuctionVehicle {
   id: string
@@ -57,13 +59,16 @@ export function Auctions() {
 
   return (
     <Section style={{ position: 'relative' }}>
-      <Speedometer className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-2)', right: 'var(--space-2)', opacity: 0.04 }} size={56} />
-      <HandCircle className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', left: 'var(--space-3)', opacity: 0.08 }} size={48} />
-      <div className={styles.header}>
-        <p className={styles.headerLabel}>Auction</p>
-        <h2>Live Auctions</h2>
-        <p>Bid on premium vehicles in real-time. Place your bid and drive away with the best deal.</p>
-      </div>
+      <ParallaxSection>
+        <Speedometer className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-2)', right: 'var(--space-2)', opacity: 0.04 }} size={56} />
+        <HandCircle className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', left: 'var(--space-3)', opacity: 0.08 }} size={48} />
+        <div className={styles.header}>
+          <p className={styles.headerLabel}>Auction</p>
+          <SplitHeading as="h2">Live Auctions</SplitHeading>
+          <p>Bid on premium vehicles in real-time. Place your bid and drive away with the best deal.</p>
+        </div>
+      </ParallaxSection>
+      <div className="section-divider" />
 
       {loading ? (
         <div className={styles.grid}>
@@ -74,14 +79,14 @@ export function Auctions() {
       ) : fetchError ? (
         <div className={styles.empty}>
           <p style={{ color: 'var(--error)', marginBottom: 'var(--space-2)' }}>{fetchError}</p>
-          <Button variant="secondary" size="sm" onClick={fetchVehicles}>Try Again</Button>
+          <RippleButton variant="secondary" size="sm" onClick={fetchVehicles}>Try Again</RippleButton>
         </div>
       ) : vehicles.length === 0 ? (
         <div className={styles.empty}>
           <p>No active auctions right now. <Link to="/inventory" style={{ color: 'var(--navy)', textDecoration: 'underline' }}>Browse inventory</Link> instead.</p>
         </div>
       ) : (
-        <div className={styles.grid}>
+        <div className={`${styles.grid} stagger-fade-in`}>
           {vehicles.map(v => {
             const img = v.media?.find(m => m.is_primary) ?? v.media?.[0]
             return (

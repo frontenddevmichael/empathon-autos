@@ -30,11 +30,16 @@
   background: rgba(255,255,255,0.15);
 }
 
-/* When scrolled — add blur + shadow */
+/* When scrolled — add blur + shadow + shrink */
 .scrolled {
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  height: 60px;
+}
+.scrolled .inner {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 /* Contact button — always white bg, navy text

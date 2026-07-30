@@ -4,6 +4,8 @@ import { supabase } from '@/lib/supabase'
 import type { BlogPost } from '@/types'
 import { Section } from '@/components/PageLayout'
 import { Squiggle, HandDots } from '@/components/DecoSvgs'
+import { SplitHeading } from '@/components/SplitHeading'
+import { ParallaxSection } from '@/components/ParallaxSection'
 
 export function Blog() {
   const [posts, setPosts] = useState<BlogPost[]>([])
@@ -24,11 +26,13 @@ export function Blog() {
   }, [])
 
   return (
-    <Section style={{ position: 'relative' }}>
-      <HandDots className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.25 }} />
-      <p style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--navy)', marginBottom: 'var(--space-0-5)' }}>Blog</p>
-      <h2 style={{ marginBottom: 'var(--space-1)' }}>Latest Articles</h2>
-      <Squiggle style={{ marginBottom: 'var(--space-2)' }} />
+    <ParallaxSection>
+      <Section style={{ position: 'relative' }}>
+        <HandDots className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.25 }} />
+        <p style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--navy)', marginBottom: 'var(--space-0-5)' }}>Blog</p>
+        <SplitHeading as="h2" style={{ marginBottom: 'var(--space-1)' }}>Latest Articles</SplitHeading>
+        <div className="section-divider" />
+        <Squiggle style={{ marginBottom: 'var(--space-2)' }} />
 
       {loading ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
@@ -39,7 +43,7 @@ export function Blog() {
       ) : posts.length === 0 ? (
         <p style={{ color: 'var(--stone)' }}>No articles yet. Check back soon.</p>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+        <div className="stagger-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
           {posts.map(p => (
             <Link key={p.id} to={`/blog/${p.slug}`} style={{ display: 'block', padding: 'var(--space-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', background: 'var(--surface)', transition: 'border-color var(--transition-fast), transform var(--transition-fast)' }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--navy-light)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
@@ -55,5 +59,6 @@ export function Blog() {
         </div>
       )}
     </Section>
+    </ParallaxSection>
   )
 }

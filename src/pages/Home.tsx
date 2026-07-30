@@ -8,8 +8,12 @@ import { useSiteContent, parseJsonContent, getTextContent } from '@/hooks/useSit
 import { Button } from '@/components/ui/Button'
 import { VehicleCard } from '@/components/ui/VehicleCard'
 import { VehicleCardSkeleton } from '@/components/ui/Skeleton'
+import { RippleButton } from '@/components/RippleButton'
+import { SplitHeading } from '@/components/SplitHeading'
+import { AnimatedCounter } from '@/components/AnimatedCounter'
+import { ParallaxSection } from '@/components/ParallaxSection'
 import { DecoMark } from '@/components/DecoMark'
-import { Squiggle, HandDots, HandArrow, HandBracket, HandCircle, WavyDivider, CarSilhouette, SteeringWheel, CarKey, Speedometer, ShieldCheck } from '@/components/DecoSvgs'
+import { Squiggle, HandDots, HandArrow, HandBracket, HandCircle, CarSilhouette, SteeringWheel, CarKey, Speedometer, ShieldCheck } from '@/components/DecoSvgs'
 
 import styles from './Home.module.css'
 
@@ -126,18 +130,18 @@ export function Home() {
         <HandCircle className="deco-positioned" style={{ position: 'absolute', top: '12%', right: '8%', opacity: 0.4 }} size={80} />
         <HandDots className="deco-positioned" style={{ position: 'absolute', bottom: '18%', right: '15%', opacity: 0.5 }} />
         <div className={styles.heroContent}>
-          <p className={styles.heroTag}>Lagos &middot; Since 2019</p>
-          <h1 className={styles.heroTitle}>Trust . Fit . Drive.</h1>
+          <p className={styles.heroTag} style={{ animation: 'fadeInDown 600ms var(--ease-out) forwards' }}>Lagos &middot; Since 2019</p>
+          <SplitHeading as="h1" className={styles.heroTitle}>Trust . Fit . Drive.</SplitHeading>
           <Squiggle style={{ marginTop: '-4px', marginBottom: 'var(--space-1)' }} />
-          <p className={styles.heroSub}>
+          <p className={styles.heroSub} style={{ animation: 'fadeInUp 600ms 300ms var(--ease-out) both' }}>
             Real cars. Real people. No games. We bring in quality vehicles from around the world
             and help you find the one that actually fits your life and budget.
           </p>
-          <div className={styles.heroCtas}>
-            <Link to="/inventory"><Button size="md">Browse Inventory <ArrowRight size={16} /></Button></Link>
-            <Link to="/contact"><Button size="md" style={{ background: 'rgba(255,255,255,0.1)', color: 'white', borderColor: 'rgba(255,255,255,0.25)', backdropFilter: 'blur(8px)' }}>Request a Quote</Button></Link>
+          <div className={styles.heroCtas} style={{ animation: 'fadeInUp 600ms 500ms var(--ease-out) both' }}>
+            <Link to="/inventory"><RippleButton size="md">Browse Inventory <ArrowRight size={16} /></RippleButton></Link>
+            <Link to="/contact"><RippleButton size="md" style={{ background: 'rgba(255,255,255,0.1)', color: 'white', borderColor: 'rgba(255,255,255,0.25)', backdropFilter: 'blur(8px)' }}>Request a Quote</RippleButton></Link>
           </div>
-          <div className={styles.heroSecondary}>
+          <div className={styles.heroSecondary} style={{ animation: 'fadeInUp 600ms 700ms var(--ease-out) both' }}>
             <Link to="/corporate">Corporate & Fleet Sales</Link>
             <HandArrow style={{ margin: '0 -4px' }} />
             <Link to="/pre-order">Pre-Order a Vehicle</Link>
@@ -149,12 +153,12 @@ export function Home() {
       <div aria-hidden="true" className={styles.heroTransition} />
 
       {/* FEATURED VEHICLES */}
-      <section className={`scroll-reveal ${styles.section}`} style={{ background: 'var(--paper-light)', position: 'relative' }}>
+      <ParallaxSection className={`scroll-reveal ${styles.section}`} style={{ background: 'var(--paper-light)', position: 'relative' }}>
         <SteeringWheel className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-2)', left: 'var(--space-2)', opacity: 0.06 }} size={80} />
         <div className={styles.sectionInner}>
           <p className={styles.sectionLabel}>Collection</p>
-          <h2 className={styles.sectionTitle}>Featured Vehicles</h2>
-          <Squiggle style={{ marginTop: '-4px', marginBottom: 'var(--space-1)' }} />
+          <SplitHeading as="h2" className={styles.sectionTitle}>Featured Vehicles</SplitHeading>
+          <div className="section-divider" />
           <p className={styles.sectionDesc}>Handpicked and ready to go. Every car here is sourced from trusted partners across North America, Europe, the Middle East, and the Far East — then prepped and waiting for you in Lagos.</p>
 
           {loading ? (
@@ -168,75 +172,96 @@ export function Home() {
             </div>
           ) : vehicles.length > 0 ? (
             <>
-              <div className={styles.featuredGrid}>
+              <div className={`${styles.featuredGrid} stagger-fade-in`}>
                 {vehicles.map(v => <VehicleCard key={v.id} vehicle={v} />)}
               </div>
               <div style={{ textAlign: 'center', marginTop: 'var(--space-3)' }}>
-                <Link to="/inventory"><Button variant="secondary">View All Vehicles <ArrowRight size={14} /></Button></Link>
+                <Link to="/inventory"><RippleButton variant="secondary">View All Vehicles <ArrowRight size={14} /></RippleButton></Link>
               </div>
             </>
           ) : null}
         </div>
-      </section>
+      </ParallaxSection>
 
       {/* WALK-IN vs PRE-ORDER */}
-      <section className={`scroll-reveal ${styles.section}`} style={{ position: 'relative' }}>
+      <ParallaxSection className={`scroll-reveal ${styles.section}`} style={{ position: 'relative' }}>
         <CarKey className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.06 }} size={64} />
         <HandDots className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-3)', right: 'var(--space-3)', opacity: 0.4 }} />
         <div className={styles.sectionInner}>
           <p className={styles.sectionLabel}>How to Buy</p>
-          <h2 className={styles.sectionTitle}>Two Ways to Drive</h2>
-          <Squiggle style={{ marginTop: '-4px', marginBottom: 'var(--space-1)' }} />
+          <SplitHeading as="h2" className={styles.sectionTitle}>Two Ways to Drive</SplitHeading>
+          <div className="section-divider" />
           <p className={styles.sectionDesc}>If you want to drive it today, we've got stock. If you want something specific, we'll find it. Simple as that.</p>
 
-          <div className={styles.explainerGrid}>
-            <div className={`scroll-reveal-child ${styles.explainerCard}`}>
+          <div className={`${styles.explainerGrid} stagger-fade-in`}>
+            <div className={styles.explainerCard}>
               <DecoMark variant="shield" size={36} />
               <h3>Walk-In &mdash; In Stock</h3>
               <p>Come see us at 123 Ajao Road, Ikeja. Test drive whatever catches your eye, ask all the questions you want, and drive home the same day if it feels right. Paperwork included.</p>
               <div className={styles.explainerCta}>
-                <Link to="/inventory?status=walk-in"><Button size="sm" variant="secondary">Browse In-Stock Vehicles</Button></Link>
+                <Link to="/inventory?status=walk-in"><RippleButton size="sm" variant="secondary">Browse In-Stock Vehicles</RippleButton></Link>
               </div>
             </div>
-            <div className={`scroll-reveal-child ${styles.explainerCard}`}>
+            <div className={styles.explainerCard}>
               <DecoMark variant="arrow" size={36} />
               <h3>Pre-Order &mdash; Import &amp; Allocation</h3>
               <p>Can't find that exact spec on the lot? Tell us what you want and we'll track it down through our network — Japan, Dubai, Europe, wherever it takes. A small deposit secures your place in line.</p>
               <div className={styles.explainerCta}>
-                <Link to="/pre-order"><Button size="sm" variant="secondary">Learn About Pre-Ordering</Button></Link>
+                <Link to="/pre-order"><RippleButton size="sm" variant="secondary">Learn About Pre-Ordering</RippleButton></Link>
               </div>
             </div>
           </div>
         </div>
-      </section>
+      </ParallaxSection>
 
       {/* CORPORATE vs INDIVIDUAL */}
-      <section className={`scroll-reveal ${styles.section}`} style={{ background: 'var(--paper-warm)', position: 'relative' }}>
+      <ParallaxSection className={`scroll-reveal ${styles.section}`} style={{ background: 'var(--paper-warm)', position: 'relative' }}>
         <ShieldCheck className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-2)', left: 'var(--space-2)', opacity: 0.05 }} size={56} />
         <HandBracket className="deco-positioned" position="top-right" style={{ position: 'absolute', top: 'var(--space-3)', right: 'var(--space-3)', opacity: 0.3 }} />
         <div className={styles.sectionInner}>
           <p className={styles.sectionLabel}>Who We Serve</p>
-          <h2 className={styles.sectionTitle}>Tailored for You</h2>
-          <Squiggle style={{ marginTop: '-4px', marginBottom: 'var(--space-1)' }} />
+          <SplitHeading as="h2" className={styles.sectionTitle}>Tailored for You</SplitHeading>
+          <div className="section-divider" />
           <p className={styles.sectionDesc}>One car or a whole fleet — we'll treat you the same: with respect, transparency, and zero nonsense.</p>
 
-          <div className={styles.explainerGrid}>
-            <div className={`scroll-reveal-child ${styles.explainerCard}`}>
+          <div className={`${styles.explainerGrid} stagger-fade-in`}>
+            <div className={styles.explainerCard}>
               <DecoMark variant="split" size={36} />
               <h3>Individual Buyers</h3>
               <p>Browse what we've got, book a test drive, or just walk in. We'll walk you through everything — financing, documents, registration — so you can focus on the fun part.</p>
               <div className={styles.explainerCta}>
-                <Link to="/inventory"><Button size="sm" variant="secondary">Browse as Individual</Button></Link>
+                <Link to="/inventory"><RippleButton size="sm" variant="secondary">Browse as Individual</RippleButton></Link>
               </div>
             </div>
-            <div className={`scroll-reveal-child ${styles.explainerCard}`}>
+            <div className={styles.explainerCard}>
               <DecoMark variant="shield" size={36} />
               <h3>Corporate &amp; Fleet Buyers</h3>
               <p>Better pricing on bulk orders, a dedicated person who knows your account, and after-sales support that actually shows up. Trusted by Radisson Blu Hotel, Johnvents Group, and others.</p>
               <div className={styles.explainerCta}>
-                <Link to="/corporate"><Button size="sm" variant="secondary">Explore Corporate Sales</Button></Link>
+                <Link to="/corporate"><RippleButton size="sm" variant="secondary">Explore Corporate Sales</RippleButton></Link>
               </div>
             </div>
+          </div>
+        </div>
+      </ParallaxSection>
+
+      {/* STATS ROW */}
+      <section className={`scroll-reveal ${styles.section}`} style={{ background: 'var(--navy)', padding: 'var(--space-6) var(--space-4)' }}>
+        <div className={styles.sectionInner}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 'var(--space-4)', textAlign: 'center' }}>
+            {[
+              { label: 'Vehicles Imported', target: 500, suffix: '+' },
+              { label: 'Happy Clients', target: 300, suffix: '+' },
+              { label: 'Years in Business', target: 6, suffix: '' },
+              { label: 'Countries Sourced', target: 12, suffix: '' },
+            ].map((stat) => (
+              <div key={stat.label} style={{ animation: 'fadeInUp 500ms var(--ease-out) forwards' }}>
+                <div style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, color: 'var(--gold)', lineHeight: 1, marginBottom: 'var(--space-1)' }}>
+                  <AnimatedCounter target={stat.target} suffix={stat.suffix} />
+                </div>
+                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 'var(--text-sm)', fontWeight: 500 }}>{stat.label}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -245,15 +270,15 @@ export function Home() {
       <section className={`scroll-reveal ${styles.section}`} style={{ position: 'relative' }}>
           <HandCircle className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', left: 'var(--space-2)', opacity: 0.2 }} size={60} />
           <div className={styles.sectionInner}>
-            <p className={styles.sectionLabel} style={{ textAlign: 'center' }}>Trusted By</p>
-            <h2 className={styles.sectionTitle} style={{ textAlign: 'center' }}>Our Clients</h2>
-            <WavyDivider style={{ margin: '0 auto var(--space-2)', maxWidth: '200px' }} />
+            <p className={styles.sectionLabel} style={{ textAlign: 'center', justifyContent: 'center' }}>Trusted By</p>
+            <SplitHeading as="h2" className={styles.sectionTitle} style={{ textAlign: 'center' }}>Our Clients</SplitHeading>
+            <div className="section-divider section-divider-center" />
             <p className={styles.sectionDesc} style={{ textAlign: 'center', margin: '0 auto var(--space-3)' }}>
               Organisations that trust us to keep their teams moving.
             </p>
             <div className={styles.trustStrip}>
-              {clientNames.map((name: string) => (
-                <span key={name} className={styles.trustItem}>{name}</span>
+              {clientNames.map((name: string, i: number) => (
+                <span key={name} className={styles.trustItem} style={{ animation: `fadeInUp 400ms ${i * 80}ms var(--ease-out) both` }}>{name}</span>
               ))}
             </div>
             <p style={{ textAlign: 'center', fontSize: 'var(--text-sm)', color: 'var(--stone)', marginTop: 'var(--space-2)' }}>
@@ -263,15 +288,15 @@ export function Home() {
         </section>
 
       {/* TESTIMONIALS */}
-      <section className={`scroll-reveal ${styles.section}`} style={{ background: 'var(--paper-light)', position: 'relative' }}>
+      <ParallaxSection className={`scroll-reveal ${styles.section}`} style={{ background: 'var(--paper-light)', position: 'relative' }}>
           <HandDots className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-4)', opacity: 0.35 }} />
           <div className={styles.sectionInner}>
             <p className={styles.sectionLabel}>Testimonials</p>
-            <h2 className={styles.sectionTitle}>What Our Customers Say</h2>
-            <Squiggle style={{ marginTop: '-4px', marginBottom: 'var(--space-1)' }} />
-            <div className={styles.testimonialGrid}>
-              {(testimonials.length > 0 ? testimonials : (!testimonialsLoaded ? FALLBACK_TESTIMONIALS : [])).map((t, i) => (
-                <div key={t.id} className={`scroll-reveal-child ${styles.testimonialCard}`} style={{ ['--reveal-delay' as string]: `${i * 100}ms` }}>
+            <SplitHeading as="h2" className={styles.sectionTitle}>What Our Customers Say</SplitHeading>
+            <div className="section-divider" />
+            <div className={`${styles.testimonialGrid} stagger-fade-in`}>
+              {(testimonials.length > 0 ? testimonials : (!testimonialsLoaded ? FALLBACK_TESTIMONIALS : [])).map((t) => (
+                <div key={t.id} className={styles.testimonialCard}>
                   <div className={styles.stars}>
                     {Array.from({ length: 5 }).map((_, j) => (
                       <svg key={j} className={styles.star} viewBox="0 0 20 20" fill={j < t.rating ? 'var(--gold)' : 'var(--border)'}>
@@ -297,7 +322,7 @@ export function Home() {
               ))}
             </div>
           </div>
-        </section>
+        </ParallaxSection>
 
       {/* CTA */}
       <section className={`scroll-reveal ${styles.ctaSection}`} style={{ position: 'relative' }}>
@@ -305,11 +330,11 @@ export function Home() {
         <HandCircle className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-4)', left: '8%', opacity: 0.15 }} size={100} />
         <HandDots className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-4)', right: '10%', opacity: 0.3 }} />
         <HandBracket className="deco-positioned" position="top-right" style={{ position: 'absolute', top: 'var(--space-3)', right: 'var(--space-3)', opacity: 0.12 }} />
-        <h2>Ready to Get Behind the Wheel?</h2>
+        <SplitHeading as="h2">Ready to Get Behind the Wheel?</SplitHeading>
         <p>No pressure. No pushy sales. Just real cars and honest conversation.</p>
         <div className={styles.ctaCtas}>
-          <Link to="/inventory"><Button variant="secondary" style={{ background: 'white', color: 'var(--navy)', borderColor: 'white' }}>Browse Inventory</Button></Link>
-          <Link to="/contact"><Button variant="ghost" style={{ color: 'rgba(255,255,255,0.7)', borderColor: 'rgba(255,255,255,0.2)' }}>Contact Us</Button></Link>
+          <Link to="/inventory"><RippleButton variant="secondary" style={{ background: 'white', color: 'var(--navy)', borderColor: 'white' }}>Browse Inventory</RippleButton></Link>
+          <Link to="/contact"><RippleButton variant="ghost" style={{ color: 'rgba(255,255,255,0.7)', borderColor: 'rgba(255,255,255,0.2)' }}>Contact Us</RippleButton></Link>
         </div>
       </section>
     </>

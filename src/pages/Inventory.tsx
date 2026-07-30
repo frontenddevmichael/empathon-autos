@@ -11,6 +11,9 @@ import { VehicleCardSkeleton } from '@/components/ui/Skeleton'
 import { Section } from '@/components/PageLayout'
 import { CarSilhouette, SteeringWheel, Sparkle, Compass, ChatBubble } from '@/components/DecoSvgs'
 import styles from './Inventory.module.css'
+import { SplitHeading } from '@/components/SplitHeading'
+import { RippleButton } from '@/components/RippleButton'
+import { ParallaxSection } from '@/components/ParallaxSection'
 
 const PAGE_SIZE = 12
 const MAX_WITH_FILTERS = 200
@@ -88,13 +91,16 @@ export function Inventory() {
   return (
     <Section style={{ position: 'relative' }}>
       <SteeringWheel className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-2)', right: 'var(--space-2)', opacity: 0.04 }} size={64} />
-      <div className={styles.header}>
-        <p className={styles.headerLabel}>Inventory</p>
-        <h2>Browse Our Collection</h2>
-        <p style={{ color: 'var(--stone)' }}>
-          {loading ? 'Searching...' : `${total} vehicle${total !== 1 ? 's' : ''} available`}
-        </p>
-      </div>
+      <ParallaxSection>
+        <div className={styles.header}>
+          <p className={styles.headerLabel}>Inventory</p>
+          <SplitHeading as="h2">Browse Our Collection</SplitHeading>
+          <p style={{ color: 'var(--stone)' }}>
+            {loading ? 'Searching...' : `${total} vehicle${total !== 1 ? 's' : ''} available`}
+          </p>
+        </div>
+        <div className="section-divider" />
+      </ParallaxSection>
 
       <div className={styles.toolbar}>
         <div className={styles.searchRow}>
@@ -161,7 +167,7 @@ export function Inventory() {
       )}
 
       <CarSilhouette className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-1)', left: 'var(--space-1)', opacity: 0.03 }} size={100} />
-      <div className={`scroll-reveal ${styles.grid}`}>
+      <div className={`scroll-reveal stagger-fade-in ${styles.grid}`}>
         {loading ? (
           Array.from({ length: 6 }).map((_, i) => <VehicleCardSkeleton key={i} />)
         ) : vehicles.length === 0 ? (
@@ -206,19 +212,19 @@ export function Inventory() {
             </div>
             <div style={{ display: 'flex', gap: 'var(--space-1-5)', flexWrap: 'wrap' }}>
               <Link to="/contact">
-                <Button variant="primary" size="md">
+                <RippleButton variant="primary" size="md">
                   <HelpCircle size={15} style={{ marginRight: 4 }} />
                   Send Enquiry
-                </Button>
+                </RippleButton>
               </Link>
               <a
                 href="https://wa.me/2348023392388?text=Hi%20Empathon%20Autos!%20I%20need%20help%20finding%20a%20vehicle."
                 target="_blank" rel="noopener noreferrer"
               >
-                <Button variant="secondary" size="md">
+                <RippleButton variant="secondary" size="md">
                   <MessageCircle size={15} style={{ marginRight: 4 }} />
                   WhatsApp Us
-                </Button>
+                </RippleButton>
               </a>
             </div>
           </div>

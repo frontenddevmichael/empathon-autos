@@ -1,6 +1,8 @@
 ﻿import { useState } from 'react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
-import { Button } from '@/components/ui/Button'
+import { SplitHeading } from '@/components/SplitHeading'
+import { RippleButton } from '@/components/RippleButton'
+import { ParallaxSection } from '@/components/ParallaxSection'
 import { Input, TextArea } from '@/components/ui/Input'
 import { Section } from '@/components/PageLayout'
 import { DecoMark } from '@/components/DecoMark'
@@ -48,26 +50,31 @@ export function Corporate() {
 
   return (
     <>
+      <ParallaxSection>
       <Section dark style={{ paddingBottom: 0, minHeight: '50vh', display: 'flex', alignItems: 'center', position: 'relative' }}>
         <Handshake className="deco-positioned" style={{ position: 'absolute', top: '15%', right: '10%', opacity: 0.06 }} size={80} />
         <CarSilhouette className="deco-positioned" style={{ position: 'absolute', bottom: '8%', left: '6%', opacity: 0.04 }} size={120} />
         <div>
           <p style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)', marginBottom: 'var(--space-1)' }}>Corporate Sales</p>
-          <h1 style={{ color: 'white', fontSize: 'clamp(2rem, 4vw, var(--text-5xl))' }}>Fleet Solutions for<br />Nigeria's Leading Organisations</h1>
+          <SplitHeading as="h1" style={{ color: 'white', fontSize: 'clamp(2rem, 4vw, var(--text-5xl))' }}>Fleet Solutions for<br />Nigeria's Leading Organisations</SplitHeading>
+          <div className="section-divider" />
           <p style={{ color: 'rgba(255,255,255,0.5)', maxWidth: 480, marginTop: 'var(--space-1)' }}>
             One person handles your account. Better pricing on volume. After-sales support that doesn't vanish after the cheque clears.
           </p>
         </div>
       </Section>
+      </ParallaxSection>
 
+      <ParallaxSection>
       <Section>
-        <div className="scroll-reveal responsive-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', alignItems: 'start' }}>
+        <div className="scroll-reveal responsive-grid-2 stagger-fade-in" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', alignItems: 'start' }}>
           <div>
-            <h2>Corporate Fleet Programme</h2>
+            <SplitHeading as="h2">Corporate Fleet Programme</SplitHeading>
+            <div className="section-divider" />
             <p style={{ color: 'var(--stone)', marginTop: 'var(--space-1)' }}>
               Whether you need one car or fifty, we make it straightforward. No wasted time, no middlemen, no fuss.
             </p>
-            <ul style={{ marginTop: 'var(--space-2)', display: 'flex', flexDirection: 'column', gap: 'var(--space-1-5)' }}>
+            <ul className="stagger-fade-in" style={{ marginTop: 'var(--space-2)', display: 'flex', flexDirection: 'column', gap: 'var(--space-1-5)' }}>
               {[
                 { title: 'Better Pricing', desc: 'The more you buy, the better the deal. Simple.' },
                 { title: 'One Contact Person', desc: 'No phone tennis. You deal with one person who knows your business.' },
@@ -96,18 +103,21 @@ export function Corporate() {
               <Input label="Company" value={form.company} onChange={e => setForm(f => ({ ...f, company: e.target.value }))} />
               <Input label="Fleet Size" type="number" value={form.fleetSize} onChange={e => setForm(f => ({ ...f, fleetSize: e.target.value }))} min={1} />
               <TextArea label="Message" value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} rows={3} />
-              <Button type="submit" loading={saving}>Submit Quote Request</Button>
+              <RippleButton type="submit" loading={saving}>Submit Quote Request</RippleButton>
             </form>
           </div>
         </div>
       </Section>
+      </ParallaxSection>
 
       {realClients.length > 0 && (
+        <ParallaxSection>
         <Section style={{ background: 'var(--paper-light)', position: 'relative' }}>
           <ShieldCheck className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.04 }} size={48} />
           <p style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--navy)', marginBottom: 'var(--space-2)', textAlign: 'center' }}>Trusted By</p>
-          <h2 style={{ textAlign: 'center', marginBottom: 'var(--space-3)' }}>Our Corporate Clients</h2>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-3)', justifyContent: 'center' }}>
+          <SplitHeading as="h2" style={{ textAlign: 'center', marginBottom: 'var(--space-3)' }}>Our Corporate Clients</SplitHeading>
+          <div className="section-divider" />
+          <div className="stagger-fade-in" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-3)', justifyContent: 'center' }}>
             {realClients.map(c => (
               <div key={c.name} style={{ padding: 'var(--space-2) var(--space-3)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', background: 'var(--surface)', textAlign: 'center', minWidth: 180 }}>
                 <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>{c.name}</p>
@@ -116,6 +126,7 @@ export function Corporate() {
             ))}
           </div>
         </Section>
+        </ParallaxSection>
       )}
     </>
   )
