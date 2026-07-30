@@ -149,8 +149,26 @@ export function Home() {
         </div>
       </section>
 
-      {/* Smooth gradient transition from navy hero to paper-light content */}
-      <div aria-hidden="true" className={styles.heroTransition} />
+      {/* STATS ROW — immediately after hero */}
+      <section style={{ background: 'var(--navy)', padding: 'var(--space-4) var(--space-4)' }}>
+        <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 'var(--space-4)', textAlign: 'center' }}>
+            {[
+              { label: 'Vehicles Imported', target: 500, suffix: '+' },
+              { label: 'Happy Clients', target: 300, suffix: '+' },
+              { label: 'Years in Business', target: 6, suffix: '' },
+              { label: 'Countries Sourced', target: 12, suffix: '' },
+            ].map((stat) => (
+              <div key={stat.label} style={{ animation: 'fadeInUp 500ms var(--ease-out) forwards' }}>
+                <div style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, color: 'var(--gold)', lineHeight: 1, marginBottom: 'var(--space-1)' }}>
+                  <AnimatedCounter target={stat.target} suffix={stat.suffix} />
+                </div>
+                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 'var(--text-sm)', fontWeight: 500 }}>{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* FEATURED VEHICLES */}
       <ParallaxSection className={`scroll-reveal ${styles.section}`} style={{ background: 'var(--paper-light)', position: 'relative' }}>
@@ -244,27 +262,6 @@ export function Home() {
           </div>
         </div>
       </ParallaxSection>
-
-      {/* STATS ROW */}
-      <section className={`scroll-reveal ${styles.section}`} style={{ background: 'var(--navy)', padding: 'var(--space-6) var(--space-4)' }}>
-        <div className={styles.sectionInner}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 'var(--space-4)', textAlign: 'center' }}>
-            {[
-              { label: 'Vehicles Imported', target: 500, suffix: '+' },
-              { label: 'Happy Clients', target: 300, suffix: '+' },
-              { label: 'Years in Business', target: 6, suffix: '' },
-              { label: 'Countries Sourced', target: 12, suffix: '' },
-            ].map((stat) => (
-              <div key={stat.label} style={{ animation: 'fadeInUp 500ms var(--ease-out) forwards' }}>
-                <div style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, color: 'var(--gold)', lineHeight: 1, marginBottom: 'var(--space-1)' }}>
-                  <AnimatedCounter target={stat.target} suffix={stat.suffix} />
-                </div>
-                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 'var(--text-sm)', fontWeight: 500 }}>{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* TRUST + CLIENT LOGOS */}
       <section className={`scroll-reveal ${styles.section}`} style={{ position: 'relative' }}>

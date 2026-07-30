@@ -20,6 +20,13 @@
   border-radius: 1px;
 }
 
+/* ── Content wrapper (constrains toolbar + grid) ── */
+.content {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
 /* ── Search + Filter Bar ── */
 .toolbar {
   display: flex;

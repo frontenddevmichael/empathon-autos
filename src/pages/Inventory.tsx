@@ -99,7 +99,7 @@ export function Inventory() {
         deco="car"
       />
 
-      <div style={{ position: 'relative' }}>
+      <div className={styles.content} style={{ position: 'relative' }}>
       <div className={styles.toolbar}>
         <div className={styles.searchRow}>
           <div className={styles.searchInput}>
