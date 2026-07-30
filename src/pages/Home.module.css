@@ -7,19 +7,15 @@
   overflow: hidden;
 }
 
-/* Hero images — stacked absolutely, crossfade via opacity */
+/* Hero images — full-viewport cover, crossfade via opacity */
 .heroImage {
   position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 55%;
+  inset: 0;
+  width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
   z-index: 0;
-  mask-image: linear-gradient(to left, black 60%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to left, black 60%, transparent 100%);
   transition: opacity 1s ease-in-out;
 }
 .heroImageActive {
@@ -65,14 +61,16 @@
   background: linear-gradient(
     to right,
     var(--navy) 0%,
-    rgba(12,30,58,0.95) 30%,
-    rgba(12,30,58,0.6) 55%,
-    transparent 75%
+    rgba(12,30,58,0.92) 35%,
+    rgba(12,30,58,0.65) 60%,
+    rgba(12,30,58,0.15) 100%
   ),
   linear-gradient(
-    to top,
-    rgba(12,30,58,0.4) 0%,
-    transparent 40%
+    to bottom,
+    rgba(12,30,58,0.2) 0%,
+    transparent 30%,
+    transparent 70%,
+    rgba(12,30,58,0.4) 100%
   );
   pointer-events: none;
 }
@@ -164,13 +162,8 @@
 }
 
 @media (max-width: 768px) {
-  .heroImage {
-    width: 80%;
-    mask-image: linear-gradient(to left, black 40%, transparent 90%);
-    -webkit-mask-image: linear-gradient(to left, black 40%, transparent 90%);
-  }
   .heroImageActive {
-    opacity: 0.35;
+    opacity: 0.5;
   }
   .heroImageInactive {
     opacity: 0;
@@ -184,9 +177,13 @@
     background: linear-gradient(
       to right,
       var(--navy) 0%,
-      rgba(12,30,58,0.85) 40%,
-      rgba(12,30,58,0.3) 70%,
-      transparent 100%
+      rgba(12,30,58,0.88) 50%,
+      rgba(12,30,58,0.3) 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(12,30,58,0.4) 100%
     );
   }
   .heroTransition {
