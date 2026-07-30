@@ -35,6 +35,7 @@ export function Home() {
   const [loading, setLoading] = useState(true)
   const [fetchError, setFetchError] = useState<string | null>(null)
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
+  const [testimonialsLoaded, setTestimonialsLoaded] = useState(false)
   const { content: homeContent } = useSiteContent('home')
   const clientNames = parseJsonContent<Client>(homeContent, 'clients', FALLBACK_CLIENTS).map(c => c.name)
   const cmsImage = getTextContent(homeContent, 'hero_image')
@@ -77,7 +78,7 @@ export function Home() {
   useEffect(() => { loadVehicles() }, [])
 
   useEffect(() => {
-    if (!isSupabaseConfigured()) return
+    if (!isSupabaseConfigured()) { setTestimonialsLoaded(true); return }
     ;(async () => {
       const { data } = await supabase
         .from('testimonials')
@@ -86,7 +87,10 @@ export function Home() {
         .order('sort_order', { ascending: true })
         .order('created_at', { ascending: false })
         .limit(6)
-      if (mounted.current && data) setTestimonials(data)
+      if (mounted.current) {
+        if (data) setTestimonials(data)
+        setTestimonialsLoaded(true)
+      }
     })()
   }, [])
 
@@ -266,7 +270,7 @@ export function Home() {
             <h2 className={styles.sectionTitle}>What Our Customers Say</h2>
             <Squiggle style={{ marginTop: '-4px', marginBottom: 'var(--space-1)' }} />
             <div className={styles.testimonialGrid}>
-              {(testimonials.length > 0 ? testimonials : FALLBACK_TESTIMONIALS).map((t, i) => (
+              {(testimonials.length > 0 ? testimonials : (!testimonialsLoaded ? FALLBACK_TESTIMONIALS : [])).map((t, i) => (
                 <div key={t.id} className={`scroll-reveal-child ${styles.testimonialCard}`} style={{ ['--reveal-delay' as string]: `${i * 100}ms` }}>
                   <div className={styles.stars}>
                     {Array.from({ length: 5 }).map((_, j) => (
