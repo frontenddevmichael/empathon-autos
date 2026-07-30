@@ -77,23 +77,33 @@ export function AdminAuctionForm() {
     })()
   }, [id, fetchVehicles])
 
+  const toSafeISO = (val: string): string | null => {
+    if (!val) return null
+    try {
+      const d = new Date(val)
+      if (isNaN(d.getTime())) return null
+      return d.toISOString()
+    } catch { return null }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!form.vehicle_id || !form.closes_at) { showToast('Vehicle and closing time required', 'error'); return }
+    if (!form.vehicle_id) { showToast('Vehicle is required', 'error'); return }
     setSaving(true)
+    const closesAt = toSafeISO(form.closes_at)
+    if (!closesAt) { showToast('Valid closing date/time is required', 'error'); setSaving(false); return }
     const payload = {
       vehicle_id: form.vehicle_id,
       opening_bid: parseFloat(form.opening_bid || '0') * 1_000_000,
       reserve_price: parseFloat(form.reserve_price || '0') * 1_000_000,
       current_bid: parseFloat(form.current_bid || '0') * 1_000_000,
       status: form.status,
-      closes_at: new Date(form.closes_at).toISOString(),
-      opens_at: form.opens_at ? new Date(form.opens_at).toISOString() : null,
+      closes_at: closesAt,
+      opens_at: toSafeISO(form.opens_at),
     }
     if (id) {
       const { error } = await supabase.from('lots').update(payload).eq('id', id)
       if (error) { showToast(`Failed to update lot: ${error.message}`, 'error'); setSaving(false); return }
-      // If vehicle changed, reset old vehicle status to 'draft' and mark new one as 'in-auction'
       if (originalVehicleId && originalVehicleId !== form.vehicle_id) {
         await supabase.from('vehicles').update({ status: 'draft' }).eq('id', originalVehicleId)
         await supabase.from('vehicles').update({ status: 'in-auction' }).eq('id', form.vehicle_id)

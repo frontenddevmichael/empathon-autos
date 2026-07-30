@@ -129,8 +129,9 @@ export function AdminTestimonials() {
 
   const handleDelete = async () => {
     if (!deleteId) return
-    const { error } = await supabase.from('testimonials').delete().eq('id', deleteId)
+    const { error, data } = await supabase.from('testimonials').delete().eq('id', deleteId).select()
     if (error) { showToast(`Delete failed: ${error.message}`, 'error'); return }
+    if (!data || data.length === 0) { showToast('Testimonial not found or already deleted', 'error'); return }
     showToast('Testimonial deleted')
     setDeleteId(null); fetch()
   }
