@@ -8,7 +8,7 @@ let sentryInitialized = false
 
 export function initSentry() {
   const dsn = import.meta.env.VITE_SENTRY_DSN as string | undefined
-  if (!dsn) return
+  if (!dsn || dsn.includes('your-dsn') || dsn.includes('XXXXX')) return
   if (sentryInitialized) return
 
   import('@sentry/react').then(Sentry => {

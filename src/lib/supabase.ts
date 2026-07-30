@@ -2,8 +2,9 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string
+const isPlaceholder = (v: string) => !v || v.includes('your-project') || v.includes('your-') || v.includes('XXXXX')
 
-const missingEnv = !supabaseUrl || !supabaseAnonKey
+const missingEnv = isPlaceholder(supabaseUrl) || isPlaceholder(supabaseAnonKey)
 
 /**
  * Check if Supabase environment variables are configured.
