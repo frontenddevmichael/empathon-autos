@@ -7,7 +7,7 @@
   overflow: hidden;
 }
 
-/* Single hero car image — positioned on the right */
+/* Hero images — stacked absolutely, crossfade via opacity */
 .heroImage {
   position: absolute;
   right: 0;
@@ -20,6 +20,41 @@
   z-index: 0;
   mask-image: linear-gradient(to left, black 60%, transparent 100%);
   -webkit-mask-image: linear-gradient(to left, black 60%, transparent 100%);
+  transition: opacity 1s ease-in-out;
+}
+.heroImageActive {
+  opacity: 1;
+}
+.heroImageInactive {
+  opacity: 0;
+}
+
+/* Image indicator dots */
+.heroDots {
+  position: absolute;
+  bottom: 32px;
+  left: var(--space-4);
+  z-index: 3;
+  display: flex;
+  gap: 10px;
+}
+.heroDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.3);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: all 300ms var(--ease-out);
+}
+.heroDot:hover {
+  border-color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.3);
+}
+.heroDotActive {
+  background: white;
+  border-color: white;
 }
 
 /* Dark gradient overlay on left side for text readability */
@@ -131,9 +166,19 @@
 @media (max-width: 768px) {
   .heroImage {
     width: 80%;
-    opacity: 0.35;
     mask-image: linear-gradient(to left, black 40%, transparent 90%);
     -webkit-mask-image: linear-gradient(to left, black 40%, transparent 90%);
+  }
+  .heroImageActive {
+    opacity: 0.35;
+  }
+  .heroImageInactive {
+    opacity: 0;
+  }
+  .heroDots {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 24px;
   }
   .heroOverlay {
     background: linear-gradient(

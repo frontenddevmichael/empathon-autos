@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
@@ -37,7 +37,19 @@ export function Home() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const { content: homeContent } = useSiteContent('home')
   const clientNames = parseJsonContent<Client>(homeContent, 'clients', FALLBACK_CLIENTS).map(c => c.name)
-  const heroImageUrl = getTextContent(homeContent, 'hero_image') || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1400&q=90&fit=crop'
+  const cmsImage = getTextContent(homeContent, 'hero_image')
+  const heroImages = [
+    cmsImage || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1400&q=90&fit=crop',
+    'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1400&q=90&fit=crop',
+    'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1400&q=90&fit=crop',
+    'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=1400&q=90&fit=crop',
+  ]
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const nextImage = useCallback(() => setCurrentIndex(i => (i + 1) % heroImages.length), [heroImages.length])
+  useEffect(() => {
+    const id = setInterval(nextImage, 5000)
+    return () => clearInterval(id)
+  }, [nextImage])
 
   const loadVehicles = () => {
     if (!isSupabaseConfigured()) { setLoading(false); return }
@@ -82,16 +94,30 @@ export function Home() {
     <>
       {/* HERO */}
       <section className={styles.hero}>
-        {/* Single hero car image — right side */}
-        <img
-          className={styles.heroImage}
-          src={heroImageUrl}
-          alt="Premium luxury car"
-          loading="eager"
-          fetchPriority="high"
-        />
+        {/* Hero images — crossfade */}
+        {heroImages.map((url, i) => (
+          <img
+            key={url}
+            className={`${styles.heroImage} ${i === currentIndex ? styles.heroImageActive : styles.heroImageInactive}`}
+            src={url}
+            alt="Premium luxury car"
+            loading={i === 0 ? 'eager' : 'lazy'}
+            fetchPriority={i === 0 ? 'high' : 'low'}
+          />
+        ))}
         {/* Dark gradient overlay for text readability on the left */}
         <div className={styles.heroOverlay} />
+        {/* Image indicators */}
+        <div className={styles.heroDots}>
+          {heroImages.map((_, i) => (
+            <button
+              key={i}
+              className={`${styles.heroDot} ${i === currentIndex ? styles.heroDotActive : ''}`}
+              onClick={() => setCurrentIndex(i)}
+              aria-label={`Image ${i + 1}`}
+            />
+          ))}
+        </div>
         <CarSilhouette className="deco-positioned" style={{ position: 'absolute', bottom: '10%', left: '6%', opacity: 0.08, width: 160 }} size={160} />
         <HandCircle className="deco-positioned" style={{ position: 'absolute', top: '12%', right: '8%', opacity: 0.4 }} size={80} />
         <HandDots className="deco-positioned" style={{ position: 'absolute', bottom: '18%', right: '15%', opacity: 0.5 }} />
