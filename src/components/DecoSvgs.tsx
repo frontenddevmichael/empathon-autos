@@ -70,13 +70,13 @@ export function HandDots({ className, style }: DecoProps) {
       fill="none"
       aria-hidden="true"
     >
-      <circle className="deco-dot" cx="8" cy="12" r="2" fill="var(--navy)" style={{ '--deco-dot-opacity': '0.12' as any }} />
-      <circle className="deco-dot" cx="24" cy="8" r="1.5" fill="var(--gold)" style={{ '--deco-dot-opacity': '0.2' as any }} />
-      <circle className="deco-dot" cx="40" cy="16" r="2.5" fill="var(--navy)" style={{ '--deco-dot-opacity': '0.08' as any }} />
-      <circle className="deco-dot" cx="52" cy="10" r="1.5" fill="var(--gold)" style={{ '--deco-dot-opacity': '0.15' as any }} />
-      <circle className="deco-dot" cx="16" cy="28" r="2" fill="var(--gold)" style={{ '--deco-dot-opacity': '0.18' as any }} />
-      <circle className="deco-dot" cx="36" cy="32" r="1.5" fill="var(--navy)" style={{ '--deco-dot-opacity': '0.1' as any }} />
-      <circle className="deco-dot" cx="48" cy="30" r="2" fill="var(--navy)" style={{ '--deco-dot-opacity': '0.12' as any }} />
+      <circle className="deco-dot" cx="8" cy="12" r="2" fill="var(--navy)" style={{ '--deco-dot-opacity': '0.12' } as CSSProperties} />
+      <circle className="deco-dot" cx="24" cy="8" r="1.5" fill="var(--gold)" style={{ '--deco-dot-opacity': '0.2' } as CSSProperties} />
+      <circle className="deco-dot" cx="40" cy="16" r="2.5" fill="var(--navy)" style={{ '--deco-dot-opacity': '0.08' } as CSSProperties} />
+      <circle className="deco-dot" cx="52" cy="10" r="1.5" fill="var(--gold)" style={{ '--deco-dot-opacity': '0.15' } as CSSProperties} />
+      <circle className="deco-dot" cx="16" cy="28" r="2" fill="var(--gold)" style={{ '--deco-dot-opacity': '0.18' } as CSSProperties} />
+      <circle className="deco-dot" cx="36" cy="32" r="1.5" fill="var(--navy)" style={{ '--deco-dot-opacity': '0.1' } as CSSProperties} />
+      <circle className="deco-dot" cx="48" cy="30" r="2" fill="var(--navy)" style={{ '--deco-dot-opacity': '0.12' } as CSSProperties} />
     </svg>
   )
 }
