@@ -367,14 +367,20 @@
   transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
   will-change: opacity, transform;
 }
+.scroll-reveal.revealed.ctaSection > *:not(.deco-positioned),
 .scroll-reveal.revealed .ctaSection > *:not(.deco-positioned) {
   opacity: 1;
   transform: translateY(0);
 }
+.scroll-reveal.revealed.ctaSection > *:not(.deco-positioned):nth-child(1),
 .scroll-reveal.revealed .ctaSection > *:not(.deco-positioned):nth-child(1) { transition-delay: 70ms; }
+.scroll-reveal.revealed.ctaSection > *:not(.deco-positioned):nth-child(2),
 .scroll-reveal.revealed .ctaSection > *:not(.deco-positioned):nth-child(2) { transition-delay: 140ms; }
+.scroll-reveal.revealed.ctaSection > *:not(.deco-positioned):nth-child(3),
 .scroll-reveal.revealed .ctaSection > *:not(.deco-positioned):nth-child(3) { transition-delay: 210ms; }
+.scroll-reveal.revealed.ctaSection > *:not(.deco-positioned):nth-child(4),
 .scroll-reveal.revealed .ctaSection > *:not(.deco-positioned):nth-child(4) { transition-delay: 280ms; }
+.scroll-reveal.revealed.ctaSection > *:not(.deco-positioned):nth-child(5),
 .scroll-reveal.revealed .ctaSection > *:not(.deco-positioned):nth-child(5) { transition-delay: 350ms; }
 
 .testimonialGrid {

@@ -132,7 +132,8 @@ body::-webkit-scrollbar-thumb { background: var(--stone-light); border-radius: 1
   will-change: opacity, transform;
 }
 .scroll-reveal.revealed .scroll-reveal-child,
-.scroll-reveal.revealed.stagger-fade-in > * {
+.scroll-reveal.revealed.stagger-fade-in > *,
+.scroll-reveal.revealed .stagger-fade-in > * {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
