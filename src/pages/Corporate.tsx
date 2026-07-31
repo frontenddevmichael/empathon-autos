@@ -114,7 +114,7 @@ export function Corporate() {
           <p style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--navy)', marginBottom: 'var(--space-2)', textAlign: 'center' }}>Trusted By</p>
           <SplitHeading as="h2" style={{ textAlign: 'center', marginBottom: 'var(--space-3)' }}>Our Corporate Clients</SplitHeading>
           <div className="section-divider" />
-          <div className="stagger-fade-in" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-3)', justifyContent: 'center' }}>
+          <div className="scroll-reveal stagger-fade-in" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-3)', justifyContent: 'center' }}>
             {realClients.map(c => (
               <div key={c.name} style={{ padding: 'var(--space-2) var(--space-3)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', background: 'var(--surface)', textAlign: 'center', minWidth: 180 }}>
                 <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>{c.name}</p>
