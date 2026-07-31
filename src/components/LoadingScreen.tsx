@@ -29,17 +29,6 @@ export function LoadingScreen({ height = '60vh' }: { height?: string }) {
             }
           `}</style>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: 240, alignItems: 'center' }}>
-          <div style={{ height: 10, width: '45%', background: 'var(--border)', borderRadius: 5, animation: 'loadingShimmer 1.2s ease-in-out infinite' }} />
-          <div style={{ height: 10, width: '70%', background: 'var(--border)', borderRadius: 5, animation: 'loadingShimmer 1.2s ease-in-out 0.15s infinite' }} />
-          <div style={{ height: 10, width: '55%', background: 'var(--border)', borderRadius: 5, animation: 'loadingShimmer 1.2s ease-in-out 0.3s infinite' }} />
-        </div>
-        <style>{`
-          @keyframes loadingShimmer {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 0.8; }
-          }
-        `}</style>
       </div>
     </div>
   )
