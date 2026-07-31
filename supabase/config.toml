@@ -1,7 +1,4 @@
 project_id = "emphaton-autos"
 
-[functions]
-  include = ["place-bid"]
-
 [functions.place-bid]
-  verify_jwt = true
+  verify_jwt = false
