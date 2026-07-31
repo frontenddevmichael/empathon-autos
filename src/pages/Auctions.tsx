@@ -12,37 +12,48 @@ import styles from './Auctions.module.css'
 import { RippleButton } from '@/components/RippleButton'
 import { HeroSection } from '@/components/HeroSection'
 
-interface AuctionVehicle {
+interface AuctionLot {
   id: string
-  make: string
-  model: string
-  year: number
-  mileage: number
-  transmission: string
-  fuel_type: string
-  media: { url: string; is_primary: boolean }[]
-  lot?: { id: string; current_bid: number; opening_bid: number; closes_at: string; status: string }[]
+  status: string
+  current_bid: number
+  opening_bid: number
+  opens_at?: string | null
+  closes_at: string
+  vehicles: {
+    id: string
+    make: string
+    model: string
+    year: number
+    mileage: number
+    transmission: string
+    fuel_type: string
+    media: { url: string; is_primary: boolean }[]
+  } | null
 }
 
 export function Auctions() {
   const mounted = useMounted()
-  const [vehicles, setVehicles] = useState<AuctionVehicle[]>([])
+  const [lots, setLots] = useState<AuctionLot[]>([])
   const [loading, setLoading] = useState(true)
   const [fetchError, setFetchError] = useState<string | null>(null)
 
-  const fetchVehicles = useCallback(() => {
+  const fetchLots = useCallback(() => {
     if (!isSupabaseConfigured()) { setLoading(false); return }
     setLoading(true)
     setFetchError(null)
     ;(async () => {
       try {
-        const { data, error } = await supabase.from('vehicles').select('*, media:vehicle_media(*), lot:lots(*)').eq('status', 'in-auction')
+        const { data, error } = await supabase
+          .from('lots')
+          .select('*, vehicles:vehicle_id(*, media:vehicle_media(*))')
+          .in('status', ['scheduled', 'open', 'closing'])
+          .order('created_at')
         if (error) {
-          console.error('[Auctions] Failed to load auction vehicles:', error.message)
+          console.error('[Auctions] Failed to load auction lots:', error.message)
           setFetchError('Could not load auctions. Please try again.')
         }
         if (!mounted.current) return
-        if (data) setVehicles(data as unknown as AuctionVehicle[])
+        if (data) setLots(data as unknown as AuctionLot[])
       } catch {
         if (mounted.current) setFetchError('Something went wrong. Please try again.')
       }
@@ -50,10 +61,10 @@ export function Auctions() {
     })()
   }, [])
 
-  useEffect(() => { fetchVehicles() }, [fetchVehicles])
+  useEffect(() => { fetchLots() }, [fetchLots])
 
   // Auto-close expired lots every 60s, re-fetch vehicles afterward
-  useAutoCloseLots(fetchVehicles)
+  useAutoCloseLots(fetchLots)
 
   return (
     <Section style={{ position: 'relative' }}>
@@ -78,18 +89,22 @@ export function Auctions() {
       ) : fetchError ? (
         <div className={styles.empty}>
           <p style={{ color: 'var(--error)', marginBottom: 'var(--space-2)' }}>{fetchError}</p>
-          <RippleButton variant="secondary" size="sm" onClick={fetchVehicles}>Try Again</RippleButton>
+          <RippleButton variant="secondary" size="sm" onClick={fetchLots}>Try Again</RippleButton>
         </div>
-      ) : vehicles.length === 0 ? (
+      ) : lots.length === 0 ? (
         <div className={styles.empty}>
           <p>No active auctions right now. <Link to="/inventory" style={{ color: 'var(--navy)', textDecoration: 'underline' }}>Browse inventory</Link> instead.</p>
         </div>
       ) : (
         <div className={`scroll-reveal ${styles.grid} stagger-fade-in`}>
-          {vehicles.map(v => {
+          {lots.map(lot => {
+            const v = lot.vehicles
+            if (!v) return null
             const img = v.media?.find(m => m.is_primary) ?? v.media?.[0]
+            const isOpen = lot.status === 'open' || lot.status === 'closing'
+            const hasBid = lot.current_bid > 0
             return (
-              <Link key={v.id} to={`/inventory/${v.id}`} className={styles.link}>
+              <Link key={lot.id} to={`/auctions/${lot.id}`} className={styles.link}>
                 <Card hoverable style={{ padding: 0 }}>
                   <div style={{ aspectRatio: '4/3', background: 'var(--paper-warm)', overflow: 'hidden' }}>
                     {img ? <img src={img.url} alt={`${v.make} ${v.model} ${v.year}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--stone-light)', fontSize: 'var(--text-sm)' }}>No image</div>}
@@ -97,14 +112,17 @@ export function Auctions() {
                   <div style={{ padding: 'var(--space-2)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
                       <p style={{ fontWeight: 600 }}>{v.make} {v.model}</p>
-                      <Badge variant="live" />
+                      {isOpen ? <Badge variant="live" /> : <Badge variant="draft" label="Scheduled" />}
                     </div>
                     <p style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)' }}>{v.year} &middot; {formatMileage(v.mileage)}</p>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'var(--space-1)' }}>
-                      <p className="tabular-nums" style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--navy)' }}>
-                        {v.lot?.[0] ? formatPrice(v.lot[0].current_bid) : 'Bidding opens soon'}
-                      </p>
-                      <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>{v.lot?.[0] ? <AuctionTimer closesAt={v.lot[0].closes_at} /> : ''}</p>
+                      <div>
+                        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>{hasBid ? 'Current bid' : 'Opening bid'}</p>
+                        <p className="tabular-nums" style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--navy)' }}>
+                          {formatPrice(hasBid ? lot.current_bid : lot.opening_bid)}
+                        </p>
+                      </div>
+                      <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>{isOpen ? <AuctionTimer closesAt={lot.closes_at} /> : 'Bidding opens soon'}</p>
                     </div>
                   </div>
                 </Card>

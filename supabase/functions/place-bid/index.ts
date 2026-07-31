@@ -3,24 +3,14 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 serve(async (req) => {
   try {
-    const authHeader = req.headers.get('Authorization')!
-
-    const userClient = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_ANON_KEY')!,
-      { global: { headers: { Authorization: authHeader } } }
-    )
-
     const serviceClient = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     )
 
-    const { lot_id, amount } = await req.json()
+    const { lot_id, amount, bidder_name, bidder_email, bidder_phone } = await req.json()
     if (!lot_id || !amount) return new Response(JSON.stringify({ error: 'lot_id and amount required' }), { status: 400 })
-
-    const { data: { user } } = await userClient.auth.getUser()
-    if (!user) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
+    if (!bidder_name || !bidder_email) return new Response(JSON.stringify({ error: 'Name and email are required' }), { status: 400 })
 
     const { data: lot } = await serviceClient.from('lots').select('*').eq('id', lot_id).single()
     if (!lot) return new Response(JSON.stringify({ error: 'Lot not found' }), { status: 404 })
@@ -28,12 +18,18 @@ serve(async (req) => {
     if (amount <= lot.current_bid) return new Response(JSON.stringify({ error: 'Bid too low' }), { status: 400 })
 
     const { data: bid, error: bidError } = await serviceClient.from('bids').insert({
-      lot_id, bidder_id: user.id, amount,
+      lot_id, amount,
+      bidder_name: String(bidder_name).trim().slice(0, 120),
+      bidder_email: String(bidder_email).trim().toLowerCase().slice(0, 254),
+      bidder_phone: String(bidder_phone ?? '').trim().slice(0, 30),
     }).select().single()
 
     if (bidError) return new Response(JSON.stringify({ error: bidError.message }), { status: 500 })
 
-    const { error: lotError } = await serviceClient.from('lots').update({ current_bid: amount, current_bidder_id: user.id }).eq('id', lot_id)
+    const { error: lotError } = await serviceClient.from('lots').update({
+      current_bid: amount,
+      current_bidder_name: String(bidder_name).trim().slice(0, 120),
+    }).eq('id', lot_id)
 
     if (lotError) {
       await serviceClient.from('bids').delete().eq('id', bid.id)

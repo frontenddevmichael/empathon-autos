@@ -15,7 +15,8 @@ interface BidRecord {
   id: string
   amount: number
   placed_at: string
-  bidder_id: string
+  bidder_id: string | null
+  bidder_name?: string | null
 }
 
 interface LotDetail {
@@ -46,16 +47,10 @@ export function AuctionDetail() {
   const [bids, setBids] = useState<BidRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [bidAmount, setBidAmount] = useState('')
+  const [bidderName, setBidderName] = useState('')
+  const [bidderEmail, setBidderEmail] = useState('')
+  const [bidderPhone, setBidderPhone] = useState('')
   const [saving, setSaving] = useState(false)
-  const [session, setSession] = useState<{ user: { id: string } } | null>(null)
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session))
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
-    return () => listener?.subscription.unsubscribe()
-  }, [])
 
   useEffect(() => {
     if (!lotId) return
@@ -94,7 +89,7 @@ export function AuctionDetail() {
 
   const placeBid = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!session || !lotId) { showToast('Sign in to place a bid', 'error'); return }
+    if (!lotId) return
     if (!lot) return
 
     // Client-side validation before calling Edge Function
@@ -105,6 +100,14 @@ export function AuctionDetail() {
     const timeLeft = new Date(lot.closes_at).getTime() - Date.now()
     if (timeLeft <= 0) {
       showToast('This auction has ended', 'error')
+      return
+    }
+    if (!bidderName.trim() || !bidderEmail.trim()) {
+      showToast('Please enter your name and email', 'error')
+      return
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(bidderEmail.trim())) {
+      showToast('Please enter a valid email address', 'error')
       return
     }
     const amount = parseFloat(bidAmount) * 1_000_000
@@ -119,18 +122,21 @@ export function AuctionDetail() {
 
     setSaving(true)
     try {
-      const { data: { session: currentSession } } = await supabase.auth.getSession()
-      const token = currentSession?.access_token
-      if (!token) { showToast('Sign in to place a bid', 'error'); setSaving(false); return }
-
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
+      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string
       const res = await fetch(`${supabaseUrl}/functions/v1/place-bid`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${anonKey}`,
         },
-        body: JSON.stringify({ lot_id: lotId, amount }),
+        body: JSON.stringify({
+          lot_id: lotId,
+          amount,
+          bidder_name: bidderName.trim(),
+          bidder_email: bidderEmail.trim(),
+          bidder_phone: bidderPhone.trim(),
+        }),
       })
 
       const result = await res.json()
@@ -257,6 +263,30 @@ export function AuctionDetail() {
 
             {isOpen && (
               <form onSubmit={placeBid} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+                <p style={{ fontSize: 'var(--text-sm)', fontWeight: 600 }}>Place a bid</p>
+                <Input
+                  label="Your name"
+                  type="text"
+                  value={bidderName}
+                  onChange={e => setBidderName(e.target.value)}
+                  placeholder="e.g. Ada Obi"
+                  required
+                />
+                <Input
+                  label="Email"
+                  type="email"
+                  value={bidderEmail}
+                  onChange={e => setBidderEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  required
+                />
+                <Input
+                  label="Phone (optional)"
+                  type="tel"
+                  value={bidderPhone}
+                  onChange={e => setBidderPhone(e.target.value)}
+                  placeholder="+234 800 000 0000"
+                />
                 <Input
                   label={`Your bid (₦M) — min ${formatPrice(lot.current_bid + 100_000)}`}
                   type="number"
@@ -265,10 +295,9 @@ export function AuctionDetail() {
                   value={bidAmount}
                   onChange={e => setBidAmount(e.target.value)}
                   placeholder="e.g. 5.5"
+                  required
                 />
-                <Button type="submit" loading={saving} disabled={!session}>
-                  {session ? 'Place Bid' : 'Sign in to Bid'}
-                </Button>
+                <Button type="submit" loading={saving}>Place Bid</Button>
               </form>
             )}
 
@@ -284,9 +313,12 @@ export function AuctionDetail() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 240, overflowY: 'auto' }}>
                 {bids.map(b => (
-                  <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-sm)', padding: '4px 0', borderBottom: '1px solid var(--border-light)' }}>
+                  <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 'var(--text-sm)', padding: '4px 0', borderBottom: '1px solid var(--border-light)' }}>
                     <span className="tabular-nums" style={{ fontWeight: 600 }}>{formatPrice(b.amount)}</span>
-                    <span className="tabular-nums" style={{ color: 'var(--stone)', fontSize: 'var(--text-xs)' }}>{new Date(b.placed_at).toLocaleString()}</span>
+                    <span style={{ color: 'var(--stone)', fontSize: 'var(--text-xs)', textAlign: 'right' }}>
+                      {b.bidder_name || 'Anonymous bidder'}
+                      <span className="tabular-nums" style={{ display: 'block' }}>{new Date(b.placed_at).toLocaleString()}</span>
+                    </span>
                   </div>
                 ))}
               </div>
