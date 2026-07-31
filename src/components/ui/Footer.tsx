@@ -30,14 +30,14 @@ function FooterDeco() {
     >
       <path
         d="M 10 30 Q 8 30 8 28 Q 8 24 16 24 Q 22 18 30 16 Q 38 14 50 14 Q 58 14 64 18 Q 70 20 76 24 Q 78 26 78 28 Q 78 30 74 30 L 10 30 Z"
-        stroke="white"
+        stroke="var(--navy)"
         strokeWidth="1"
         strokeLinecap="round"
-        fill="white"
+        fill="var(--navy)"
         fillOpacity="0.05"
       />
-      <circle cx="24" cy="32" r="5" stroke="white" strokeWidth="0.8" fill="none" />
-      <circle cx="62" cy="32" r="5" stroke="white" strokeWidth="0.8" fill="none" />
+      <circle cx="24" cy="32" r="5" stroke="var(--navy)" strokeWidth="0.8" fill="none" />
+      <circle cx="62" cy="32" r="5" stroke="var(--navy)" strokeWidth="0.8" fill="none" />
     </svg>
   )
 }
@@ -49,7 +49,7 @@ export function Footer() {
       <div className={styles.inner}>
         <div className={styles.brand}>
           <span className={styles.brandIcon} style={{ marginBottom: 'var(--space-1)' }}>
-            <img src="/Empathon logo.png" alt="Empathon Autos" width="64" height="64" style={{ borderRadius: 10, objectFit: 'contain' }} />
+            <img src="/Empathon logo.png" alt="Empathon Autos" width="110" height="110" style={{ borderRadius: 14, objectFit: 'contain' }} />
           </span>
           <p>Premium vehicle imports, pre-orders, and sales since 2019. Your trusted automotive partner in Lagos, Nigeria.</p>
         </div>

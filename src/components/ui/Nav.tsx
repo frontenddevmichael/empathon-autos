@@ -19,7 +19,7 @@ function LogoSvg() {
   const onErr = useCallback(() => setImgErr(true), [])
   if (imgErr) {
     return (
-      <svg width="56" height="56" viewBox="0 0 34 34" fill="none" aria-hidden="true" style={{ flexShrink: 0 }}>
+      <svg width="110" height="110" viewBox="0 0 34 34" fill="none" aria-hidden="true" style={{ flexShrink: 0 }}>
         <rect width="34" height="34" rx="6" fill="var(--navy)" />
         <text x="17" y="22" textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize="16" fontWeight="800" fill="white" letterSpacing="-0.02">EA</text>
         <path d="M6 26 Q17 30 28 26" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.3" />
@@ -30,9 +30,9 @@ function LogoSvg() {
     <img
       src="/Empathon logo.png"
       alt="Empathon Autos"
-      width="56"
-      height="56"
-      style={{ borderRadius: 8, flexShrink: 0, objectFit: 'contain' }}
+      width="110"
+      height="110"
+      style={{ borderRadius: 14, flexShrink: 0, objectFit: 'contain' }}
       onError={onErr}
     />
   )

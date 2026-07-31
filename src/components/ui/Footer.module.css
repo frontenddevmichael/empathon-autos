@@ -1,6 +1,6 @@
 .footer {
-  background: var(--ink);
-  color: rgba(255,255,255,0.7);
+  background: transparent;
+  color: var(--ink);
   padding: var(--space-7) 0 var(--space-4);
   font-size: var(--text-sm);
 }
@@ -15,7 +15,7 @@
 }
 
 .brand p {
-  color: rgba(255,255,255,0.4);
+  color: var(--stone);
   margin-top: var(--space-2);
   max-width: 340px;
   line-height: 1.8;
@@ -28,7 +28,7 @@
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--text-lg);
-  color: white;
+  color: var(--ink);
   letter-spacing: -0.02em;
 }
 .brandIcon {
@@ -46,7 +46,7 @@
 }
 
 .col h4 {
-  color: white;
+  color: var(--ink);
   font-size: var(--text-xs);
   font-weight: 700;
   margin-bottom: var(--space-2);
@@ -55,18 +55,18 @@
 }
 .col a, .col p {
   display: block;
-  color: rgba(255,255,255,0.4);
+  color: var(--stone);
   margin-bottom: var(--space-1-5);
   transition: color 150ms var(--ease-out);
   font-size: var(--text-sm);
 }
-.col a:hover { color: rgba(255,255,255,0.85); }
+.col a:hover { color: var(--navy); }
 
 .bottom {
   max-width: var(--container-max);
   margin: 0 auto;
   padding: var(--space-4) var(--space-4) 0;
-  border-top: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid var(--border);
   margin-top: var(--space-5);
   padding-top: var(--space-3);
   display: flex;
@@ -74,7 +74,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-1);
-  color: rgba(255,255,255,0.25);
+  color: var(--stone-light);
   font-size: var(--text-xs);
 }
 
