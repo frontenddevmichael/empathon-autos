@@ -22,7 +22,8 @@ interface LotWithVehicle {
 interface BidWithBidder {
   id: string
   lot_id: string
-  bidder_id: string
+  bidder_id: string | null
+  bidder_name?: string | null
   amount: number
   placed_at: string
   outcome: string | null
@@ -254,7 +255,7 @@ export function AdminAuctions() {
                                     onMouseLeave={e => { e.currentTarget.style.background = i === 0 ? 'rgba(21,128,61,0.04)' : '' }}
                                   >
                                     <span style={{ fontSize: 'var(--text-xs)', fontWeight: i === 0 ? 600 : 400, color: 'var(--ink)' }}>
-                                      {bid.profiles?.[0]?.full_name || bid.bidder_id.slice(0, 8) + '…'}
+                                      {bid.bidder_name || bid.profiles?.[0]?.full_name || 'Anonymous bidder'}
                                     </span>
                                     <span className="tabular-nums" style={{
                                       fontSize: 'var(--text-xs)', fontWeight: i === 0 ? 700 : 500,

@@ -110,9 +110,13 @@ export function AuctionDetail() {
       showToast('Please enter a valid email address', 'error')
       return
     }
-    const amount = parseFloat(bidAmount) * 1_000_000
+    const amount = parseFloat(bidAmount.replace(/,/g, ''))
     if (!amount || amount <= 0) {
       showToast('Please enter a valid bid amount', 'error')
+      return
+    }
+    if (amount > 9_999_999_999) {
+      showToast('Bid amount is too large', 'error')
       return
     }
     if (amount <= lot.current_bid) {
@@ -288,13 +292,12 @@ export function AuctionDetail() {
                   placeholder="+234 800 000 0000"
                 />
                 <Input
-                  label={`Your bid (₦M) — min ${formatPrice(lot.current_bid + 100_000)}`}
-                  type="number"
-                  step="0.1"
-                  min={(lot.current_bid + 100_000) / 1_000_000}
+                  label={`Your bid (₦) — must exceed ${formatPrice(lot.current_bid)}`}
+                  type="text"
+                  inputMode="numeric"
                   value={bidAmount}
-                  onChange={e => setBidAmount(e.target.value)}
-                  placeholder="e.g. 5.5"
+                  onChange={e => setBidAmount(e.target.value.replace(/[^\d,]/g, ''))}
+                  placeholder="e.g. 85,000,000"
                   required
                 />
                 <Button type="submit" loading={saving}>Place Bid</Button>
