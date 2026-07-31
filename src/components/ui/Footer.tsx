@@ -49,7 +49,7 @@ export function Footer() {
       <div className={styles.inner}>
         <div className={styles.brand}>
           <span className={styles.brandIcon} style={{ marginBottom: 'var(--space-1)' }}>
-            <img src="/Empathon logo.png" alt="Empathon Autos" width="44" height="44" style={{ borderRadius: 8, objectFit: 'contain' }} />
+            <img src="/Empathon logo.png" alt="Empathon Autos" width="64" height="64" style={{ borderRadius: 10, objectFit: 'contain' }} />
           </span>
           <p>Premium vehicle imports, pre-orders, and sales since 2019. Your trusted automotive partner in Lagos, Nigeria.</p>
         </div>

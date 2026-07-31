@@ -106,12 +106,12 @@ export function HeroSection({
       <img
         src="/Empathon logo.png"
         alt=""
-        width="110"
-        height="110"
+        width="180"
+        height="180"
         style={{
           position: 'absolute',
-          bottom: '10%',
-          right: '5%',
+          bottom: '8%',
+          right: '4%',
           zIndex: 2,
           opacity: 0.07,
           pointerEvents: 'none',

@@ -7,16 +7,16 @@ export function LoadingScreen({ height = '60vh' }: { height?: string }) {
     <div style={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 var(--space-4)' }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
         {/* Branded pulse animation */}
-        <div style={{ position: 'relative', width: 80, height: 80 }}>
+        <div style={{ position: 'relative', width: 120, height: 120 }}>
           <img
             src="/Empathon logo.png"
             alt="Empathon Autos"
-            width="80"
-            height="80"
-            style={{ position: 'relative', borderRadius: 16, zIndex: 1, objectFit: 'contain' }}
+            width="120"
+            height="120"
+            style={{ position: 'relative', borderRadius: 20, zIndex: 1, objectFit: 'contain' }}
           />
           <div style={{
-            position: 'absolute', inset: -10,
+            position: 'absolute', inset: -12,
             borderRadius: '50%',
             border: '2px solid rgba(12,30,58,0.08)',
             animation: 'loadingRing 1.5s ease-in-out infinite',
