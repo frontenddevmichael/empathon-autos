@@ -2,8 +2,10 @@ import { useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 
 /**
- * Global scroll reveal — observes all `.scroll-reveal` and `.scroll-reveal-child`
- * elements in the DOM and adds `.revealed` when they enter the viewport.
+ * Global scroll reveal — observes all `.scroll-reveal` elements in the DOM
+ * and adds `.revealed` when they enter the viewport. Child elements
+ * (`.scroll-reveal-child`, `.stagger-fade-in > *`) cascade in automatically
+ * via CSS once their parent is revealed.
  *
  * Uses a MutationObserver to catch lazy-loaded elements that mount after the
  * initial DOM scan — critical for Suspense/lazy routes.
@@ -45,7 +47,7 @@ export function useScrollReveal() {
 
     const scanAndObserve = () => {
       const observer = createObserver()
-      const targets = document.querySelectorAll('.scroll-reveal:not(.revealed), .scroll-reveal-child:not(.revealed)')
+      const targets = document.querySelectorAll('.scroll-reveal:not(.revealed)')
       targets.forEach(el => observer.observe(el))
     }
 
@@ -54,7 +56,7 @@ export function useScrollReveal() {
 
     // MutationObserver catches lazy-loaded/revealed-after-navigation content
     const mutationObserver = new MutationObserver(() => {
-      const targets = document.querySelectorAll('.scroll-reveal:not(.revealed), .scroll-reveal-child:not(.revealed)')
+      const targets = document.querySelectorAll('.scroll-reveal:not(.revealed)')
       if (targets.length === 0) return
       // Ensure observer is still alive
       const obs = observerRef.current ?? createObserver()
