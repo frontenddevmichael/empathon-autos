@@ -7,6 +7,7 @@ const links = [
   { to: '/inventory', label: 'Inventory' },
   { to: '/ev', label: 'EV' },
   { to: '/pre-order', label: 'Pre-Order' },
+  { to: '/track-order', label: 'Track Order' },
   { to: '/auctions', label: 'Auctions' },
   { to: '/corporate', label: 'Corporate' },
   { to: '/about', label: 'About' },

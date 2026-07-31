@@ -6,6 +6,7 @@ const pageTitles: Record<string, string> = {
   '/inventory': 'Inventory | Empathon Autos',
   '/ev': 'Electric Vehicles | Empathon Autos',
   '/pre-order': 'Pre-Order | Empathon Autos',
+  '/track-order': 'Track Order | Empathon Autos',
   '/auctions': 'Auctions | Empathon Autos',
   '/corporate': 'Corporate Sales | Empathon Autos',
   '/about': 'About Us | Empathon Autos',

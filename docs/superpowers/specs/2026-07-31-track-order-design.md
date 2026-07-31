@@ -61,7 +61,7 @@ stepper, result card, and empty/not-found states.
    - **Order summary** — mock vehicle (make/model/colour/year), reference, placed date,
      current stage label, estimated pickup date. All derived deterministically from ref.
 4. Same ref always yields the identical result (deterministic).
-5. Empty state includes hint: "Don't have a reference? Try `EA-2024-0718`".
+5. Empty state includes hint: "Don't have a reference? Try `EA-202418`".
 
 ## Deterministic data model
 
@@ -81,7 +81,7 @@ stepper, result card, and empty/not-found states.
 ## Testing
 
 New `src/lib/__tests__/mockOrders.test.ts`:
-- regex validity (accepts `EA-2024-0718`, rejects wrong length / prefix / chars).
+- regex validity (accepts `EA-202418`, rejects wrong length / prefix / chars).
 - determinism (same ref twice → same order).
 - stage distribution 0–4 across sample refs.
 - every valid ref resolves (no `null`).
@@ -89,6 +89,6 @@ New `src/lib/__tests__/mockOrders.test.ts`:
 ## Success criteria
 
 - `/track-order` reachable from nav and footer.
-- `EA-2024-0718` (and any valid ref) renders a timeline immediately.
+- `EA-202418` (and any valid ref) renders a timeline immediately.
 - Deterministic: same ref → same result on refresh.
 - Build passes; tests pass (existing 21 + new suite).
