@@ -85,7 +85,7 @@ export function Auctions() {
           <p>No active auctions right now. <Link to="/inventory" style={{ color: 'var(--navy)', textDecoration: 'underline' }}>Browse inventory</Link> instead.</p>
         </div>
       ) : (
-        <div className={`${styles.grid} stagger-fade-in`}>
+        <div className={`scroll-reveal ${styles.grid} stagger-fade-in`}>
           {vehicles.map(v => {
             const img = v.media?.find(m => m.is_primary) ?? v.media?.[0]
             return (

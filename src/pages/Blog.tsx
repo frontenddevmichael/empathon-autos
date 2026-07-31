@@ -45,7 +45,7 @@ export function Blog() {
         ) : posts.length === 0 ? (
           <p style={{ color: 'var(--stone)' }}>No articles yet. Check back soon.</p>
         ) : (
-          <div className="stagger-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+          <div className="scroll-reveal stagger-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
             {posts.map(p => (
               <Link key={p.id} to={`/blog/${p.slug}`} style={{ display: 'block', padding: 'var(--space-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', background: 'var(--surface)', transition: 'border-color var(--transition-fast), transform var(--transition-fast)' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--navy-light)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
