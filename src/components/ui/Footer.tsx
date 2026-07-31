@@ -30,14 +30,14 @@ function FooterDeco() {
     >
       <path
         d="M 10 30 Q 8 30 8 28 Q 8 24 16 24 Q 22 18 30 16 Q 38 14 50 14 Q 58 14 64 18 Q 70 20 76 24 Q 78 26 78 28 Q 78 30 74 30 L 10 30 Z"
-        stroke="var(--navy)"
+        stroke="white"
         strokeWidth="1"
         strokeLinecap="round"
-        fill="var(--navy)"
+        fill="white"
         fillOpacity="0.05"
       />
-      <circle cx="24" cy="32" r="5" stroke="var(--navy)" strokeWidth="0.8" fill="none" />
-      <circle cx="62" cy="32" r="5" stroke="var(--navy)" strokeWidth="0.8" fill="none" />
+      <circle cx="24" cy="32" r="5" stroke="white" strokeWidth="0.8" fill="none" />
+      <circle cx="62" cy="32" r="5" stroke="white" strokeWidth="0.8" fill="none" />
     </svg>
   )
 }
@@ -48,7 +48,7 @@ export function Footer() {
       <FooterDeco />
       <div className={styles.inner}>
         <div className={styles.brand}>
-          <img src="/Empathon logo.png" alt="Empathon Autos" width="150" height="150" style={{ maxWidth: '100%', height: 'auto', objectFit: 'contain', marginBottom: 'var(--space-2)' }} />
+          <img src="/Empathon logo.png" alt="Empathon Autos" style={{ width: '100%', maxWidth: 460, height: 150, objectFit: 'contain', objectPosition: 'left center', marginBottom: 'var(--space-2)' }} />
           <p>Premium vehicle imports, pre-orders, and sales since 2019. Your trusted automotive partner in Lagos, Nigeria.</p>
         </div>
         {Object.entries(footerLinks).map(([heading, items]) => (

@@ -97,7 +97,7 @@
   --transition-spring: 500ms var(--ease-spring);
 
   /* ── Layout ── */
-  --nav-height: 164px;
+  --nav-height: 72px;
   --container-max: 1240px;
   --container-narrow: 680px;
 

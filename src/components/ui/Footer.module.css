@@ -1,6 +1,6 @@
 .footer {
-  background: transparent;
-  color: var(--ink);
+  background: var(--ink);
+  color: rgba(255,255,255,0.7);
   padding: var(--space-7) 0 var(--space-4);
   font-size: var(--text-sm);
 }
@@ -15,7 +15,7 @@
 }
 
 .brand p {
-  color: var(--stone);
+  color: rgba(255,255,255,0.4);
   margin-top: var(--space-2);
   max-width: 340px;
   line-height: 1.8;
@@ -23,7 +23,7 @@
 }
 
 .col h4 {
-  color: var(--ink);
+  color: white;
   font-size: var(--text-xs);
   font-weight: 700;
   margin-bottom: var(--space-2);
@@ -32,18 +32,18 @@
 }
 .col a, .col p {
   display: block;
-  color: var(--stone);
+  color: rgba(255,255,255,0.4);
   margin-bottom: var(--space-1-5);
   transition: color 150ms var(--ease-out);
   font-size: var(--text-sm);
 }
-.col a:hover { color: var(--navy); }
+.col a:hover { color: rgba(255,255,255,0.85); }
 
 .bottom {
   max-width: var(--container-max);
   margin: 0 auto;
   padding: var(--space-4) var(--space-4) 0;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(255,255,255,0.06);
   margin-top: var(--space-5);
   padding-top: var(--space-3);
   display: flex;
@@ -51,7 +51,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-1);
-  color: var(--stone-light);
+  color: rgba(255,255,255,0.25);
   font-size: var(--text-xs);
 }
 

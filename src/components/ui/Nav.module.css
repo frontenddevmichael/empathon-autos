@@ -35,17 +35,16 @@
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-  height: 112px;
+  height: 60px;
 }
 .scrolled .inner {
   padding-top: 0;
   padding-bottom: 0;
 }
-.scrolled .logo img,
-.scrolled .logo svg {
-  width: 96px;
-  height: 96px;
-  border-radius: 10px;
+.scrolled .logo {
+  top: 60px;
+  height: 90px;
+  width: min(34vw, 300px);
 }
 
 /* Contact button — always white bg, navy text
@@ -70,7 +69,7 @@
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
 .logo {
@@ -82,6 +81,12 @@
   font-size: var(--text-lg);
   letter-spacing: -0.02em;
   transition: opacity 200ms var(--ease-out);
+  position: absolute;
+  left: var(--space-4);
+  top: var(--nav-height);
+  height: 150px;
+  width: min(50vw, 460px);
+  overflow: visible;
 }
 .logo:hover { opacity: 0.75; }
 .wordmark { color: var(--ink); letter-spacing: -0.03em; }
@@ -225,4 +230,5 @@
 @media (max-width: 768px) {
   .links { display: none; }
   .hamburger { display: flex; }
+  .logo { left: var(--space-3); height: 120px; width: min(70vw, 340px); }
 }
