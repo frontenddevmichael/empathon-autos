@@ -45,19 +45,19 @@ export function Blog() {
         ) : posts.length === 0 ? (
           <p style={{ color: 'var(--stone)' }}>No articles yet. Check back soon.</p>
         ) : (
-          <div className="scroll-reveal stagger-fade-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 'var(--space-3)' }}>
+          <div className="scroll-reveal stagger-fade-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 'var(--space-3)' }}>
             {posts.map(p => (
-              <Link key={p.id} to={`/blog/${p.slug}`} style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', background: 'var(--surface)', transition: 'border-color var(--transition-fast), transform var(--transition-fast)' }}
+              <Link key={p.id} to={`/blog/${p.slug}`} style={{ display: 'flex', flexDirection: 'row', overflow: 'hidden', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', background: 'var(--surface)', transition: 'border-color var(--transition-fast), transform var(--transition-fast)' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--navy-light)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = ''; e.currentTarget.style.transform = '' }}
               >
                 {p.cover_image && (
-                  <div style={{ aspectRatio: '16/10', overflow: 'hidden', background: 'var(--paper-warm)' }}>
+                  <div style={{ width: 140, minWidth: 140, overflow: 'hidden', background: 'var(--paper-warm)' }}>
                     <img src={p.cover_image} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                   </div>
                 )}
                 <div style={{ flex: 1, minWidth: 0, padding: 'var(--space-2)' }}>
-                  <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: 4 }}>{p.title}</h3>
+                  <h3 style={{ fontSize: 'var(--text-base)', marginBottom: 4 }}>{p.title}</h3>
                   <div style={{ display: 'flex', gap: 'var(--space-2)', fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>
                     {p.author && <span>{p.author}</span>}
                     {p.published_at && <span className="tabular-nums">{new Date(p.published_at).toLocaleDateString()}</span>}
