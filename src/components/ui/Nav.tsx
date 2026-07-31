@@ -5,6 +5,7 @@ import styles from './Nav.module.css'
 
 const links = [
   { to: '/inventory', label: 'Inventory' },
+  { to: '/ev', label: 'EV' },
   { to: '/pre-order', label: 'Pre-Order' },
   { to: '/auctions', label: 'Auctions' },
   { to: '/corporate', label: 'Corporate' },
@@ -18,7 +19,7 @@ function LogoSvg() {
   const onErr = useCallback(() => setImgErr(true), [])
   if (imgErr) {
     return (
-      <svg width="34" height="34" viewBox="0 0 34 34" fill="none" aria-hidden="true" style={{ flexShrink: 0 }}>
+      <svg width="44" height="44" viewBox="0 0 34 34" fill="none" aria-hidden="true" style={{ flexShrink: 0 }}>
         <rect width="34" height="34" rx="6" fill="var(--navy)" />
         <text x="17" y="22" textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize="16" fontWeight="800" fill="white" letterSpacing="-0.02">EA</text>
         <path d="M6 26 Q17 30 28 26" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.3" />
@@ -29,9 +30,9 @@ function LogoSvg() {
     <img
       src="/Empathon logo.png"
       alt="Empathon Autos"
-      width="34"
-      height="34"
-      style={{ borderRadius: 6, flexShrink: 0, objectFit: 'contain' }}
+      width="44"
+      height="44"
+      style={{ borderRadius: 8, flexShrink: 0, objectFit: 'contain' }}
       onError={onErr}
     />
   )

@@ -56,6 +56,7 @@ const AdminAuctionForm = namedLazy(() => import('@/components/admin/AdminAuction
 const Home = namedLazy(() => import('@/pages/Home'), 'Home')
 const Inventory = namedLazy(() => import('@/pages/Inventory'), 'Inventory')
 const VehicleDetail = namedLazy(() => import('@/pages/VehicleDetail'), 'VehicleDetail')
+const Electric = namedLazy(() => import('@/pages/Electric'), 'Electric')
 const PreOrder = namedLazy(() => import('@/pages/PreOrder'), 'PreOrder')
 const Auctions = namedLazy(() => import('@/pages/Auctions'), 'Auctions')
 const AuctionDetail = namedLazy(() => import('@/pages/AuctionDetail'), 'AuctionDetail')
@@ -112,6 +113,7 @@ export function App() {
           <Route path="/" element={<PublicLayout><Lazy cmp={Home} /></PublicLayout>} />
           <Route path="/inventory" element={<PublicLayout><Lazy cmp={Inventory} /></PublicLayout>} />
           <Route path="/inventory/:id" element={<PublicLayout><Lazy cmp={VehicleDetail} /></PublicLayout>} />
+          <Route path="/ev" element={<PublicLayout><Lazy cmp={Electric} /></PublicLayout>} />
           <Route path="/pre-order" element={<PublicLayout><Lazy cmp={PreOrder} /></PublicLayout>} />
           <Route path="/auctions" element={<PublicLayout><Lazy cmp={Auctions} /></PublicLayout>} />
           <Route path="/auctions/:lotId" element={<PublicLayout><Lazy cmp={AuctionDetail} /></PublicLayout>} />

@@ -4,6 +4,7 @@ import styles from './Footer.module.css'
 const footerLinks = {
   Vehicles: [
     { to: '/inventory', label: 'Browse Inventory' },
+    { to: '/ev', label: 'Electric Vehicles' },
     { to: '/pre-order', label: 'Pre-Order' },
     { to: '/auctions', label: 'Auctions' },
     { to: '/corporate', label: 'Corporate Sales' },
@@ -48,10 +49,7 @@ export function Footer() {
       <div className={styles.inner}>
         <div className={styles.brand}>
           <span className={styles.brandIcon} style={{ marginBottom: 'var(--space-1)' }}>
-            <svg width="40" height="40" viewBox="0 0 34 34" fill="none" aria-hidden="true">
-              <rect width="34" height="34" rx="6" fill="white" opacity="0.9" />
-              <text x="17" y="22" textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize="15" fontWeight="800" fill="var(--ink)" letterSpacing="-0.02">EA</text>
-            </svg>
+            <img src="/Empathon logo.png" alt="Empathon Autos" width="44" height="44" style={{ borderRadius: 8, objectFit: 'contain' }} />
           </span>
           <p>Premium vehicle imports, pre-orders, and sales since 2019. Your trusted automotive partner in Lagos, Nigeria.</p>
         </div>

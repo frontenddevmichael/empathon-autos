@@ -44,10 +44,10 @@ export function Home() {
   const clientNames = parseJsonContent<Client>(homeContent, 'clients', FALLBACK_CLIENTS).map(c => c.name)
   const cmsImage = getTextContent(homeContent, 'hero_image')
   const heroImages = [
-    cmsImage || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1400&q=90&fit=crop',
-    'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1400&q=90&fit=crop',
-    'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1400&q=90&fit=crop',
-    'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=1400&q=90&fit=crop',
+    cmsImage || 'https://images.unsplash.com/photo-1780296269675-169390638617?w=1400&q=90&fit=crop',
+    'https://images.unsplash.com/photo-1774578432996-54e195b3c5b0?w=1400&q=90&fit=crop',
+    'https://images.unsplash.com/photo-1779025313068-b4a11d86bf0d?w=1400&q=90&fit=crop',
+    'https://images.unsplash.com/photo-1636578929419-fc62088fd08f?w=1400&q=90&fit=crop',
   ]
   const [currentIndex, setCurrentIndex] = useState(0)
   const nextImage = useCallback(() => setCurrentIndex(i => (i + 1) % heroImages.length), [heroImages.length])
@@ -198,6 +198,33 @@ export function Home() {
               </div>
             </>
           ) : null}
+        </div>
+      </ParallaxSection>
+
+      {/* EV TEASER */}
+      <ParallaxSection className={`scroll-reveal ${styles.evSection}`}>
+        <div className={styles.sectionInner}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-5)', alignItems: 'center' }}>
+            <div>
+              <p className={styles.sectionLabel} style={{ color: 'rgba(255,255,255,0.5)' }}>Electric Vehicles</p>
+              <SplitHeading as="h2" style={{ color: 'white' }}>Go Electric. Go Silent.</SplitHeading>
+              <div className="section-divider" />
+              <p style={{ color: 'rgba(255,255,255,0.45)', lineHeight: 1.8, marginBottom: 'var(--space-3)', maxWidth: 480 }}>
+                Premium EVs — Mercedes-Benz EQ series and more. Lower running costs, serious performance, and the latest tech, imported and ready for Nigerian roads.
+              </p>
+              <Link to="/ev"><RippleButton size="md">Explore Electric Vehicles <ArrowRight size={15} /></RippleButton></Link>
+            </div>
+            <div style={{ animation: 'fadeInUp 700ms var(--ease-out) both' }}>
+              <div style={{ borderRadius: 'var(--radius-xl)', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 24px 48px rgba(0,0,0,0.35)' }}>
+                <img
+                  src="https://images.unsplash.com/photo-1636578929419-fc62088fd08f?w=900&q=80&fit=crop"
+                  alt="Mercedes-Benz electric vehicle"
+                  loading="lazy"
+                  style={{ width: '100%', height: 300, objectFit: 'cover', display: 'block' }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </ParallaxSection>
 

@@ -44,8 +44,8 @@ export function Contact() {
     <>
       <HeroSection
         images={[
-          { url: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1400&q=90&fit=crop' },
-          { url: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=1400&q=90&fit=crop' },
+          { url: 'https://images.unsplash.com/photo-1780296269675-169390638617?w=1400&q=90&fit=crop' },
+          { url: 'https://images.unsplash.com/photo-1779025313068-b4a11d86bf0d?w=1400&q=90&fit=crop' },
         ]}
         label="Contact"
         title="Get in Touch"

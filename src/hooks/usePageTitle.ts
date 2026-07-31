@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom'
 const pageTitles: Record<string, string> = {
   '/': 'Home | Empathon Autos',
   '/inventory': 'Inventory | Empathon Autos',
+  '/ev': 'Electric Vehicles | Empathon Autos',
   '/pre-order': 'Pre-Order | Empathon Autos',
   '/auctions': 'Auctions | Empathon Autos',
   '/corporate': 'Corporate Sales | Empathon Autos',

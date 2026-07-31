@@ -46,8 +46,8 @@ export function PreOrder() {
     <>
       <HeroSection
         images={[
-          { url: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1400&q=90&fit=crop' },
-          { url: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=1400&q=90&fit=crop' },
+          { url: 'https://images.unsplash.com/photo-1774578432996-54e195b3c5b0?w=1400&q=90&fit=crop' },
+          { url: 'https://images.unsplash.com/photo-1779025313068-b4a11d86bf0d?w=1400&q=90&fit=crop' },
         ]}
         label="Pre-Order"
         title="Order the Vehicle You Really Want"

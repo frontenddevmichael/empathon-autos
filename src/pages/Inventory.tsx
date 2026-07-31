@@ -90,8 +90,8 @@ export function Inventory() {
     <>
       <HeroSection
         images={[
-          { url: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1400&q=90&fit=crop' },
-          { url: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1400&q=90&fit=crop' },
+          { url: 'https://images.unsplash.com/photo-1774578432996-54e195b3c5b0?w=1400&q=90&fit=crop' },
+          { url: 'https://images.unsplash.com/photo-1780296269675-169390638617?w=1400&q=90&fit=crop' },
         ]}
         label="Inventory"
         title="Browse Our Collection"

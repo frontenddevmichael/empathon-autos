@@ -103,23 +103,21 @@ export function HeroSection({
       />
 
       {/* Empathon logo watermark */}
-      <div
+      <img
+        src="/Empathon logo.png"
+        alt=""
+        width="110"
+        height="110"
         style={{
           position: 'absolute',
-          bottom: '12%',
-          right: '6%',
+          bottom: '10%',
+          right: '5%',
           zIndex: 2,
-          opacity: 0.06,
+          opacity: 0.07,
           pointerEvents: 'none',
           animation: 'float 6s ease-in-out infinite',
         }}
-      >
-        <svg width="80" height="80" viewBox="0 0 34 34" fill="none">
-          <rect width="34" height="34" rx="6" fill="white" />
-          <text x="17" y="22" textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize="16" fontWeight="800" fill="var(--navy)" letterSpacing="-0.02">EA</text>
-          <path d="M6 26 Q17 30 28 26" stroke="var(--navy)" strokeWidth="1.2" strokeLinecap="round" opacity="0.3" />
-        </svg>
-      </div>
+      />
 
       {/* Decorative elements */}
       {deco === 'circle' && (
