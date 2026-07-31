@@ -48,9 +48,7 @@ export function Footer() {
       <FooterDeco />
       <div className={styles.inner}>
         <div className={styles.brand}>
-          <span className={styles.brandIcon} style={{ marginBottom: 'var(--space-1)' }}>
-            <img src="/Empathon logo.png" alt="Empathon Autos" width="110" height="110" style={{ borderRadius: 14, objectFit: 'contain' }} />
-          </span>
+          <img src="/Empathon logo.png" alt="Empathon Autos" width="150" height="150" style={{ maxWidth: '100%', height: 'auto', objectFit: 'contain', marginBottom: 'var(--space-2)' }} />
           <p>Premium vehicle imports, pre-orders, and sales since 2019. Your trusted automotive partner in Lagos, Nigeria.</p>
         </div>
         {Object.entries(footerLinks).map(([heading, items]) => (

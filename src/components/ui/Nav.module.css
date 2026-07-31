@@ -35,7 +35,7 @@
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-  height: 88px;
+  height: 112px;
 }
 .scrolled .inner {
   padding-top: 0;
@@ -43,8 +43,8 @@
 }
 .scrolled .logo img,
 .scrolled .logo svg {
-  width: 72px;
-  height: 72px;
+  width: 96px;
+  height: 96px;
   border-radius: 10px;
 }
 

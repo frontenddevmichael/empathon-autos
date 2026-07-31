@@ -33,7 +33,7 @@ export function AdminLogin() {
       <div style={{ width: '100%', maxWidth: 400 }}>
         <form onSubmit={handleLogin} style={{ padding: 'var(--space-4)', background: 'var(--surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', marginBottom: 'var(--space-2)' }}>
           <div style={{ marginBottom: 'var(--space-3)', textAlign: 'center' }}>
-            <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-sm)', background: 'var(--navy)', color: 'white', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 'var(--text-lg)', marginBottom: 'var(--space-1)' }}>EA</div>
+            <img src="/Empathon logo.png" alt="Empathon Autos" width="150" height="150" style={{ maxWidth: '100%', height: 'auto', objectFit: 'contain', marginBottom: 'var(--space-1)' }} />
             <h2 style={{ fontSize: 'var(--text-xl)' }}>Admin Login</h2>
             <p style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)' }}>Empathon Autos dashboard</p>
           </div>

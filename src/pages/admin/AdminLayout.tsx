@@ -33,7 +33,7 @@ export function AdminLayout() {
       
       <aside className={`${styles.sidebar} ${mobileOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.brand}>
-          <span style={{ width: 24, height: 24, borderRadius: 4, background: 'white', color: 'var(--ink)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--text-xs)', fontWeight: 800 }}>EA</span>
+          <img src="/Empathon logo.png" alt="Empathon Autos" height="36" style={{ width: 'auto', maxWidth: 160, height: 36, objectFit: 'contain' }} />
           Admin
           <button className={styles.closeBtn} onClick={() => setMobileOpen(false)} aria-label="Close menu">
             <X size={16} />

@@ -21,29 +21,6 @@
   line-height: 1.8;
   font-size: var(--text-sm);
 }
-.brandMark {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--text-lg);
-  color: var(--ink);
-  letter-spacing: -0.02em;
-}
-.brandIcon {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-sm);
-  background: var(--navy);
-  color: white;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--text-xs);
-  font-weight: 800;
-  letter-spacing: 0.05em;
-}
 
 .col h4 {
   color: var(--ink);
