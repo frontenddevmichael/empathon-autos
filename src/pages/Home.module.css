@@ -207,22 +207,22 @@
   transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
   will-change: opacity, transform;
 }
-.scroll-reveal.revealed .sectionInner > * {
+:global(.scroll-reveal.revealed) .sectionInner > * {
   opacity: 1;
   transform: translateY(0);
 }
-.scroll-reveal.revealed .sectionInner > *:nth-child(1) { transition-delay: 70ms; }
-.scroll-reveal.revealed .sectionInner > *:nth-child(2) { transition-delay: 140ms; }
-.scroll-reveal.revealed .sectionInner > *:nth-child(3) { transition-delay: 210ms; }
-.scroll-reveal.revealed .sectionInner > *:nth-child(4) { transition-delay: 280ms; }
-.scroll-reveal.revealed .sectionInner > *:nth-child(5) { transition-delay: 350ms; }
-.scroll-reveal.revealed .sectionInner > *:nth-child(6) { transition-delay: 420ms; }
-.scroll-reveal.revealed .sectionInner > *:nth-child(7) { transition-delay: 490ms; }
-.scroll-reveal.revealed .sectionInner > *:nth-child(8) { transition-delay: 560ms; }
-.scroll-reveal.revealed .sectionInner > *:nth-child(9) { transition-delay: 630ms; }
-.scroll-reveal.revealed .sectionInner > *:nth-child(10) { transition-delay: 700ms; }
-.scroll-reveal.revealed .sectionInner > *:nth-child(11) { transition-delay: 770ms; }
-.scroll-reveal.revealed .sectionInner > *:nth-child(12) { transition-delay: 840ms; }
+:global(.scroll-reveal.revealed) .sectionInner > *:nth-child(1) { transition-delay: 70ms; }
+:global(.scroll-reveal.revealed) .sectionInner > *:nth-child(2) { transition-delay: 140ms; }
+:global(.scroll-reveal.revealed) .sectionInner > *:nth-child(3) { transition-delay: 210ms; }
+:global(.scroll-reveal.revealed) .sectionInner > *:nth-child(4) { transition-delay: 280ms; }
+:global(.scroll-reveal.revealed) .sectionInner > *:nth-child(5) { transition-delay: 350ms; }
+:global(.scroll-reveal.revealed) .sectionInner > *:nth-child(6) { transition-delay: 420ms; }
+:global(.scroll-reveal.revealed) .sectionInner > *:nth-child(7) { transition-delay: 490ms; }
+:global(.scroll-reveal.revealed) .sectionInner > *:nth-child(8) { transition-delay: 560ms; }
+:global(.scroll-reveal.revealed) .sectionInner > *:nth-child(9) { transition-delay: 630ms; }
+:global(.scroll-reveal.revealed) .sectionInner > *:nth-child(10) { transition-delay: 700ms; }
+:global(.scroll-reveal.revealed) .sectionInner > *:nth-child(11) { transition-delay: 770ms; }
+:global(.scroll-reveal.revealed) .sectionInner > *:nth-child(12) { transition-delay: 840ms; }
 .sectionLabel {
   font-size: var(--text-xs);
   font-weight: 700;
@@ -367,21 +367,21 @@
   transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
   will-change: opacity, transform;
 }
-.scroll-reveal.revealed.ctaSection > *:not(.deco-positioned),
-.scroll-reveal.revealed .ctaSection > *:not(.deco-positioned) {
+:global(.scroll-reveal.revealed).ctaSection > *:not(.deco-positioned),
+:global(.scroll-reveal.revealed) .ctaSection > *:not(.deco-positioned) {
   opacity: 1;
   transform: translateY(0);
 }
-.scroll-reveal.revealed.ctaSection > *:not(.deco-positioned):nth-child(1),
-.scroll-reveal.revealed .ctaSection > *:not(.deco-positioned):nth-child(1) { transition-delay: 70ms; }
-.scroll-reveal.revealed.ctaSection > *:not(.deco-positioned):nth-child(2),
-.scroll-reveal.revealed .ctaSection > *:not(.deco-positioned):nth-child(2) { transition-delay: 140ms; }
-.scroll-reveal.revealed.ctaSection > *:not(.deco-positioned):nth-child(3),
-.scroll-reveal.revealed .ctaSection > *:not(.deco-positioned):nth-child(3) { transition-delay: 210ms; }
-.scroll-reveal.revealed.ctaSection > *:not(.deco-positioned):nth-child(4),
-.scroll-reveal.revealed .ctaSection > *:not(.deco-positioned):nth-child(4) { transition-delay: 280ms; }
-.scroll-reveal.revealed.ctaSection > *:not(.deco-positioned):nth-child(5),
-.scroll-reveal.revealed .ctaSection > *:not(.deco-positioned):nth-child(5) { transition-delay: 350ms; }
+:global(.scroll-reveal.revealed).ctaSection > *:not(.deco-positioned):nth-child(1),
+:global(.scroll-reveal.revealed) .ctaSection > *:not(.deco-positioned):nth-child(1) { transition-delay: 70ms; }
+:global(.scroll-reveal.revealed).ctaSection > *:not(.deco-positioned):nth-child(2),
+:global(.scroll-reveal.revealed) .ctaSection > *:not(.deco-positioned):nth-child(2) { transition-delay: 140ms; }
+:global(.scroll-reveal.revealed).ctaSection > *:not(.deco-positioned):nth-child(3),
+:global(.scroll-reveal.revealed) .ctaSection > *:not(.deco-positioned):nth-child(3) { transition-delay: 210ms; }
+:global(.scroll-reveal.revealed).ctaSection > *:not(.deco-positioned):nth-child(4),
+:global(.scroll-reveal.revealed) .ctaSection > *:not(.deco-positioned):nth-child(4) { transition-delay: 280ms; }
+:global(.scroll-reveal.revealed).ctaSection > *:not(.deco-positioned):nth-child(5),
+:global(.scroll-reveal.revealed) .ctaSection > *:not(.deco-positioned):nth-child(5) { transition-delay: 350ms; }
 
 .testimonialGrid {
   display: grid;
