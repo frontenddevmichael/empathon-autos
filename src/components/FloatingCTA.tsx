@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { MessageCircle, X, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { Magnetic } from '@/components/Magnetic'
 
 interface FloatingCTAProps {
   onEnquire?: () => void
@@ -32,7 +33,11 @@ export function FloatingCTA({ onEnquire, showEnquire = true }: FloatingCTAProps)
     <>
       {/* Back to Top */}
         <button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          onClick={() => {
+            const lenis = (window as any).__lenis
+            if (lenis) lenis.scrollTo(0, { duration: 1.2 })
+            else window.scrollTo({ top: 0, behavior: 'smooth' })
+          }}
           aria-label="Back to top"
           style={{
             position: 'fixed',
@@ -114,31 +119,33 @@ export function FloatingCTA({ onEnquire, showEnquire = true }: FloatingCTAProps)
         )}
 
         {/* Main toggle button */}
-        <button
-          onClick={() => setExpanded(!expanded)}
-          aria-label={expanded ? 'Close quick actions' : 'Quick actions'}
-          style={{
-            width: 48,
-            height: 48,
-            borderRadius: '50%',
-            border: 'none',
-            background: expanded ? 'var(--error)' : 'var(--navy)',
-            color: 'white',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: expanded
-              ? '0 4px 16px rgba(197,48,48,0.25)'
-              : '0 4px 16px rgba(12,30,58,0.2)',
-            transition: 'all 250ms var(--ease-out)',
-            transform: expanded ? 'rotate(45deg)' : 'rotate(0)',
-          }}
-          onMouseEnter={e => { if (!expanded) e.currentTarget.style.transform = 'scale(1.08)' }}
-          onMouseLeave={e => { if (!expanded) e.currentTarget.style.transform = '' }}
-        >
-          {expanded ? <X size={20} /> : <MessageCircle size={20} />}
-        </button>
+        <Magnetic strength={0.5}>
+          <button
+            onClick={() => setExpanded(!expanded)}
+            aria-label={expanded ? 'Close quick actions' : 'Quick actions'}
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: '50%',
+              border: 'none',
+              background: expanded ? 'var(--error)' : 'var(--navy)',
+              color: 'white',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: expanded
+                ? '0 4px 16px rgba(197,48,48,0.25)'
+                : '0 4px 16px rgba(12,30,58,0.2)',
+              transition: 'all 250ms var(--ease-out)',
+              transform: expanded ? 'rotate(45deg)' : 'rotate(0)',
+            }}
+            onMouseEnter={e => { if (!expanded) e.currentTarget.style.transform = 'scale(1.08)' }}
+            onMouseLeave={e => { if (!expanded) e.currentTarget.style.transform = '' }}
+          >
+            {expanded ? <X size={20} /> : <MessageCircle size={20} />}
+          </button>
+        </Magnetic>
       </div>
 
       <style>{`

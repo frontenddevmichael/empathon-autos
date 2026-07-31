@@ -16,6 +16,7 @@ import { MouseGlow } from '@/components/MouseGlow'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
 import { useScrollToTop } from '@/hooks/useScrollToTop'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { useLenis } from '@/hooks/useLenis'
 import { LoadingScreen, AdminSkeleton } from '@/components/LoadingScreen'
 
 const SITE_URL = 'https://www.emphatonautos.com'
@@ -94,6 +95,7 @@ function AppShell({ children }: { children: React.ReactNode }) {
   useScrollReveal()
   useScrollToTop()
   usePageTitle()
+  useLenis()
   return (
     <>
       <ScrollProgress />

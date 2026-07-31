@@ -108,7 +108,7 @@ export function Nav() {
               </Link>
             ))}
             <div className={styles.cta}>
-              <Button as="a" href="/contact" size="sm" variant="primary" className={styles.navContact}>Contact</Button>
+              <Button as="a" href="/contact" size="sm" variant="primary" magnetic className={styles.navContact}>Contact</Button>
             </div>
           </div>
 

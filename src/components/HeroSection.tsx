@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, type ReactNode } from 'react'
+import { useEffect, useState, useCallback, useRef, type ReactNode } from 'react'
 import { Squiggle, HandCircle, HandDots, CarSilhouette } from '@/components/DecoSvgs'
 import { SplitHeading } from '@/components/SplitHeading'
 
@@ -30,16 +30,47 @@ export function HeroSection({
 }: HeroSectionProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const nextImage = useCallback(() => setCurrentIndex(i => (i + 1) % images.length), [images.length])
+  const sectionRef = useRef<HTMLElement>(null)
+  const [parallax, setParallax] = useState({ zoom: 1, rise: 0, fade: 1 })
 
   useEffect(() => {
     const id = setInterval(nextImage, 5000)
     return () => clearInterval(id)
   }, [nextImage])
 
+  // Scroll parallax — images zoom/blur and the hero peels away as you scroll down
+  useEffect(() => {
+    let frame: number
+    const onScroll = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        const el = sectionRef.current
+        if (!el) return
+        const rect = el.getBoundingClientRect()
+        const scrolled = -rect.top
+        if (scrolled <= 0) {
+          setParallax({ zoom: 1, rise: 0, fade: 1 })
+          return
+        }
+        const max = Math.min(500, rect.height * 0.4)
+        const t = Math.min(1, scrolled / max)
+        setParallax({
+          zoom: 1 + t * 0.18,
+          rise: t * 160,
+          fade: Math.max(0, 1 - t),
+        })
+      })
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(frame) }
+  }, [])
+
   const isCenterDark = gradient === 'center-dark'
 
   return (
     <section
+      ref={sectionRef}
       className={className}
       style={{
         minHeight: '100vh',
@@ -60,19 +91,17 @@ export function HeroSection({
           fetchPriority={i === 0 ? 'high' : 'low'}
           style={{
             position: 'absolute',
-            top: 0,
+            top: -50,
             left: 0,
             width: '100%',
-            height: '100%',
+            height: 'calc(100% + 100px)',
             objectFit: 'cover',
             objectPosition: 'center',
             zIndex: 0,
             opacity: i === currentIndex ? 1 : 0,
             transition: 'opacity 1.2s ease-in-out',
-            transform: i === currentIndex ? 'scale(1)' : 'scale(1.05)',
-            transitionProperty: 'opacity, transform',
-            transitionDuration: '1.2s, 4s',
-            transitionTimingFunction: 'ease-in-out, ease-out',
+            transform: `translateY(${parallax.rise * 0.4}px) scale(${parallax.zoom})`,
+            willChange: 'transform, opacity',
           }}
         />
       ))}
@@ -147,6 +176,9 @@ export function HeroSection({
           margin: '0 auto',
           padding: '0 var(--space-4)',
           width: '100%',
+          transform: `translateY(${parallax.rise}px)`,
+          opacity: parallax.fade,
+          willChange: 'transform, opacity',
         }}
       >
         {label && (

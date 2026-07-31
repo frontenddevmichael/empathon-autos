@@ -138,8 +138,8 @@ export function Home() {
             and help you find the one that actually fits your life and budget.
           </p>
           <div className={styles.heroCtas} style={{ animation: 'fadeInUp 600ms 500ms var(--ease-out) both' }}>
-            <Link to="/inventory"><RippleButton size="md">Browse Inventory <ArrowRight size={16} /></RippleButton></Link>
-            <Link to="/contact"><RippleButton size="md" style={{ background: 'rgba(255,255,255,0.1)', color: 'white', borderColor: 'rgba(255,255,255,0.25)', backdropFilter: 'blur(8px)' }}>Request a Quote</RippleButton></Link>
+            <Link to="/inventory"><RippleButton magnetic size="md">Browse Inventory <ArrowRight size={16} /></RippleButton></Link>
+            <Link to="/contact"><RippleButton magnetic size="md" style={{ background: 'rgba(255,255,255,0.1)', color: 'white', borderColor: 'rgba(255,255,255,0.25)', backdropFilter: 'blur(8px)' }}>Request a Quote</RippleButton></Link>
           </div>
           <div className={styles.heroSecondary} style={{ animation: 'fadeInUp 600ms 700ms var(--ease-out) both' }}>
             <Link to="/corporate">Corporate & Fleet Sales</Link>
