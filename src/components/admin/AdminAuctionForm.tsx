@@ -24,6 +24,18 @@ const BODY_OPTIONS = [
   { value: 'pickup', label: 'Pickup' }, { value: 'truck', label: 'Truck' },
 ]
 
+/** Max full-naira value NUMERIC(12,2) can hold (9,999,999,999.99). */
+const MAX_LOT_AMOUNT = 9_999_999_999.99
+
+/** Parse a ₦M input into full naira; returns null if invalid or would overflow the lots column. */
+function toFullNaira(milValue: string): number | null {
+  const n = parseFloat(milValue)
+  if (isNaN(n)) return null
+  const full = n * 1_000_000
+  if (full > MAX_LOT_AMOUNT) return null
+  return full
+}
+
 const emptyVehicle = {
   make: '', model: '', year: new Date().getFullYear(), price: 0,
   mileage: 0, colour: '', condition: 'used' as const,
@@ -92,11 +104,19 @@ export function AdminAuctionForm() {
     setSaving(true)
     const closesAt = toSafeISO(form.closes_at)
     if (!closesAt) { showToast('Valid closing date/time is required', 'error'); setSaving(false); return }
+    const openingBid = toFullNaira(form.opening_bid)
+    const reservePrice = toFullNaira(form.reserve_price)
+    const currentBid = toFullNaira(form.current_bid)
+    if (openingBid === null || reservePrice === null || currentBid === null) {
+      showToast('Amount too large — enter values in ₦ millions (e.g. 85 = ₦85M, max ~₦9,999M)', 'error')
+      setSaving(false)
+      return
+    }
     const payload = {
       vehicle_id: form.vehicle_id,
-      opening_bid: parseFloat(form.opening_bid || '0') * 1_000_000,
-      reserve_price: parseFloat(form.reserve_price || '0') * 1_000_000,
-      current_bid: parseFloat(form.current_bid || '0') * 1_000_000,
+      opening_bid: openingBid,
+      reserve_price: reservePrice,
+      current_bid: currentBid,
       status: form.status,
       closes_at: closesAt,
       opens_at: toSafeISO(form.opens_at),
@@ -173,9 +193,9 @@ export function AdminAuctionForm() {
             </Button>
           </div>
         </div>
-        <Input label="Opening Bid (₦M)" type="number" step="0.1" min="0" value={form.opening_bid} onChange={e => setForm(f => ({ ...f, opening_bid: e.target.value }))} />
-        <Input label="Reserve Price (₦M)" type="number" step="0.1" min="0" value={form.reserve_price} onChange={e => setForm(f => ({ ...f, reserve_price: e.target.value }))} />
-        {id && <Input label="Current Bid (₦M)" type="number" step="0.1" min="0" value={form.current_bid} onChange={e => setForm(f => ({ ...f, current_bid: e.target.value }))} />}
+        <Input label="Opening Bid (₦M)" type="number" step="0.1" min="0" value={form.opening_bid} onChange={e => setForm(f => ({ ...f, opening_bid: e.target.value }))} placeholder="e.g. 85 = ₦85,000,000" />
+        <Input label="Reserve Price (₦M)" type="number" step="0.1" min="0" value={form.reserve_price} onChange={e => setForm(f => ({ ...f, reserve_price: e.target.value }))} placeholder="e.g. 95 = ₦95,000,000" />
+        {id && <Input label="Current Bid (₦M)" type="number" step="0.1" min="0" value={form.current_bid} onChange={e => setForm(f => ({ ...f, current_bid: e.target.value }))} placeholder="e.g. 90 = ₦90,000,000" />}
         <Select label="Status" value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))} options={[
           { value: 'scheduled', label: 'Scheduled' }, { value: 'open', label: 'Open' },
           { value: 'closing', label: 'Closing' }, { value: 'closed', label: 'Closed' },
