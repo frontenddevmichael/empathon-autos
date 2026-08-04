@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { VehicleCard } from '@/components/ui/VehicleCard'
 import { VehicleCardSkeleton } from '@/components/ui/Skeleton'
-import { HeroSection } from '@/components/HeroSection'
 import { CarSilhouette, Sparkle, Compass, ChatBubble } from '@/components/DecoSvgs'
 import styles from './Inventory.module.css'
 import { RippleButton } from '@/components/RippleButton'
@@ -88,16 +87,13 @@ export function Inventory() {
 
   return (
     <>
-      <HeroSection
-        images={[
-          { url: 'https://images.unsplash.com/photo-1774578432996-54e195b3c5b0?w=1400&q=90&fit=crop' },
-          { url: 'https://images.unsplash.com/photo-1780296269675-169390638617?w=1400&q=90&fit=crop' },
-        ]}
-        label="Inventory"
-        title="Browse Our Collection"
-        subtitle="Real cars. Real prices. Ready to drive."
-        deco="car"
-      />
+      <header className={styles.slimHeader}>
+        <div className={styles.slimHeaderInner}>
+          <p className={styles.slimHeaderLabel}>Inventory</p>
+          <h1 className={styles.slimHeaderTitle}>Browse Our Collection</h1>
+          <p className={styles.slimHeaderSub}>Real cars. Real prices. Ready to drive.</p>
+        </div>
+      </header>
 
       <div className={styles.content} style={{ position: 'relative' }}>
       <div className={styles.toolbar}>

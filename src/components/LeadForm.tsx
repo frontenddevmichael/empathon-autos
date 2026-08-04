@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import type { LeadType } from '@/types'
 import { Button } from '@/components/ui/Button'
@@ -11,6 +11,7 @@ interface LeadFormProps {
   onClose: () => void
   type?: LeadType
   vehicleId?: string
+  initialMessage?: string
 }
 
 const typeOptions = [
@@ -21,12 +22,20 @@ const typeOptions = [
   { value: 'contact', label: 'Contact Message' },
 ]
 
-export function LeadForm({ open, onClose, type = 'enquiry', vehicleId }: LeadFormProps) {
+export function LeadForm({ open, onClose, type = 'enquiry', vehicleId, initialMessage }: LeadFormProps) {
   const { showToast } = useToast()
   const [selectedType, setSelectedType] = useState<LeadType>(type)
   const [form, setForm] = useState({ name: '', email: '', phone: '', company: '', message: '' })
   const [saving, setSaving] = useState(false)
   const [honeypot, setHoneypot] = useState('')
+
+  useEffect(() => {
+    if (open) {
+      setSelectedType(type)
+      setForm(f => ({ ...f, message: initialMessage || '' }))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

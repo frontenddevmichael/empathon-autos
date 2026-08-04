@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import { ArrowLeft, MessageCircle } from 'lucide-react'
+import { ArrowLeft, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { formatPrice, formatMileage } from '@/lib/format'
 import type { Vehicle, VehicleMedia, LeadType } from '@/types'
@@ -36,6 +36,9 @@ export function VehicleDetail() {
         if (fetchErr || !data) { setError(true); setLoading(false); return }
         const v = data as unknown as VehicleWithMedia
         setVehicle(v)
+        const images = v.media?.filter(m => m.type === 'image') ?? []
+        const primaryIdx = images.findIndex(m => m.is_primary)
+        setActiveImg(primaryIdx >= 0 ? primaryIdx : 0)
         const { data: similarData } = await supabase.from('vehicles')
           .select('*, media:vehicle_media(*)')
           .eq('make', v.make).neq('id', id).neq('status', 'sold').limit(3)
@@ -71,6 +74,14 @@ export function VehicleDetail() {
 
   const images = vehicle.media?.filter(m => m.type === 'image') ?? []
   const activeImage = images[activeImg] ?? images[0]
+  const prevImage = () => {
+    if (images.length < 2) return
+    setActiveImg(i => (i - 1 + images.length) % images.length)
+  }
+  const nextImage = () => {
+    if (images.length < 2) return
+    setActiveImg(i => (i + 1) % images.length)
+  }
   const price = formatPrice(vehicle.price)
   const vehicleAlt = `${vehicle.make} ${vehicle.model}${vehicle.trim ? ` ${vehicle.trim}` : ''} ${vehicle.year}`
   const whatsappMsg = encodeURIComponent(`Hi, I'm interested in the ${vehicleAlt} at Empathon Autos.`)
@@ -102,6 +113,17 @@ export function VehicleDetail() {
             <div style={{ width: '100%', height: '100%', background: 'var(--paper-warm)' }} />
           )}
           <div className={styles.heroOverlay} />
+          {images.length > 1 && (
+            <>
+              <button onClick={prevImage} className={styles.heroArrow} style={{ left: 'var(--space-3)' }} aria-label="Previous image">
+                <ChevronLeft size={22} />
+              </button>
+              <button onClick={nextImage} className={styles.heroArrow} style={{ right: 'var(--space-3)' }} aria-label="Next image">
+                <ChevronRight size={22} />
+              </button>
+              <span className={styles.imageCounter}>{activeImg + 1} / {images.length}</span>
+            </>
+          )}
         </div>
         <div className={styles.heroContent}>
           <Link to="/inventory" className={styles.heroBack}>

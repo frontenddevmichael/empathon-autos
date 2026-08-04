@@ -6,9 +6,29 @@ import { Input } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
 import { TableSkeleton } from '@/components/ui/Skeleton'
 import { useToast } from '@/context/ToastContext'
+import { ClientLogosEditor, type ClientEntry } from '@/components/admin/ClientLogosEditor'
 import { CheckCircle, XCircle, Code, Eye, EyeOff, AlignLeft, Zap } from 'lucide-react'
 
 // ─── JSON helpers ───────────────────────────────────────────────
+
+/** Parse a clients content block body into client entries (name + logo). */
+function parseClientsBody(body: string): ClientEntry[] {
+  const trimmed = body.trim()
+  if (!trimmed) return [{ name: '' }]
+  try {
+    const parsed = JSON.parse(trimmed)
+    if (!Array.isArray(parsed)) return [{ name: '' }]
+    return parsed.map((c: unknown) => {
+      const row = c as { name?: unknown; logo?: unknown }
+      return {
+        name: typeof row?.name === 'string' ? row.name : '',
+        logo: typeof row?.logo === 'string' ? row.logo : null,
+      }
+    })
+  } catch {
+    return [{ name: '' }]
+  }
+}
 
 type JsonStatus =
   | { kind: 'plain' }
@@ -197,7 +217,7 @@ function ContentBodyEditor({ value, onChange }: ContentBodyEditorProps) {
               border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer',
               transition: 'all 150ms var(--ease-out)',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(12,30,58,0.12)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,51,102,0.12)' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'var(--navy-light)' }}
           >
             <Code size={11} /> Format
@@ -266,7 +286,7 @@ function ContentBodyEditor({ value, onChange }: ContentBodyEditorProps) {
         onFocus={e => {
           if (analysis.kind !== 'invalid') {
             e.currentTarget.style.borderColor = 'var(--navy)'
-            e.currentTarget.style.boxShadow = '0 0 0 2px rgba(12,30,58,0.08)'
+            e.currentTarget.style.boxShadow = '0 0 0 2px rgba(0,51,102,0.08)'
           }
         }}
         onBlur={e => {
@@ -462,12 +482,12 @@ export function AdminContent() {
                     style={{
                       padding: '3px 10px', fontSize: 'var(--text-2xs)', fontWeight: 500,
                       color: 'var(--navy)', background: 'var(--navy-light)',
-                      border: '1px solid rgba(12,30,58,0.08)', borderRadius: 'var(--radius-full)',
+                      border: '1px solid rgba(0,51,102,0.08)', borderRadius: 'var(--radius-full)',
                       cursor: 'pointer', whiteSpace: 'nowrap',
                       transition: 'all 150ms var(--ease-out)',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(12,30,58,0.12)'; e.currentTarget.style.borderColor = 'rgba(12,30,58,0.2)' }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'var(--navy-light)'; e.currentTarget.style.borderColor = 'rgba(12,30,58,0.08)' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,51,102,0.12)'; e.currentTarget.style.borderColor = 'rgba(0,51,102,0.2)' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'var(--navy-light)'; e.currentTarget.style.borderColor = 'rgba(0,51,102,0.08)' }}
                   >
                     {t.label}
                   </button>
@@ -476,8 +496,14 @@ export function AdminContent() {
             </div>
           )}
 
-          <ContentBodyEditor value={form.body} onChange={v => setForm(f => ({ ...f, body: v }))} />
-
+          {form.title === 'clients' ? (
+            <ClientLogosEditor
+              value={parseClientsBody(form.body)}
+              onChange={clients => setForm(f => ({ ...f, body: JSON.stringify(clients, null, 2) }))}
+            />
+          ) : (
+            <ContentBodyEditor value={form.body} onChange={v => setForm(f => ({ ...f, body: v }))} />
+          )}
           <div style={{ display: 'flex', gap: 'var(--space-1)', justifyContent: 'flex-end', marginTop: 'var(--space-1)' }}>
             <Button type="button" variant="ghost" onClick={close}>Cancel</Button>
             <Button type="submit" loading={saving}>{editBlock ? 'Save Changes' : 'Create Block'}</Button>

@@ -326,7 +326,7 @@ body::-webkit-scrollbar-thumb { background: var(--stone-light); border-radius: 1
 }
 
 .premium-card:hover {
-  border-color: rgba(12,30,58,0.12);
+  border-color: rgba(0,51,102,0.12);
   box-shadow:
     0 2px 4px rgba(10,10,10,0.03),
     0 8px 20px rgba(10,10,10,0.06),

@@ -24,7 +24,7 @@ export function MouseGlow() {
         inset: 0,
         zIndex: 9999,
         pointerEvents: 'none',
-        background: 'radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), rgba(184,148,31,0.04) 0%, transparent 60%)',
+        background: 'radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), rgba(208,208,208,0.15) 0%, transparent 60%)',
         transition: 'background 0.3s ease',
       }}
     />

@@ -18,8 +18,8 @@ import { Squiggle, HandDots, HandArrow, HandBracket, HandCircle, CarSilhouette, 
 import styles from './Home.module.css'
 
 const FALLBACK_CLIENTS = [
-  { name: 'Radisson Blu Hotel' }, { name: 'Johnvents Group' },
-  { name: 'Dangote Industries' }, { name: 'MTN Nigeria' }, { name: 'Access Bank' },
+  { name: 'Radisson Blu Hotel', logo: null }, { name: 'Johnvents Group', logo: null },
+  { name: 'Dangote Industries', logo: null }, { name: 'MTN Nigeria', logo: null }, { name: 'Access Bank', logo: null },
 ]
 
 const FALLBACK_TESTIMONIALS = [
@@ -31,7 +31,7 @@ const FALLBACK_TESTIMONIALS = [
     quote: 'I was nervous about importing a car but they handled everything. I just showed up and drove away.' },
 ]
 
-interface Client { name: string }
+interface Client { name: string; logo?: string | null }
 
 export function Home() {
   const mounted = useMounted()
@@ -41,7 +41,7 @@ export function Home() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [testimonialsLoaded, setTestimonialsLoaded] = useState(false)
   const { content: homeContent } = useSiteContent('home')
-  const clientNames = parseJsonContent<Client>(homeContent, 'clients', FALLBACK_CLIENTS).map(c => c.name)
+  const clientLogos = parseJsonContent<Client>(homeContent, 'clients', FALLBACK_CLIENTS)
   const cmsImage = getTextContent(homeContent, 'hero_image')
   const heroImages = [
     cmsImage || 'https://images.unsplash.com/photo-1780296269675-169390638617?w=1400&q=90&fit=crop',
@@ -207,7 +207,7 @@ export function Home() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-5)', alignItems: 'center' }}>
             <div>
               <p className={styles.sectionLabel} style={{ color: 'rgba(255,255,255,0.5)' }}>Electric Vehicles</p>
-              <SplitHeading as="h2" style={{ color: 'white' }}>Go Electric. Go Silent.</SplitHeading>
+              <SplitHeading as="h2" style={{ color: 'white' }}>GO Electric. GO Green.</SplitHeading>
               <div className="section-divider" />
               <p style={{ color: 'rgba(255,255,255,0.45)', lineHeight: 1.8, marginBottom: 'var(--space-3)', maxWidth: 480 }}>
                 Premium EVs — Mercedes-Benz EQ series and more. Lower running costs, serious performance, and the latest tech, imported and ready for Nigerian roads.
@@ -242,7 +242,7 @@ export function Home() {
             <div className={styles.explainerCard}>
               <DecoMark variant="shield" size={36} />
               <h3>Walk-In &mdash; In Stock</h3>
-              <p>Come see us at 123 Ajao Road, Ikeja. Test drive whatever catches your eye, ask all the questions you want, and drive home the same day if it feels right. Paperwork included.</p>
+              <p>Come see us at 123 Ajao Road, off Awolowo Way, Ikeja. Test drive whatever catches your eye, ask all the questions you want, and drive home the same day if it feels right. Paperwork included.</p>
               <div className={styles.explainerCta}>
                 <Link to="/inventory?status=walk-in"><RippleButton size="sm" variant="secondary">Browse In-Stock Vehicles</RippleButton></Link>
               </div>
@@ -267,7 +267,7 @@ export function Home() {
           <p className={styles.sectionLabel}>Who We Serve</p>
           <SplitHeading as="h2" className={styles.sectionTitle}>Tailored for You</SplitHeading>
           <div className="section-divider" />
-          <p className={styles.sectionDesc}>One car or a whole fleet — we'll treat you the same: with respect, transparency, and zero nonsense.</p>
+          <p className={styles.sectionDesc}>One car or a whole fleet — we'll treat you the same: with respect, transparency, and straight talk.</p>
 
           <div className={`${styles.explainerGrid} stagger-fade-in`}>
             <div className={styles.explainerCard}>
@@ -301,8 +301,14 @@ export function Home() {
               Organisations that trust us to keep their teams moving.
             </p>
             <div className={styles.trustStrip}>
-              {clientNames.map((name: string, i: number) => (
-                <span key={name} className={styles.trustItem} style={{ animation: `fadeInUp 400ms ${i * 80}ms var(--ease-out) both` }}>{name}</span>
+              {clientLogos.map((client, i) => (
+                client.logo ? (
+                  <span key={client.name} className={styles.trustLogo} style={{ animation: `fadeInUp 400ms ${i * 80}ms var(--ease-out) both` }}>
+                    <img src={client.logo} alt={client.name} loading="lazy" />
+                  </span>
+                ) : (
+                  <span key={client.name} className={styles.trustItem} style={{ animation: `fadeInUp 400ms ${i * 80}ms var(--ease-out) both` }}>{client.name}</span>
+                )
               ))}
             </div>
             <p style={{ textAlign: 'center', fontSize: 'var(--text-sm)', color: 'var(--stone)', marginTop: 'var(--space-2)' }}>

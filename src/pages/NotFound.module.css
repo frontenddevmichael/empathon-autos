@@ -49,7 +49,7 @@
   transition: all 200ms var(--ease-out);
 }
 .btn:hover {
-  box-shadow: 0 4px 12px rgba(12,30,58,0.25);
+  box-shadow: 0 4px 12px rgba(0,51,102,0.25);
   transform: translateY(-1px);
 }
 .btn:active {
@@ -67,7 +67,7 @@
   transition: all 200ms var(--ease-out);
 }
 .btnSecondary:hover {
-  border-color: rgba(12,30,58,0.2);
+  border-color: rgba(0,51,102,0.2);
   background: var(--navy-light);
 }
 .links {

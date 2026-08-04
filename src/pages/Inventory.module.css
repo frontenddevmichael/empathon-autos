@@ -20,6 +20,61 @@
   border-radius: 1px;
 }
 
+/* ── Slim page header (no full hero — inventory is the first thing users see) ── */
+.slimHeader {
+  background: var(--navy);
+  position: relative;
+  overflow: hidden;
+}
+.slimHeader::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,0.05) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 20%, rgba(208,208,208,0.12) 0%, transparent 50%);
+  pointer-events: none;
+}
+.slimHeaderInner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-4);
+  position: relative;
+  z-index: 1;
+}
+.slimHeaderLabel {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: var(--space-1-5);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1-5);
+}
+.slimHeaderLabel::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: rgba(255,255,255,0.25);
+}
+.slimHeaderTitle {
+  color: white;
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  letter-spacing: -0.035em;
+  margin-bottom: var(--space-1);
+}
+.slimHeaderSub {
+  color: rgba(255,255,255,0.45);
+  font-size: var(--text-base);
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .slimHeaderInner { padding: var(--space-4) var(--space-3); }
+}
+
 /* ── Content wrapper (constrains toolbar + grid) ── */
 .content {
   max-width: var(--container-max);
@@ -125,11 +180,11 @@
   min-width: 120px;
 }
 .filterSelect:hover {
-  border-color: rgba(12,30,58,0.2);
+  border-color: rgba(0,51,102,0.2);
 }
 .filterSelect:focus {
   border-color: var(--navy);
-  box-shadow: 0 0 0 2px rgba(12,30,58,0.08);
+  box-shadow: 0 0 0 2px rgba(0,51,102,0.08);
   outline: none;
 }
 
@@ -159,7 +214,7 @@
 .leadCtaInner {
   position: relative;
   padding: var(--space-5);
-  border: 1px solid rgba(12,30,58,0.08);
+  border: 1px solid rgba(0,51,102,0.08);
   border-radius: var(--radius-xl);
   background: var(--paper-warm);
   overflow: hidden;

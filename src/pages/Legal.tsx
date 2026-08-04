@@ -22,7 +22,7 @@ export function Privacy() {
         </div>
         <div>
           <h3>Contact</h3>
-          <p style={{ color: 'var(--stone)', fontSize: 'var(--text-sm)' }}>For privacy-related enquiries, contact us at empathonautos@gmail.com or visit our showroom at 123 Ajao Road, Ikeja, Lagos.</p>
+          <p style={{ color: 'var(--stone)', fontSize: 'var(--text-sm)' }}>For privacy-related enquiries, contact us at empathonautos@gmail.com or visit our showroom at 123 Ajao Road, off Awolowo Way, Ikeja, Lagos.</p>
         </div>
       </div>
     </Section>

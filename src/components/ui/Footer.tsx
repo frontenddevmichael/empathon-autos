@@ -62,7 +62,7 @@ export function Footer() {
         ))}
         <div className={styles.col}>
           <h4>Contact</h4>
-          <p>123 Ajao Road, Ikeja, Lagos</p>
+          <p>123 Ajao Road, off Awolowo Way, Ikeja, Lagos</p>
           <a href="tel:+2348023392388">+234 802 339 2388</a>
           <a href="tel:+2348103832403">+234 810 383 2403</a>
           <a href="mailto:empathonautos@gmail.com">empathonautos@gmail.com</a>

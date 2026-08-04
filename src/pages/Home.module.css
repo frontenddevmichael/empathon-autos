@@ -1,5 +1,5 @@
 .hero {
-  min-height: 100vh;
+  min-height: 50vh;
   background: var(--navy);
   display: flex;
   align-items: center;
@@ -61,16 +61,16 @@
   background: linear-gradient(
     to right,
     var(--navy) 0%,
-    rgba(12,30,58,0.92) 35%,
-    rgba(12,30,58,0.65) 60%,
-    rgba(12,30,58,0.15) 100%
+    rgba(0,51,102,0.92) 35%,
+    rgba(0,51,102,0.65) 60%,
+    rgba(0,51,102,0.15) 100%
   ),
   linear-gradient(
     to bottom,
-    rgba(12,30,58,0.2) 0%,
+    rgba(0,51,102,0.2) 0%,
     transparent 30%,
     transparent 70%,
-    rgba(12,30,58,0.4) 100%
+    rgba(0,51,102,0.4) 100%
   );
   pointer-events: none;
 }
@@ -103,21 +103,21 @@
 }
 
 .heroTitle {
-  font-size: clamp(2.5rem, 7vw, 5rem);
+  font-size: clamp(2rem, 5.5vw, 3.75rem);
   font-weight: 800;
   letter-spacing: -0.045em;
   line-height: 0.92;
   color: white;
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-1-5);
   max-width: 700px;
 }
 
 .heroSub {
-  font-size: var(--text-lg);
+  font-size: var(--text-base);
   color: rgba(255,255,255,0.4);
   max-width: 460px;
-  line-height: 1.8;
-  margin-bottom: var(--space-4);
+  line-height: 1.7;
+  margin-bottom: var(--space-2-5);
 }
 
 .heroCtas {
@@ -131,7 +131,7 @@
   font-size: var(--text-sm);
   display: flex;
   gap: var(--space-3);
-  margin-top: var(--space-4);
+  margin-top: var(--space-2-5);
   flex-wrap: wrap;
 }
 
@@ -150,9 +150,9 @@
   background: linear-gradient(
     to bottom,
     var(--navy) 0%,
-    #1a2f4e 25%,
-    #3a4f6e 50%,
-    #8a9bb0 75%,
+    #003366 25%,
+    #33557f 50%,
+    #88a0bf 75%,
     var(--paper-light) 100%
   );
   position: relative;
@@ -177,13 +177,13 @@
     background: linear-gradient(
       to right,
       var(--navy) 0%,
-      rgba(12,30,58,0.88) 50%,
-      rgba(12,30,58,0.3) 100%
+      rgba(0,51,102,0.88) 50%,
+      rgba(0,51,102,0.3) 100%
     ),
     linear-gradient(
       to bottom,
       transparent 0%,
-      rgba(12,30,58,0.4) 100%
+      rgba(0,51,102,0.4) 100%
     );
   }
   .heroTransition {
@@ -267,7 +267,7 @@
   box-shadow: 0 1px 3px rgba(10,10,10,0.03);
 }
 .explainerCard:hover {
-  border-color: rgba(12,30,58,0.1);
+  border-color: rgba(0,51,102,0.1);
   box-shadow: 0 8px 24px rgba(10,10,10,0.06);
   transform: translateY(-2px);
 }
@@ -309,12 +309,38 @@
   transition: all 200ms var(--ease-out);
 }
 .trustItem:hover {
-  border-color: rgba(12,30,58,0.12);
+  border-color: rgba(0,51,102,0.12);
   color: var(--navy);
 }
 
+.trustLogo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  filter: grayscale(1);
+  opacity: 0.75;
+  transition: all 250ms var(--ease-out);
+}
+.trustLogo:hover {
+  filter: grayscale(0);
+  opacity: 1;
+  border-color: rgba(0,51,102,0.25);
+}
+.trustLogo img {
+  max-height: 36px;
+  max-width: 140px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
 .evSection {
-  background: linear-gradient(135deg, #0a1628 0%, var(--navy) 60%, #1a2f4e 100%);
+  background: linear-gradient(135deg, #00264d 0%, var(--navy) 60%, #00407f 100%);
   padding: var(--space-8) var(--space-4);
   position: relative;
   overflow: hidden;
@@ -323,12 +349,12 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 80% 30%, rgba(184,148,31,0.12) 0%, transparent 55%);
+  background: radial-gradient(ellipse at 80% 30%, rgba(208,208,208,0.08) 0%, transparent 55%);
   pointer-events: none;
 }
 
 .ctaSection {
-  background: linear-gradient(135deg, var(--navy) 0%, #0a1628 50%, #0c1e3a 100%);
+  background: linear-gradient(135deg, var(--navy) 0%, #00264d 50%, #003366 100%);
   text-align: center;
   padding: var(--space-9) var(--space-4);
   position: relative;
@@ -337,8 +363,8 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 30% 50%, rgba(184,148,31,0.1) 0%, transparent 50%),
-              radial-gradient(ellipse at 70% 50%, rgba(12,30,58,0.4) 0%, transparent 50%);
+  background: radial-gradient(ellipse at 30% 50%, rgba(208,208,208,0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 50%, rgba(0,51,102,0.4) 0%, transparent 50%);
 }
 .ctaSection h2 {
   color: white;
@@ -397,7 +423,7 @@
   transition: all 300ms var(--ease-out);
 }
 .testimonialCard:hover {
-  border-color: rgba(12,30,58,0.08);
+  border-color: rgba(0,51,102,0.08);
 }
 .testimonialQuote {
   font-size: var(--text-sm);
@@ -423,7 +449,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-hover, #162d52) 100%);
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-hover, #00407f) 100%);
   color: white;
   display: flex;
   align-items: center;

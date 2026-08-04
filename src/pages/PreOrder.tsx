@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { ArrowRight } from 'lucide-react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { Input, TextArea } from '@/components/ui/Input'
 import { Section } from '@/components/PageLayout'
@@ -8,6 +10,10 @@ import { ShieldCheck, HandDots } from '@/components/DecoSvgs'
 import { SplitHeading } from '@/components/SplitHeading'
 import { RippleButton } from '@/components/RippleButton'
 import { HeroSection } from '@/components/HeroSection'
+import { VehicleCard } from '@/components/ui/VehicleCard'
+import { VehicleCardSkeleton } from '@/components/ui/Skeleton'
+import { useMounted } from '@/hooks/useMounted'
+import type { Vehicle, VehicleMedia } from '@/types'
 
 const steps = [
   { icon: 'shield', title: '1. Tell Us What You Want', desc: 'Make, model, trim, colour, year, budget — the more specific you are, the better we can hunt.' },
@@ -18,8 +24,34 @@ const steps = [
 
 export function PreOrder() {
   const { showToast } = useToast()
+  const mounted = useMounted()
+  const [vehicles, setVehicles] = useState<(Vehicle & { media: VehicleMedia[] })[]>([])
+  const [loading, setLoading] = useState(true)
   const [form, setForm] = useState({ name: '', email: '', phone: '', make: '', model: '', notes: '', honeypot: '' })
   const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    if (!isSupabaseConfigured()) { setLoading(false); return }
+    ;(async () => {
+      try {
+        const { data, error } = await supabase
+          .from('vehicles')
+          .select('*, media:vehicle_media(*)')
+          .eq('status', 'pre-order')
+          .limit(6)
+        if (mounted.current) {
+          if (error) {
+            console.error('[PreOrder] Failed to load pre-order vehicles:', error.message)
+          } else if (data) {
+            setVehicles(data as unknown as (Vehicle & { media: VehicleMedia[] })[])
+          }
+        }
+      } catch (err) {
+        console.error('[PreOrder] Unexpected error loading vehicles:', err)
+      }
+      if (mounted.current) setLoading(false)
+    })()
+  }, [mounted])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -54,6 +86,37 @@ export function PreOrder() {
         subtitle="Can't find that exact spec on the lot? Tell us what you want and we'll track it down through our global network."
         deco="circle"
       />
+
+      <Section style={{ position: 'relative' }}>
+        <ShieldCheck className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', opacity: 0.04 }} size={48} />
+        <p style={{ fontSize: 'var(--text-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--navy)', marginBottom: 'var(--space-1)' }}>Pre-Order Fleet</p>
+        <SplitHeading as="h2">Inbound &amp; Available to Order</SplitHeading>
+        <div className="section-divider" />
+        <p style={{ color: 'var(--stone)', marginBottom: 'var(--space-4)', maxWidth: 560, lineHeight: 1.8 }}>
+          These vehicles are already sourced or inbound. Reserve one with a deposit, or tell us about something completely different below.
+        </p>
+
+        {loading ? (
+          <div className="stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-4)', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
+            {Array.from({ length: 3 }).map((_, i) => <VehicleCardSkeleton key={i} />)}
+          </div>
+        ) : vehicles.length > 0 ? (
+          <>
+            <div className="scroll-reveal stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-4)', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
+              {vehicles.map(v => <VehicleCard key={v.id} vehicle={v} />)}
+            </div>
+            <div style={{ textAlign: 'center', marginTop: 'var(--space-3)' }}>
+              <Link to="/inventory?status=pre-order">
+                <RippleButton variant="secondary">View All Pre-Order Vehicles <ArrowRight size={14} /></RippleButton>
+              </Link>
+            </div>
+          </>
+        ) : (
+          <div style={{ textAlign: 'center', padding: 'var(--space-5)', border: '1px dashed var(--border)', borderRadius: 'var(--radius-xl)', color: 'var(--stone)' }}>
+            No pre-order vehicles right now — tell us what you want below and we'll find it.
+          </div>
+        )}
+      </Section>
 
       <Section style={{ position: 'relative' }}>
         <ShieldCheck className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', opacity: 0.04 }} size={48} />

@@ -18,7 +18,7 @@ export function LoadingScreen({ height = '60vh' }: { height?: string }) {
           <div style={{
             position: 'absolute', inset: -12,
             borderRadius: '50%',
-            border: '2px solid rgba(12,30,58,0.08)',
+            border: '2px solid rgba(0,51,102,0.08)',
             animation: 'loadingRing 1.5s ease-in-out infinite',
           }} />
           <style>{`

@@ -7,11 +7,11 @@ export function NotFound() {
     <div className={styles.container}>
       <div className={styles.illustration}>
         <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: 120, height: 120, margin: '0 auto var(--space-3)' }}>
-          <circle cx="60" cy="60" r="56" stroke="rgba(12,30,58,0.08)" strokeWidth="2" />
-          <path d="M40 50 L60 40 L80 50 M40 60 L60 50 L80 60 M40 70 L60 60 L80 70" stroke="rgba(12,30,58,0.12)" strokeWidth="2" strokeLinecap="round" />
-          <circle cx="48" cy="44" r="3" fill="rgba(12,30,58,0.15)" />
-          <circle cx="72" cy="44" r="3" fill="rgba(12,30,58,0.15)" />
-          <path d="M52 52 C56 48, 64 48, 68 52" stroke="rgba(12,30,58,0.2)" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="60" cy="60" r="56" stroke="rgba(0,51,102,0.08)" strokeWidth="2" />
+          <path d="M40 50 L60 40 L80 50 M40 60 L60 50 L80 60 M40 70 L60 60 L80 70" stroke="rgba(0,51,102,0.12)" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="48" cy="44" r="3" fill="rgba(0,51,102,0.15)" />
+          <circle cx="72" cy="44" r="3" fill="rgba(0,51,102,0.15)" />
+          <path d="M52 52 C56 48, 64 48, 68 52" stroke="rgba(0,51,102,0.2)" strokeWidth="2" strokeLinecap="round" />
           <path d="M52 58 Q60 62 68 58" stroke="rgba(197,48,48,0.2)" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       </div>

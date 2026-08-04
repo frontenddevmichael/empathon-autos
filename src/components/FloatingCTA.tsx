@@ -47,7 +47,7 @@ export function FloatingCTA({ onEnquire, showEnquire = true }: FloatingCTAProps)
             width: 40,
             height: 40,
             borderRadius: '50%',
-            border: '1px solid rgba(12,30,58,0.1)',
+            border: '1px solid rgba(0,51,102,0.1)',
             background: 'white',
             color: 'var(--navy)',
             cursor: 'pointer',
@@ -60,7 +60,7 @@ export function FloatingCTA({ onEnquire, showEnquire = true }: FloatingCTAProps)
             transform: showBackToTop ? 'translateY(0)' : 'translateY(10px)',
           }}
           onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--navy)'; e.currentTarget.style.marginTop = '-2px' }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(12,30,58,0.1)'; e.currentTarget.style.marginTop = '0' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,51,102,0.1)'; e.currentTarget.style.marginTop = '0' }}
       >
         <ChevronUp size={18} />
       </button>
@@ -136,7 +136,7 @@ export function FloatingCTA({ onEnquire, showEnquire = true }: FloatingCTAProps)
               justifyContent: 'center',
               boxShadow: expanded
                 ? '0 4px 16px rgba(197,48,48,0.25)'
-                : '0 4px 16px rgba(12,30,58,0.2)',
+                : '0 4px 16px rgba(0,51,102,0.2)',
               transition: 'all 250ms var(--ease-out)',
               transform: expanded ? 'rotate(45deg)' : 'rotate(0)',
             }}

@@ -49,13 +49,13 @@ export function AdminLogin() {
           <Button type="submit" loading={loading} fullWidth style={{ marginTop: 'var(--space-2)' }}>Sign In</Button>
         </form>
 
-        <div style={{ padding: 'var(--space-3)', background: 'var(--navy-light)', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(12,30,58,0.1)', fontSize: 'var(--text-xs)', color: 'var(--navy)', lineHeight: 1.7 }}>
+        <div style={{ padding: 'var(--space-3)', background: 'var(--navy-light)', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(0,51,102,0.1)', fontSize: 'var(--text-xs)', color: 'var(--navy)', lineHeight: 1.7 }}>
           <p style={{ fontWeight: 700, marginBottom: 4 }}>How to get admin access:</p>
           <ol style={{ paddingLeft: 14, margin: 0 }}>
             <li>Go to your Supabase dashboard → <strong>Authentication → Users</strong></li>
             <li>Click <strong>Add User</strong> and create an admin account with email + password</li>
             <li>Go to <strong>SQL Editor</strong> and run:
-              <code style={{ display: 'block', margin: '6px 0', padding: '8px 10px', background: 'rgba(12,30,58,0.06)', borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-2xs)', whiteSpace: 'pre-wrap' }}>UPDATE profiles SET role = 'super_admin' WHERE id = (SELECT id FROM auth.users WHERE email = 'your-admin@email.com' LIMIT 1);</code>
+              <code style={{ display: 'block', margin: '6px 0', padding: '8px 10px', background: 'rgba(0,51,102,0.06)', borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-2xs)', whiteSpace: 'pre-wrap' }}>UPDATE profiles SET role = 'super_admin' WHERE id = (SELECT id FROM auth.users WHERE email = 'your-admin@email.com' LIMIT 1);</code>
             </li>
             <li>Log in here with that email + password</li>
           </ol>

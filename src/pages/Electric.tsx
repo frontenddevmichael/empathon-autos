@@ -20,7 +20,7 @@ const EV_MODELS = [
 
 const BENEFITS = [
   { icon: Battery, title: 'Long Real-World Range', desc: 'Modern EQs deliver 400–700 km on a single charge — plenty for Lagos and beyond.' },
-  { icon: Zap, title: 'Serious Performance', desc: 'Instant torque, silent drivetrain, and 0–100 in under 5 seconds on flagship models.' },
+  { icon: Zap, title: 'Serious Performance', desc: 'Instant torque, a green, whisper-quiet drivetrain, and 0–100 in under 5 seconds on flagship models.' },
   { icon: Leaf, title: 'Lower Running Costs', desc: 'No fuel bills. Charging costs a fraction, and fewer moving parts means fewer repairs.' },
   { icon: Gauge, title: 'Tech That Leads', desc: 'MBUX hyperscreen, over-the-air updates, and autonomous-ready driving aids.' },
 ]
@@ -59,7 +59,7 @@ export function Electric() {
           { url: 'https://images.unsplash.com/photo-1639060015191-57b7c025941d?w=1400&q=90&fit=crop' },
         ]}
         label="Electric Vehicles"
-        title="Go Electric. Go Silent."
+        title="GO Electric. GO Green."
         subtitle="Premium electric vehicles — Mercedes-Benz EQ series and more — imported, prepped, and ready for Nigerian roads."
         deco="circle"
       />

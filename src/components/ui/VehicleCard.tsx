@@ -50,7 +50,7 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
               {/* Premium overlay gradient on hover */}
               <div style={{
                 position: 'absolute', inset: 0,
-                background: 'linear-gradient(to top, rgba(12,30,58,0.4) 0%, transparent 60%)',
+                background: 'linear-gradient(to top, rgba(0,51,102,0.4) 0%, transparent 60%)',
                 opacity: 0,
                 transition: 'opacity 400ms var(--ease-out)',
                 pointerEvents: 'none',

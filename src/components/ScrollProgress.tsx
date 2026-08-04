@@ -39,7 +39,7 @@ export function ScrollProgress() {
         zIndex: 9999,
         pointerEvents: 'none',
         transition: 'width 100ms linear',
-        boxShadow: '0 0 8px rgba(184,148,31,0.3)',
+        boxShadow: '0 0 8px rgba(208,208,208,0.6)',
       }}
       role="progressbar"
       aria-valuenow={Math.round(progress * 100)}

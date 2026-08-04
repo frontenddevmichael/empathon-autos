@@ -9,7 +9,7 @@ import { RippleButton } from '@/components/RippleButton'
 import { HeroSection } from '@/components/HeroSection'
 
 const contactDetails = [
-  { icon: MapPin, label: 'Address', value: '123 Ajao Road, Ikeja, Lagos' },
+  { icon: MapPin, label: 'Address', value: '123 Ajao Road, off Awolowo Way, Ikeja, Lagos' },
   { icon: Phone, label: 'Phone', value: '+234 802 339 2388 / +234 810 383 2403' },
   { icon: Mail, label: 'Email', value: 'empathonautos@gmail.com' },
   { icon: Clock, label: 'Hours', value: 'Mon\u2013Sat, 8:00 AM \u2013 6:00 PM' },

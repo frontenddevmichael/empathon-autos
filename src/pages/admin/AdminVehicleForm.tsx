@@ -6,6 +6,7 @@ import { Input, Select, TextArea } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { MediaUploader } from '@/components/admin/MediaUploader'
 import { useToast } from '@/context/ToastContext'
+import { Star, Trash2 } from 'lucide-react'
 
 const TRANSMISSION_OPTIONS = [
   { value: 'automatic', label: 'Automatic' }, { value: 'manual', label: 'Manual' },
@@ -47,7 +48,7 @@ export function AdminVehicleForm() {
   const isEdit = !!id
   const [form, setForm] = useState(emptyForm)
   const [featureInput, setFeatureInput] = useState('')
-  const [uploadedMedia, setUploadedMedia] = useState<{ url: string }[]>([])
+  const [uploadedMedia, setUploadedMedia] = useState<VehicleMedia[]>([])
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -65,7 +66,7 @@ export function AdminVehicleForm() {
             transmission: v.transmission, fuel_type: v.fuel_type, condition: v.condition,
             body_type: v.body_type, status: v.status,
           })
-          if (v.media) setUploadedMedia(v.media.map(m => ({ url: m.url })))
+          if (v.media) setUploadedMedia(v.media)
         }
       } catch { showToast('Failed to load vehicle', 'error') }
     })()
@@ -104,6 +105,29 @@ export function AdminVehicleForm() {
 
   const removeFeature = (i: number) => {
     setForm(f => ({ ...f, features: f.features.filter((_, idx) => idx !== i) }))
+  }
+
+  const setPrimary = async (media: VehicleMedia) => {
+    if (!media.id) { showToast('Please save the vehicle first, then set the show image', 'error'); return }
+    const { error: clearErr } = await supabase.from('vehicle_media')
+      .update({ is_primary: false })
+      .eq('vehicle_id', id!)
+      .eq('type', 'image')
+    if (clearErr) { showToast('Failed to update media', 'error'); return }
+    const { error: setErr } = await supabase.from('vehicle_media')
+      .update({ is_primary: true })
+      .eq('id', media.id)
+    if (setErr) { showToast('Failed to set show image', 'error'); return }
+    setUploadedMedia(prev => prev.map(m => ({ ...m, is_primary: m.id === media.id })))
+    showToast('Show image updated')
+  }
+
+  const removeMedia = async (mediaId: string) => {
+    if (!mediaId) return
+    const { error } = await supabase.from('vehicle_media').delete().eq('id', mediaId)
+    if (error) { showToast('Failed to remove media', 'error'); return }
+    setUploadedMedia(prev => prev.filter(m => m.id !== mediaId))
+    showToast('Media removed')
   }
 
   return (
@@ -149,12 +173,50 @@ export function AdminVehicleForm() {
         {isEdit && (
           <div>
             <p style={{ fontSize: 'var(--text-sm)', fontWeight: 600, marginBottom: 'var(--space-1)' }}>Media</p>
-            <div style={{ display: 'flex', gap: 'var(--space-1)', flexWrap: 'wrap', marginBottom: 'var(--space-1)' }}>
-              {uploadedMedia.map((m, i) => (
-                <img key={i} src={m.url} alt="" style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 'var(--radius-sm)' }} />
-              ))}
-            </div>
-            <MediaUploader vehicleId={id} onUploaded={m => setUploadedMedia(p => [...p, m])} />
+            {uploadedMedia.length > 0 && (
+              <div style={{ display: 'flex', gap: 'var(--space-1-5)', flexWrap: 'wrap', marginBottom: 'var(--space-1-5)' }}>
+                {uploadedMedia.map((m, i) => (
+                  <div key={m.id || i} style={{ width: 120 }}>
+                    <div style={{ position: 'relative', borderRadius: 'var(--radius-md)', overflow: 'hidden', border: m.is_primary ? '2px solid var(--navy)' : '1px solid var(--border)' }}>
+                      {m.type === 'video' ? (
+                        <video src={m.url} style={{ width: '100%', height: 84, objectFit: 'cover' }} muted />
+                      ) : (
+                        <img src={m.url} alt="" style={{ width: '100%', height: 84, objectFit: 'cover', display: 'block' }} />
+                      )}
+                      {m.is_primary && (
+                        <span style={{ position: 'absolute', top: 4, left: 4, display: 'inline-flex', alignItems: 'center', gap: 3, padding: '2px 6px', borderRadius: 'var(--radius-full)', background: 'var(--navy)', color: '#fff', fontSize: 'var(--text-2xs)', fontWeight: 700 }}>
+                          <Star size={9} fill="currentColor" /> Show Image
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', gap: 4, marginTop: 4, justifyContent: 'space-between' }}>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        style={{ fontSize: 'var(--text-2xs)', padding: '2px 6px', height: 'auto', flex: 1 }}
+                        onClick={() => setPrimary(m)}
+                        disabled={m.is_primary}
+                        title={m.is_primary ? 'This is the show image' : 'Set as the show image (renders first on cards)'}
+                      >
+                        {m.is_primary ? 'Show Image' : 'Set as Show Image'}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        style={{ fontSize: 'var(--text-2xs)', padding: '2px 6px', height: 'auto', color: 'var(--error)', flexShrink: 0 }}
+                        onClick={() => removeMedia(m.id)}
+                        aria-label="Remove media"
+                      >
+                        <Trash2 size={12} />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <MediaUploader vehicleId={id} onUploaded={m => setUploadedMedia(p => [...p, m as unknown as VehicleMedia])} multiple />
           </div>
         )}
         {!isEdit && (

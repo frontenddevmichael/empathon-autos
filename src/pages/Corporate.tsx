@@ -1,53 +1,73 @@
 ﻿import { useState } from 'react'
-import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { HeartPulse, Shield, Landmark, Truck, Hotel, Flame, Check, ArrowRight } from 'lucide-react'
 import { HeroSection } from '@/components/HeroSection'
 import { SplitHeading } from '@/components/SplitHeading'
 import { RippleButton } from '@/components/RippleButton'
 import { ParallaxSection } from '@/components/ParallaxSection'
-import { Input, TextArea } from '@/components/ui/Input'
 import { Section } from '@/components/PageLayout'
-import { DecoMark } from '@/components/DecoMark'
-import { useToast } from '@/context/ToastContext'
 import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
 import { ShieldCheck } from '@/components/DecoSvgs'
+import { LeadForm } from '@/components/LeadForm'
 
 interface Client {
   name: string
   desc: string
+  logo?: string | null
 }
+
+const FLEET_DEALS = [
+  {
+    sector: 'Hospital & Health',
+    icon: HeartPulse,
+    vehicles: 'Comfortable SUVs & crossovers for staff transport, rugged pickups for medical supplies.',
+    price: 'From ₦18M per unit · volume pricing at 5+ units',
+    benefits: ['Temperature-friendly vehicle specs', 'Priority servicing windows', 'Fuel-efficient fleets for daily routes'],
+  },
+  {
+    sector: 'Police / Security / Government',
+    icon: Shield,
+    vehicles: 'Durable 4x4 SUVs and utility vehicles built for heavy daily use.',
+    price: 'From ₦22M per unit · maintenance packages available',
+    benefits: ['High-mileage durability', 'Custom fitting & decals support', 'Bundled servicing contracts'],
+  },
+  {
+    sector: 'Banks & Finance',
+    icon: Landmark,
+    vehicles: 'Executive sedans and SUVs for relationship managers and senior staff.',
+    price: 'From ₦25M per unit · branded fleet options',
+    benefits: ['Executive-grade comfort', 'Resale-value planning', 'Consistent delivery timelines'],
+  },
+  {
+    sector: 'Logistics & Transport',
+    icon: Truck,
+    vehicles: 'Vans, pickups, and light trucks matched to your route and load.',
+    price: 'From ₦15M per unit · bulk-tier discounts',
+    benefits: ['Workhorse reliability', 'Parts & maintenance support', 'Scalable fleet expansion'],
+  },
+  {
+    sector: 'Hospitality',
+    icon: Hotel,
+    vehicles: 'Luxury SUVs and guest shuttles that keep your brand front-of-mind.',
+    price: 'From ₦20M per unit · welcome-pack options',
+    benefits: ['Guest-ready presentation', 'Discreet after-sales support', 'White-glove handover'],
+  },
+  {
+    sector: 'Oil & Gas / Energy',
+    icon: Flame,
+    vehicles: 'Heavy-duty 4x4s and premium SUVs for site and executive use.',
+    price: 'From ₦30M per unit · custom specs',
+    benefits: ['Rugged off-road capability', 'Hardened spec options', 'Dedicated account manager'],
+  },
+]
 
 export function Corporate() {
   const { content: clientContent } = useSiteContent('corporate')
   const realClients = parseJsonContent<Client>(clientContent, 'clients', [
-    { name: 'Radisson Blu Hotel', desc: 'Fleet partner since 2021' },
-    { name: 'Johnvents Group', desc: 'Corporate account' },
-    { name: 'Dangote Industries', desc: 'Executive fleet provider' },
+    { name: 'Radisson Blu Hotel', desc: 'Fleet partner since 2021', logo: null },
+    { name: 'Johnvents Group', desc: 'Corporate account', logo: null },
+    { name: 'Dangote Industries', desc: 'Executive fleet provider', logo: null },
   ])
-  const { showToast } = useToast()
-  const [form, setForm] = useState({ name: '', email: '', phone: '', company: '', fleetSize: '', message: '', honeypot: '' })
-  const [saving, setSaving] = useState(false)
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (form.honeypot) return
-    if (!form.name || !form.email || !form.phone) return
-    if (!isSupabaseConfigured()) {
-      showToast('Quote form is not available right now. Please try again later.', 'error')
-      return
-    }
-    setSaving(true)
-    const { error } = await supabase.from('leads').insert({
-      type: 'corporate-quote',
-      name: form.name, email: form.email, phone: form.phone,
-      company: form.company || null,
-      message: `Fleet size: ${form.fleetSize || 'Not specified'}. ${form.message || ''}`,
-      source_page: '/corporate',
-    })
-    setSaving(false)
-    if (error) { showToast('Failed to submit', 'error'); return }
-    showToast('Quote request submitted — our corporate sales team will reach out shortly')
-    setForm({ name: '', email: '', phone: '', company: '', fleetSize: '', message: '', honeypot: '' })
-  }
+  const [leadSector, setLeadSector] = useState<string | null>(null)
 
   return (
     <>
@@ -63,48 +83,40 @@ export function Corporate() {
       />
 
       <ParallaxSection>
-      <Section>
-        <div className="scroll-reveal responsive-grid-2 stagger-fade-in" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', alignItems: 'start' }}>
-          <div>
-            <SplitHeading as="h2">Corporate Fleet Programme</SplitHeading>
-            <div className="section-divider" />
-            <p style={{ color: 'var(--stone)', marginTop: 'var(--space-1)' }}>
-              Whether you need one car or fifty, we make it straightforward. No wasted time, no middlemen, no fuss.
-            </p>
-            <ul className="stagger-fade-in" style={{ marginTop: 'var(--space-2)', display: 'flex', flexDirection: 'column', gap: 'var(--space-1-5)' }}>
-              {[
-                { title: 'Better Pricing', desc: 'The more you buy, the better the deal. Simple.' },
-                { title: 'One Contact Person', desc: 'No phone tennis. You deal with one person who knows your business.' },
-                { title: 'After-Sales That Works', desc: "Servicing, warranty, coordination — we don't disappear after delivery." },
-                { title: 'We Source Anywhere', desc: "Japan, Dubai, Europe, US — wherever the right vehicle is, we'll find it." },
-              ].map(item => (
-                <li key={item.title} style={{ display: 'flex', gap: 'var(--space-1-5)' }}>
-                  <DecoMark variant="shield" size={28} />
-                  <div>
-                    <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>{item.title}</p>
-                    <p style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)' }}>{item.desc}</p>
+        <Section>
+          <p style={{ fontSize: 'var(--text-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--navy)', marginBottom: 'var(--space-1)' }}>Fleet Deals by Sector</p>
+          <SplitHeading as="h2">Packages Built Around Your Organisation</SplitHeading>
+          <div className="section-divider" />
+          <p style={{ color: 'var(--stone)', marginTop: 'var(--space-1)', maxWidth: 620, lineHeight: 1.8, marginBottom: 'var(--space-4)' }}>
+            Whether you need one car or fifty, we make it straightforward. Pick your sector, review the package, and request a tailored quote — we'll take it from there.
+          </p>
+
+          <div className="scroll-reveal stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-3)', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
+            {FLEET_DEALS.map(deal => (
+              <div key={deal.sector} style={{ display: 'flex', flexDirection: 'column', padding: 'var(--space-4)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', background: 'var(--surface)', transition: 'all 300ms var(--ease-out)', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = 'rgba(0,51,102,0.2)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.08)' }}
+                onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.borderColor = ''; e.currentTarget.style.boxShadow = '' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1-5)', marginBottom: 'var(--space-1-5)' }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-md)', background: 'var(--navy-light)', color: 'var(--navy)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <deal.icon size={22} />
                   </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div style={{ padding: 'var(--space-3)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', background: 'var(--surface)' }}>
-            <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: 'var(--space-2)' }}>Request a Corporate Quote</h3>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1-5)' }}>
-              <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
-                <input tabIndex={-1} value={form.honeypot} onChange={e => setForm(f => ({ ...f, honeypot: e.target.value }))} />
+                  <h3 style={{ fontSize: 'var(--text-lg)', letterSpacing: '-0.02em' }}>{deal.sector}</h3>
+                </div>
+                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)', lineHeight: 1.7, marginBottom: 'var(--space-2)' }}>{deal.vehicles}</p>
+                <p style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--navy)', marginBottom: 'var(--space-2)', padding: 'var(--space-1-5)', background: 'var(--paper-warm)', borderRadius: 'var(--radius-md)' }}>{deal.price}</p>
+                <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)', marginBottom: 'var(--space-2-5)', flex: 1 }}>
+                  {deal.benefits.map(b => (
+                    <li key={b} style={{ display: 'flex', gap: 'var(--space-1)', fontSize: 'var(--text-sm)', color: 'var(--stone)' }}>
+                      <Check size={14} style={{ color: 'var(--navy)', flexShrink: 0, marginTop: 3 }} /> {b}
+                    </li>
+                  ))}
+                </ul>
+                <RippleButton size="sm" onClick={() => setLeadSector(deal.sector)}>Request This Package <ArrowRight size={14} /></RippleButton>
               </div>
-              <Input label="Full Name *" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required />
-              <Input label="Email *" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required />
-              <Input label="Phone *" type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} required />
-              <Input label="Company" value={form.company} onChange={e => setForm(f => ({ ...f, company: e.target.value }))} />
-              <Input label="Fleet Size" type="number" value={form.fleetSize} onChange={e => setForm(f => ({ ...f, fleetSize: e.target.value }))} min={1} />
-              <TextArea label="Message" value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} rows={3} />
-              <RippleButton type="submit" loading={saving}>Submit Quote Request</RippleButton>
-            </form>
+            ))}
           </div>
-        </div>
-      </Section>
+        </Section>
       </ParallaxSection>
 
       {realClients.length > 0 && (
@@ -114,17 +126,34 @@ export function Corporate() {
           <p style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--navy)', marginBottom: 'var(--space-2)', textAlign: 'center' }}>Trusted By</p>
           <SplitHeading as="h2" style={{ textAlign: 'center', marginBottom: 'var(--space-3)' }}>Our Corporate Clients</SplitHeading>
           <div className="section-divider" />
-          <div className="scroll-reveal stagger-fade-in" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-3)', justifyContent: 'center' }}>
+          <div className="scroll-reveal stagger-fade-in" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-3)', justifyContent: 'center', alignItems: 'center' }}>
             {realClients.map(c => (
-              <div key={c.name} style={{ padding: 'var(--space-2) var(--space-3)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', background: 'var(--surface)', textAlign: 'center', minWidth: 180 }}>
-                <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>{c.name}</p>
-                <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>{c.desc}</p>
-              </div>
+              c.logo ? (
+                <div key={c.name} style={{ padding: 'var(--space-2) var(--space-3)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', background: 'var(--surface)', textAlign: 'center', minWidth: 180, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                  <img src={c.logo} alt={c.name} loading="lazy" style={{ maxHeight: 40, maxWidth: 140, width: 'auto', height: 'auto', objectFit: 'contain', filter: 'grayscale(1)', opacity: 0.8, transition: 'all 250ms var(--ease-out)' }}
+                    onMouseEnter={e => { e.currentTarget.style.filter = 'grayscale(0)'; e.currentTarget.style.opacity = '1' }}
+                    onMouseLeave={e => { e.currentTarget.style.filter = 'grayscale(1)'; e.currentTarget.style.opacity = '0.8' }}
+                  />
+                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>{c.desc}</p>
+                </div>
+              ) : (
+                <div key={c.name} style={{ padding: 'var(--space-2) var(--space-3)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', background: 'var(--surface)', textAlign: 'center', minWidth: 180 }}>
+                  <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>{c.name}</p>
+                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>{c.desc}</p>
+                </div>
+              )
             ))}
           </div>
         </Section>
         </ParallaxSection>
       )}
+
+      <LeadForm
+        open={leadSector !== null}
+        onClose={() => setLeadSector(null)}
+        type="corporate-quote"
+        initialMessage={leadSector ? `Fleet package enquiry — ${leadSector}` : undefined}
+      />
     </>
   )
 }

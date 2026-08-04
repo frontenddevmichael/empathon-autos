@@ -46,7 +46,7 @@ export function About() {
           <div className="scroll-reveal-child">
             <p style={{ fontSize: 'var(--text-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--navy)', marginBottom: 'var(--space-1)' }}>What We're About</p>
             <p style={{ fontSize: 'var(--text-lg)', lineHeight: 1.7 }}>
-              We bring in solid vehicles from markets around the world — Japan, Dubai, Europe, the US — and help people in Lagos find the right one without the usual car dealer nonsense. No hidden fees, no runaround, just straight talk.
+              We bring in solid vehicles from markets around the world — Japan, Dubai, Europe, the US — and help people in Lagos find the right one without the usual dealer runaround. No hidden fees, no shortcuts, just straight talk.
             </p>
           </div>
           <div className="scroll-reveal-child" style={{ ['--reveal-delay' as string]: '100ms' }}>
@@ -66,7 +66,7 @@ export function About() {
         <Squiggle style={{ marginTop: '-4px', marginBottom: 'var(--space-2)' }} />
         <div className="responsive-grid-4 stagger-fade-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-3)' }}>
           {[
-            { title: 'No Nonsense', desc: 'Clear pricing. No bait-and-switch. What you see is what you pay.' },
+            { title: 'Straight With You', desc: 'Clear pricing, honest advice, and no surprises. What we promise is what you get.' },
             { title: 'Your Side, Always', desc: "We're not here to push a sale. We're here to find the right fit." },
             { title: 'Keep Getting Better', desc: 'Every car, every customer, every interaction — we learn and improve.' },
             { title: 'Do It Properly', desc: "From sourcing to handover, we sweat the details so you don't have to." },

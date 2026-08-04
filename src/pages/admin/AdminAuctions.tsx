@@ -167,17 +167,17 @@ export function AdminAuctions() {
                       style={{
                         borderBottom: '1px solid var(--border)',
                         cursor: 'pointer',
-                        background: isExpanded ? 'rgba(12,30,58,0.02)' : undefined,
+                        background: isExpanded ? 'rgba(0,51,102,0.02)' : undefined,
                         transition: 'background 150ms ease',
                       }}
-                      onMouseEnter={e => { if (!isExpanded) e.currentTarget.style.background = 'rgba(12,30,58,0.015)' }}
+                      onMouseEnter={e => { if (!isExpanded) e.currentTarget.style.background = 'rgba(0,51,102,0.015)' }}
                       onMouseLeave={e => { if (!isExpanded) e.currentTarget.style.background = '' }}
                     >
                       <td style={{ padding: 'var(--space-1) var(--space-2)', width: 32 }}>
                         <span style={{
                           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                           width: 20, height: 20, borderRadius: 'var(--radius-sm)',
-                          background: isExpanded ? 'var(--navy)' : 'rgba(12,30,58,0.06)',
+                          background: isExpanded ? 'var(--navy)' : 'rgba(0,51,102,0.06)',
                           color: isExpanded ? 'white' : 'var(--stone)',
                           transition: 'all 200ms ease',
                           transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
@@ -211,8 +211,8 @@ export function AdminAuctions() {
                       <tr>
                         <td colSpan={7} style={{ padding: 0, borderBottom: '1px solid var(--border)' }}>
                           <div style={{
-                            background: 'rgba(12,30,58,0.015)',
-                            borderTop: '1px solid rgba(12,30,58,0.06)',
+                            background: 'rgba(0,51,102,0.015)',
+                            borderTop: '1px solid rgba(0,51,102,0.06)',
                             padding: 'var(--space-2) var(--space-3) var(--space-2) var(--space-3)',
                           }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 'var(--space-1-5)' }}>
@@ -250,7 +250,7 @@ export function AdminAuctions() {
                                       background: i === 0 ? 'rgba(21,128,61,0.04)' : undefined,
                                       transition: 'background 150ms ease',
                                     }}
-                                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(12,30,58,0.03)' }}
+                                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,51,102,0.03)' }}
                                     onMouseLeave={e => { e.currentTarget.style.background = i === 0 ? 'rgba(21,128,61,0.04)' : '' }}
                                   >
                                     <span style={{ fontSize: 'var(--text-xs)', fontWeight: i === 0 ? 600 : 400, color: 'var(--ink)' }}>

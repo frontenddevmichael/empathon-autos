@@ -73,7 +73,7 @@ export function HeroSection({
       ref={sectionRef}
       className={className}
       style={{
-        minHeight: '100vh',
+        minHeight: '50vh',
         background: 'var(--navy)',
         display: 'flex',
         alignItems: 'center',
@@ -113,8 +113,8 @@ export function HeroSection({
           inset: 0,
           zIndex: 1,
           background: isCenterDark
-            ? 'linear-gradient(to right, rgba(12,30,58,0.85) 0%, rgba(12,30,58,0.5) 50%, rgba(12,30,58,0.85) 100%), linear-gradient(to top, rgba(12,30,58,0.3) 0%, transparent 40%)'
-            : 'linear-gradient(to right, var(--navy) 0%, rgba(12,30,58,0.92) 35%, rgba(12,30,58,0.5) 65%, transparent 100%), linear-gradient(to top, rgba(12,30,58,0.4) 0%, transparent 40%)',
+            ? 'linear-gradient(to right, rgba(0,51,102,0.85) 0%, rgba(0,51,102,0.5) 50%, rgba(0,51,102,0.85) 100%), linear-gradient(to top, rgba(0,51,102,0.3) 0%, transparent 40%)'
+            : 'linear-gradient(to right, var(--navy) 0%, rgba(0,51,102,0.92) 35%, rgba(0,51,102,0.5) 65%, transparent 100%), linear-gradient(to top, rgba(0,51,102,0.4) 0%, transparent 40%)',
           pointerEvents: 'none',
         }}
       />
@@ -206,8 +206,9 @@ export function HeroSection({
             as="h1"
             style={{
               color: 'white',
-              marginBottom: 'var(--space-2)',
+              marginBottom: 'var(--space-1-5)',
               maxWidth: 700,
+              fontSize: 'clamp(1.75rem, 4.5vw, 3.25rem)',
               animation: 'fadeInUp 600ms 150ms var(--ease-out) both',
             }}
           >
@@ -224,11 +225,11 @@ export function HeroSection({
         {subtitle && (
           <p
             style={{
-              fontSize: 'var(--text-lg)',
+              fontSize: 'var(--text-base)',
               color: 'rgba(255,255,255,0.4)',
               maxWidth: 460,
-              lineHeight: 1.8,
-              marginBottom: 'var(--space-4)',
+              lineHeight: 1.7,
+              marginBottom: 'var(--space-2-5)',
               animation: 'fadeInUp 600ms 350ms var(--ease-out) both',
             }}
           >
