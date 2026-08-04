@@ -73,7 +73,7 @@ export function HeroSection({
       ref={sectionRef}
       className={className}
       style={{
-        minHeight: '50vh',
+        minHeight: '56vh',
         background: 'var(--navy)',
         display: 'flex',
         alignItems: 'center',
@@ -113,8 +113,8 @@ export function HeroSection({
           inset: 0,
           zIndex: 1,
           background: isCenterDark
-            ? 'linear-gradient(to right, rgba(0,51,102,0.85) 0%, rgba(0,51,102,0.5) 50%, rgba(0,51,102,0.85) 100%), linear-gradient(to top, rgba(0,51,102,0.3) 0%, transparent 40%)'
-            : 'linear-gradient(to right, var(--navy) 0%, rgba(0,51,102,0.92) 35%, rgba(0,51,102,0.5) 65%, transparent 100%), linear-gradient(to top, rgba(0,51,102,0.4) 0%, transparent 40%)',
+            ? 'linear-gradient(to right, rgba(0,51,102,0.7) 0%, rgba(0,51,102,0.3) 50%, rgba(0,51,102,0.7) 100%), linear-gradient(to top, rgba(0,51,102,0.2) 0%, transparent 45%)'
+            : 'linear-gradient(to right, var(--navy) 0%, rgba(0,51,102,0.82) 25%, rgba(0,51,102,0.4) 50%, rgba(0,51,102,0.08) 75%, transparent 100%), linear-gradient(to top, rgba(0,51,102,0.2) 0%, transparent 45%)',
           pointerEvents: 'none',
         }}
       />
@@ -174,7 +174,7 @@ export function HeroSection({
           zIndex: 3,
           maxWidth: 'var(--container-max)',
           margin: '0 auto',
-          padding: '0 var(--space-4)',
+          padding: 'var(--space-4) var(--space-4)',
           width: '100%',
           transform: `translateY(${parallax.rise}px)`,
           opacity: parallax.fade,
@@ -188,8 +188,8 @@ export function HeroSection({
               fontWeight: 600,
               textTransform: 'uppercase',
               letterSpacing: '0.2em',
-              color: 'rgba(255,255,255,0.35)',
-              marginBottom: 'var(--space-3)',
+              color: 'rgba(255,255,255,0.5)',
+              marginBottom: 'var(--space-2-5)',
               display: 'flex',
               alignItems: 'center',
               gap: 'var(--space-1-5)',
@@ -208,7 +208,7 @@ export function HeroSection({
               color: 'white',
               marginBottom: 'var(--space-1-5)',
               maxWidth: 700,
-              fontSize: 'clamp(1.75rem, 4.5vw, 3.25rem)',
+              fontSize: 'clamp(1.9rem, 5vw, 3.5rem)',
               animation: 'fadeInUp 600ms 150ms var(--ease-out) both',
             }}
           >
@@ -226,7 +226,7 @@ export function HeroSection({
           <p
             style={{
               fontSize: 'var(--text-base)',
-              color: 'rgba(255,255,255,0.4)',
+              color: 'rgba(255,255,255,0.6)',
               maxWidth: 460,
               lineHeight: 1.7,
               marginBottom: 'var(--space-2-5)',
