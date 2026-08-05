@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Battery, Zap, Gauge, Leaf } from 'lucide-react'
+import { ArrowRight, Battery, Zap, Gauge, Leaf, Plug, ShieldCheck as ShieldCheckIcon, Wind, PiggyBank } from 'lucide-react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { Input, TextArea } from '@/components/ui/Input'
 import { Section } from '@/components/PageLayout'
@@ -31,6 +31,10 @@ const BENEFITS = [
   { icon: Zap, title: 'Serious Performance', desc: 'Instant torque, a green, whisper-quiet drivetrain, and 0–100 in under 5 seconds on flagship models.', link: '/blog/ev-guide' },
   { icon: Leaf, title: 'Lower Running Costs', desc: 'No fuel bills. Charging costs a fraction, and fewer moving parts means fewer repairs.', link: '/blog/ev-guide' },
   { icon: Gauge, title: 'Tech That Leads', desc: 'MBUX hyperscreen, over-the-air updates, and autonomous-ready driving aids.', link: '/blog/ev-guide' },
+  { icon: Plug, title: 'Charging Made Simple', desc: 'Charge overnight at home or the office. We help you plan the setup — from a standard outlet to a fast wallbox.', link: '/blog/ev-guide' },
+  { icon: ShieldCheckIcon, title: 'Battery Health & Warranty', desc: 'Verified battery health on every unit, with care guidance that keeps range strong for years to come.', link: '/blog/ev-guide' },
+  { icon: Wind, title: 'Quiet, Refined Ride', desc: 'No engine noise, no gearbox lag. Just smooth, near-silent acceleration that makes every trip calmer.', link: '/blog/ev-guide' },
+  { icon: PiggyBank, title: 'Long-Term Value', desc: 'Fewer moving parts, less maintenance, and strong resale demand for premium EVs in Nigeria.', link: '/blog/ev-guide' },
 ]
 
 export function Electric() {
@@ -90,9 +94,9 @@ export function Electric() {
             showDots={true}
             pauseOnHover={true}
             renderItem={(b) => (
-              <div style={{ padding: 'var(--space-4)', border: '1px solid rgba(10,10,10,0.06)', borderRadius: 'var(--radius-xl)', background: 'var(--surface)', transition: 'all 300ms var(--ease-out)', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <b.icon size={24} style={{ color: 'var(--navy)', marginBottom: 'var(--space-1-5)' }} />
-                <h3 style={{ fontSize: 'var(--text-base)', marginBottom: 6, letterSpacing: '-0.02em' }}>{b.title}</h3>
+              <div style={{ maxWidth: 720, margin: '0 auto', padding: 'var(--space-5)', border: '1px solid rgba(10,10,10,0.06)', borderRadius: 'var(--radius-xl)', background: 'var(--surface)', transition: 'all 300ms var(--ease-out)', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <b.icon size={28} style={{ color: 'var(--navy)', marginBottom: 'var(--space-1-5)' }} />
+                <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: 6, letterSpacing: '-0.02em' }}>{b.title}</h3>
                 <p style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)', lineHeight: 1.7, flex: 1, marginBottom: 'var(--space-3)' }}>{b.desc}</p>
                 <Link to={b.link} style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--navy)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                   Learn More <ArrowRight size={14} />

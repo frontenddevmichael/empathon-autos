@@ -3,7 +3,6 @@ import { HeartPulse, Shield, Landmark, Truck, Hotel, Flame, Check, ArrowRight } 
 import { HeroSection } from '@/components/HeroSection'
 import { SplitHeading } from '@/components/SplitHeading'
 import { RippleButton } from '@/components/RippleButton'
-import { ParallaxSection } from '@/components/ParallaxSection'
 import { Section } from '@/components/PageLayout'
 import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
 import { ShieldCheck } from '@/components/DecoSvgs'
@@ -82,8 +81,7 @@ export function Corporate() {
         deco="dots"
       />
 
-      <ParallaxSection>
-        <Section>
+      <Section>
           <p style={{ fontSize: 'var(--text-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--navy)', marginBottom: 'var(--space-1)' }}>Fleet Deals by Sector</p>
           <SplitHeading as="h2">Packages Built Around Your Organisation</SplitHeading>
           <div className="section-divider" />
@@ -117,10 +115,8 @@ export function Corporate() {
             ))}
           </div>
         </Section>
-      </ParallaxSection>
 
       {realClients.length > 0 && (
-        <ParallaxSection>
         <Section style={{ background: 'var(--paper-light)', position: 'relative' }}>
           <ShieldCheck className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.04 }} size={48} />
           <p style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--navy)', marginBottom: 'var(--space-2)', textAlign: 'center' }}>Trusted By</p>
@@ -145,7 +141,6 @@ export function Corporate() {
             ))}
           </div>
         </Section>
-        </ParallaxSection>
       )}
 
       <LeadForm

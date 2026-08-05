@@ -1,40 +1,27 @@
 .carousel {
   position: relative;
-  display: flex;
-  align-items: center;
   width: 100%;
+}
+
+.carouselViewport {
   overflow: hidden;
 }
 
 .carouselTrack {
   display: flex;
-  width: 100%;
   transition: transform 500ms var(--ease-out);
   will-change: transform;
 }
 
 .carouselSlide {
   flex: 0 0 100%;
-  width: 100%;
-  display: flex;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 400ms var(--ease-out), visibility 400ms var(--ease-out);
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.carouselSlideActive {
-  opacity: 1;
-  visibility: visible;
-  position: relative;
+  min-width: 100%;
 }
 
 /* Arrows */
 .carouselArrow {
   position: absolute;
-  top: 50%;
+  top: 42%;
   transform: translateY(-50%);
   z-index: 10;
   width: 44px;
@@ -64,11 +51,11 @@
 }
 
 .carouselArrowPrev {
-  left: -22px;
+  left: 12px;
 }
 
 .carouselArrowNext {
-  right: -22px;
+  right: 12px;
 }
 
 /* Dots */
@@ -76,12 +63,7 @@
   display: flex;
   justify-content: center;
   gap: var(--space-1-5);
-  padding: var(--space-3) 0;
-  position: absolute;
-  bottom: -8px;
-  left: 0;
-  right: 0;
-  z-index: 10;
+  padding-top: var(--space-3);
 }
 
 .carouselDot {
@@ -112,16 +94,16 @@
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .carouselArrow {
     width: 40px;
     height: 40px;
   }
   .carouselArrowPrev {
-    left: -20px;
+    left: 8px;
   }
   .carouselArrowNext {
-    right: -20px;
+    right: 8px;
   }
 }
 
@@ -129,16 +111,10 @@
   .carouselArrow {
     display: none;
   }
-  .carouselDots {
-    bottom: -4px;
-  }
 }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .carouselSlide {
-    transition: none;
-  }
   .carouselTrack {
     transition: none;
   }

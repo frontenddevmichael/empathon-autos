@@ -38,7 +38,7 @@ export function PreOrder() {
           .from('vehicles')
           .select('*, media:vehicle_media(*)')
           .eq('status', 'pre-order')
-          .limit(6)
+          .limit(12)
         if (mounted.current) {
           if (error) {
             console.error('[PreOrder] Failed to load pre-order vehicles:', error.message)

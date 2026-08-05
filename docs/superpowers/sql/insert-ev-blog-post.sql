@@ -20,6 +20,14 @@ VALUES (
   E'No fuel bills. Charging costs a fraction of what you would spend on petrol each month, and with far fewer moving parts — no pistons, no timing belts, no oil changes — there is simply less to repair. Over a five-year ownership window, total cost of ownership typically comes in well below a comparable petrol vehicle.\n\n' ||
   E'## Tech That Leads\n' ||
   E'The EQ range is packed with the latest Mercedes-Benz technology: the **MBUX Hyperscreen**, over-the-air software updates that keep your car current without a workshop visit, and a suite of autonomous-ready driving aids — adaptive cruise, lane keep, blind-spot monitoring — that make long journeys safer and easier.\n\n' ||
+  E'## Charging Made Simple\n' ||
+  E'Most EV owners in Nigeria charge at home or the office. A standard household outlet works for a slow overnight top-up, while a dedicated 7.4 kW wallbox gets you a full charge in 6–8 hours. We help you plan the setup before the car arrives, so you never start at zero. Public DC fast chargers, where available, take you from 20% to 80% in around 30–40 minutes — perfect for a quick refresh between runs.\n\n' ||
+  E'## Battery Health and Warranty\n' ||
+  E'Every EV we import arrives with **verified battery health**, so you know exactly what you are getting. Battery care is simple: avoid letting it sit at 100% for long stretches, keep it above 20% when you can, and park out of extreme heat when possible. Follow those habits and the pack will hold strong range for years. We walk every buyer through the dos and don''ts of battery care after delivery.\n\n' ||
+  E'## Quiet, Refined Ride\n' ||
+  E'With no internal combustion engine, an EV is dramatically quieter at any speed. There is no gearbox lag and no vibration — just smooth, near-silent acceleration. That calm makes traffic easier, long motorway runs more relaxing, and passengers happier.\n\n' ||
+  E'## Long-Term Value\n' ||
+  E'Premium electric vehicles hold their value well. Demand for clean, low-maintenance cars in Nigeria keeps climbing, and with far fewer moving parts to wear out, resale buyers know they are getting a dependable car. Combined with the fuel and maintenance savings, an EV is a strong long-term investment.\n\n' ||
   E'## How We Source and Import Your EV\n' ||
   E'We bring in vehicles from North America, Europe, the Middle East, and the Far East. Every unit is inspected, the battery health is verified, and the car is prepped for Nigerian roads — speedometer conversion, charging cable set, and documentation handled. You get the vehicle, the paperwork, and honest advice on charging setup.\n\n' ||
   E'## Maintenance and Service in Lagos\n' ||
@@ -29,7 +37,7 @@ VALUES (
   'https://images.unsplash.com/photo-1568559598349-dbf322d50a48?w=1200&q=80&fit=crop',
   'Empathon Autos Team',
   now(),
-  '{"title":"The Complete Guide to Going Electric in Nigeria","description":"Everything you need to know about going electric in Nigeria — range, charging, running costs, performance, and how we source and import your EV."}'::jsonb
+  '{"title":"The Complete Guide to Going Electric in Nigeria","description":"Everything you need to know about going electric in Nigeria — range, charging, battery care, running costs, performance, resale value, and how we source and import your EV."}'::jsonb
 )
 ON CONFLICT (slug) DO UPDATE SET
   title = EXCLUDED.title,
