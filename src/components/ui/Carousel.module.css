@@ -1,0 +1,149 @@
+.carousel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+.carouselTrack {
+  display: flex;
+  width: 100%;
+  transition: transform 500ms var(--ease-out);
+  will-change: transform;
+}
+
+.carouselSlide {
+  flex: 0 0 100%;
+  width: 100%;
+  display: flex;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 400ms var(--ease-out), visibility 400ms var(--ease-out);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.carouselSlideActive {
+  opacity: 1;
+  visibility: visible;
+  position: relative;
+}
+
+/* Arrows */
+.carouselArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 200ms var(--ease-out);
+  box-shadow: 0 4px 16px rgba(10,10,10,0.08);
+}
+
+.carouselArrow:hover {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: white;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.carouselArrow:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 2px;
+}
+
+.carouselArrowPrev {
+  left: -22px;
+}
+
+.carouselArrowNext {
+  right: -22px;
+}
+
+/* Dots */
+.carouselDots {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-1-5);
+  padding: var(--space-3) 0;
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.carouselDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid rgba(0,51,102,0.3);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: all 200ms var(--ease-out);
+}
+
+.carouselDot:hover {
+  border-color: var(--navy);
+  background: rgba(0,51,102,0.1);
+}
+
+.carouselDotActive {
+  background: var(--navy);
+  border-color: var(--navy);
+  transform: scale(1.15);
+}
+
+.carouselDot:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 2px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .carouselArrow {
+    width: 40px;
+    height: 40px;
+  }
+  .carouselArrowPrev {
+    left: -20px;
+  }
+  .carouselArrowNext {
+    right: -20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .carouselArrow {
+    display: none;
+  }
+  .carouselDots {
+    bottom: -4px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .carouselSlide {
+    transition: none;
+  }
+  .carouselTrack {
+    transition: none;
+  }
+  .carouselArrow,
+  .carouselDot {
+    transition: none;
+  }
+}
