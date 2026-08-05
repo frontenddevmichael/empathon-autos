@@ -92,7 +92,7 @@ Runs in a single transaction:
 4. Validate `p_amount > current_bid` and `p_amount >= current_bid + increment`.
    - `increment = lot.bid_increment > 0 ? lot.bid_increment : default`. Default = max(`₦500,000`, 5% of `current_bid`, rounded up to a clean step).
 5. Insert bid (anonymous, `bidder_name/email/phone`, no `bidder_id`), update `current_bid`, `current_bidder_name`.
-6. **Anti-sniping**: if remaining time to the close deadline is ≤ 3 minutes, extend by 5 minutes → set `closes_at` (or `extended_until`) to the new deadline, set status `closing`. (Hard cap on total extension not required in this round; see future work.)
+6. **Anti-sniping**: the close deadline is always `COALESCE(extended_until, closes_at)`. If remaining time to that deadline is ≤ 3 minutes, extend by 5 minutes → write the new deadline to `extended_until` (never mutate `closes_at`), set status `closing`. (Hard cap on total extension not required in this round; see future work.)
 7. Return new lot state (status, current_bid, deadline).
 
 Reserve handling: bids below reserve are accepted but the lot only auto-sells at close if `current_bid >= reserve` (and `reserve > 0`). The detail page shows "Reserve not met" when `current_bid < reserve`.
