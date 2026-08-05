@@ -99,7 +99,7 @@ Reserve handling: bids below reserve are accepted but the lot only auto-sells at
 
 ### 4.2 `place-bid` Edge Function
 
-Becomes a thin HTTP wrapper: parse input, call `place_bid` RPC with the service key, return structured errors (`LOT_NOT_OPEN`, `BELOW_CURRENT`, `BELOW_INCREMENT`, `AUCTION_ENDED`, `INVALID_INPUT`). Client maps codes to toast messages.
+Implementation decision: the client calls the `place_bid` RPC **directly** via the supabase-js client (the RPC is `GRANT EXECUTE` to `anon`, and it performs all validation server-side — functionally identical to the edge function and needs no deployment). The `place-bid` Edge Function source is retained in the repo as a thin wrapper for future use (e.g., rate limiting), but is not the active path.
 
 ## 5. Server-Side Automation
 

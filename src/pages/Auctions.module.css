@@ -35,3 +35,39 @@
   padding: var(--space-8);
   color: var(--stone);
 }
+.tabs {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+.tab {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--stone);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 200ms var(--ease-out);
+  margin-bottom: -1px;
+}
+.tab:hover {
+  color: var(--navy);
+}
+.tabActive {
+  color: var(--navy);
+  border-bottom-color: var(--navy);
+}
+.tabCount {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: var(--text-2xs);
+  background: rgba(0,51,102,0.08);
+  color: var(--navy);
+  border-radius: var(--radius-sm);
+  padding: 1px 7px;
+  font-weight: 700;
+}

@@ -12,6 +12,15 @@ const json = (body: unknown, status: number) => new Response(JSON.stringify(body
   headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
 })
 
+const ERROR_MESSAGES: Record<string, string> = {
+  LOT_NOT_FOUND: 'Auction not found',
+  LOT_NOT_OPEN: 'This auction is no longer open for bidding',
+  AUCTION_ENDED: 'This auction has ended',
+  BELOW_CURRENT: 'Bid must exceed the current bid',
+  BELOW_INCREMENT: 'Bid is below the minimum bid increment',
+  BELOW_OPENING: 'Bid must exceed the opening bid',
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: CORS_HEADERS })
@@ -25,32 +34,29 @@ serve(async (req) => {
     const { lot_id, amount, bidder_name, bidder_email, bidder_phone } = await req.json()
     if (!lot_id || !amount) return json({ error: 'lot_id and amount required' }, 400)
     if (!bidder_name || !bidder_email) return json({ error: 'Name and email are required' }, 400)
+    if (!Number.isFinite(amount) || amount <= 0) return json({ error: 'Invalid bid amount' }, 400)
 
-    const { data: lot } = await serviceClient.from('lots').select('*').eq('id', lot_id).single()
-    if (!lot) return json({ error: 'Lot not found' }, 404)
-    if (lot.status !== 'open' && lot.status !== 'closing') return json({ error: 'Auction not open' }, 400)
-    if (amount <= lot.current_bid) return json({ error: 'Bid too low' }, 400)
+    const { data, error } = await serviceClient.rpc('place_bid', {
+      p_lot_id: lot_id,
+      p_amount: amount,
+      p_name: String(bidder_name).trim().slice(0, 120),
+      p_email: String(bidder_email).trim().toLowerCase().slice(0, 254),
+      p_phone: String(bidder_phone ?? '').trim().slice(0, 30),
+    })
 
-    const { data: bid, error: bidError } = await serviceClient.from('bids').insert({
-      lot_id, amount,
-      bidder_name: String(bidder_name).trim().slice(0, 120),
-      bidder_email: String(bidder_email).trim().toLowerCase().slice(0, 254),
-      bidder_phone: String(bidder_phone ?? '').trim().slice(0, 30),
-    }).select().single()
+    if (error) return json({ error: error.message }, 500)
 
-    if (bidError) return json({ error: bidError.message }, 500)
-
-    const { error: lotError } = await serviceClient.from('lots').update({
-      current_bid: amount,
-      current_bidder_name: String(bidder_name).trim().slice(0, 120),
-    }).eq('id', lot_id)
-
-    if (lotError) {
-      await serviceClient.from('bids').delete().eq('id', bid.id)
-      return json({ error: 'Failed to update lot — bid rolled back' }, 500)
+    const result = data as { ok?: boolean; code?: string; bid_id?: string; current_bid?: number; status?: string; deadline?: string }
+    if (!result?.ok) {
+      return json({ error: ERROR_MESSAGES[result?.code || ''] || 'Bid rejected' }, 400)
     }
 
-    return json(bid, 200)
+    return json({
+      bid_id: result.bid_id,
+      current_bid: result.current_bid,
+      status: result.status,
+      deadline: result.deadline,
+    }, 200)
   } catch (err) {
     return json({ error: err.message }, 500)
   }

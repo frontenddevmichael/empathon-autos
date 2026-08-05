@@ -9,6 +9,8 @@ export type LotStatus = 'scheduled' | 'open' | 'closing' | 'closed' | 'sold' | '
 export type MediaType = 'image' | 'video'
 export type BidOutcome = 'accepted' | 'rejected'
 export type AdminRole = 'super_admin' | 'admin' | 'staff' | 'editor'
+export type ConditionGrade = 'A' | 'B' | 'C' | 'D'
+export type FaultSeverity = 'minor' | 'warning' | 'critical'
 
 export interface Vehicle {
   id: string
@@ -97,25 +99,73 @@ export interface Profile {
 
 export interface Lot {
   id: string
-  vehicle_id: string
+  vehicle_id: string | null
+  title: string | null
+  make: string | null
+  model: string | null
+  trim: string
+  year: number | null
+  mileage: number
+  transmission: Transmission
+  fuel_type: FuelType
+  colour: string
+  body_type: BodyType
+  description: string | null
+  features: string[]
+  condition_grade: ConditionGrade | null
+  bid_increment: number
   opening_bid: number
   reserve_price: number
   current_bid: number
   current_bidder_id: string | null
+  current_bidder_name: string | null
   status: LotStatus
   opens_at: string | null
   closes_at: string
   extended_until: string | null
+  winner_name: string | null
+  winner_email: string | null
+  winner_phone: string | null
+  sold_at: string | null
+  created_at: string
+  updated_at: string
+  media?: LotMedia[]
+  faults?: LotFault[]
+  vehicles?: Vehicle | null
+}
+
+export interface LotMedia {
+  id: string
+  lot_id: string
+  type: MediaType
+  url: string
+  sort_order: number
+  is_primary: boolean
+  alt_text: string
+  created_at: string
+}
+
+export interface LotFault {
+  id: string
+  lot_id: string
+  title: string
+  description: string | null
+  severity: FaultSeverity
+  image_url: string | null
+  sort_order: number
   created_at: string
 }
 
 export interface Bid {
   id: string
   lot_id: string
-  bidder_id: string
+  bidder_id: string | null
   amount: number
   placed_at: string
   outcome: BidOutcome | null
+  bidder_name: string | null
+  bidder_email: string | null
+  bidder_phone: string | null
 }
 
 export interface BlogPost {

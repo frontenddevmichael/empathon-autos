@@ -1,73 +1,71 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { supabase } from '@/lib/supabase'
 import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 import { formatPrice, formatMileage } from '@/lib/format'
+import { getLotDeadline, computeBidIncrement, SEVERITY_META, GRADE_META, firstName } from '@/lib/auction'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
 import { AuctionTimer, auctionTimeColor } from '@/components/ui/AuctionTimer'
 import { Section } from '@/components/PageLayout'
 import { useToast } from '@/context/ToastContext'
+import { useAutoCloseLots } from '@/hooks/useAutoCloseLots'
+import type { Lot, Bid, LotMedia } from '@/types'
 
-interface BidRecord {
-  id: string
-  amount: number
-  placed_at: string
-  bidder_id: string | null
-  bidder_name?: string | null
+const ERROR_MESSAGES: Record<string, string> = {
+  LOT_NOT_FOUND: 'Auction not found',
+  LOT_NOT_OPEN: 'This auction is no longer open for bidding',
+  AUCTION_ENDED: 'This auction has ended',
+  BELOW_CURRENT: 'Bid must exceed the current bid',
+  BELOW_INCREMENT: 'Bid is below the minimum bid increment',
+  BELOW_OPENING: 'Bid must exceed the opening bid',
 }
 
-interface LotDetail {
-  id: string
-  opening_bid: number
-  reserve_price: number
-  current_bid: number
-  status: string
-  closes_at: string
-  vehicles: {
-    id: string
-    make: string
-    model: string
-    year: number
-    mileage: number
-    transmission: string
-    fuel_type: string
-    colour: string
-    condition: string
-    media?: { url: string; is_primary: boolean }[]
-  } | null
+function lotTitle(l: Lot): string {
+  if (l.title) return l.title
+  const own = [l.make, l.model].filter(Boolean).join(' ')
+  if (own) return own
+  if (l.vehicles) return `${l.vehicles.make} ${l.vehicles.model}`
+  return 'Untitled lot'
 }
 
 export function AuctionDetail() {
   const { lotId } = useParams<{ lotId: string }>()
   const { showToast } = useToast()
-  const [lot, setLot] = useState<LotDetail | null>(null)
-  const [bids, setBids] = useState<BidRecord[]>([])
+  const [lot, setLot] = useState<Lot | null>(null)
+  const [bids, setBids] = useState<Bid[]>([])
   const [loading, setLoading] = useState(true)
   const [bidAmount, setBidAmount] = useState('')
   const [bidderName, setBidderName] = useState('')
   const [bidderEmail, setBidderEmail] = useState('')
   const [bidderPhone, setBidderPhone] = useState('')
   const [saving, setSaving] = useState(false)
+  const [activeImage, setActiveImage] = useState(0)
+  const [lightbox, setLightbox] = useState<string | null>(null)
 
-  useEffect(() => {
+  const fetchAll = useCallback(() => {
     if (!lotId) return
     ;(async () => {
       const { data } = await supabase
         .from('lots')
-        .select('*, vehicles:vehicle_id(*, media:vehicle_media(*))')
+        .select('*, vehicles:vehicle_id(*, media:vehicle_media(*)), media:lot_media(*), faults:lot_faults(*)')
         .eq('id', lotId)
         .single()
-      if (data) setLot(data as unknown as LotDetail)
+      if (data) setLot(data as unknown as Lot)
       setLoading(false)
     })()
     ;(async () => {
       const { data } = await supabase.from('bids').select('*').eq('lot_id', lotId).order('placed_at', { ascending: false }).limit(50)
-      if (data) setBids(data)
+      if (data) setBids(data as unknown as Bid[])
     })()
   }, [lotId])
+
+  useEffect(() => { fetchAll() }, [fetchAll])
+
+  // Poll for server-side status transitions so the page reflects close without a reload.
+  useAutoCloseLots(fetchAll)
 
   const lotRef = useRef(lot)
   lotRef.current = lot
@@ -75,8 +73,8 @@ export function AuctionDetail() {
   useEffect(() => {
     if (!lotId) return
     const channel = supabase.channel(`bids:${lotId}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bids', filter: `lot_id=eq.${lotId}` }, (payload: RealtimePostgresChangesPayload<BidRecord>) => {
-        const newBid = payload.new as BidRecord
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bids', filter: `lot_id=eq.${lotId}` }, (payload: RealtimePostgresChangesPayload<Bid>) => {
+        const newBid = payload.new as Bid
         setBids(prev => [newBid, ...prev].slice(0, 50))
         const currentLot = lotRef.current
         if (currentLot && newBid.amount > currentLot.current_bid) {
@@ -89,16 +87,14 @@ export function AuctionDetail() {
 
   const placeBid = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!lotId) return
-    if (!lot) return
+    if (!lotId || !lot) return
 
-    // Client-side validation before calling Edge Function
     if (lot.status !== 'open' && lot.status !== 'closing') {
       showToast('This auction is no longer open for bidding', 'error')
       return
     }
-    const timeLeft = new Date(lot.closes_at).getTime() - Date.now()
-    if (timeLeft <= 0) {
+    const deadline = new Date(getLotDeadline(lot)).getTime()
+    if (deadline - Date.now() <= 0) {
       showToast('This auction has ended', 'error')
       return
     }
@@ -119,36 +115,33 @@ export function AuctionDetail() {
       showToast('Bid amount is too large', 'error')
       return
     }
-    if (amount <= lot.current_bid) {
-      showToast(`Bid must exceed ${formatPrice(lot.current_bid)}`, 'error')
-      return
-    }
 
     setSaving(true)
     try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
-      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string
-      const res = await fetch(`${supabaseUrl}/functions/v1/place-bid`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${anonKey}`,
-        },
-        body: JSON.stringify({
-          lot_id: lotId,
-          amount,
-          bidder_name: bidderName.trim(),
-          bidder_email: bidderEmail.trim(),
-          bidder_phone: bidderPhone.trim(),
-        }),
+      const { data, error } = await supabase.rpc('place_bid', {
+        p_lot_id: lotId,
+        p_amount: amount,
+        p_name: bidderName.trim(),
+        p_email: bidderEmail.trim(),
+        p_phone: bidderPhone.trim(),
       })
-
-      const result = await res.json()
-      if (!res.ok) {
-        showToast(result.error || 'Failed to place bid', 'error')
+      if (error) {
+        showToast(error.message || 'Failed to place bid', 'error')
       } else {
-        showToast('Bid placed successfully')
-        setBidAmount('')
+        const result = data as { ok?: boolean; code?: string; current_bid?: number; status?: string; deadline?: string }
+        if (result?.ok) {
+          showToast('Bid placed successfully')
+          setBidAmount('')
+          setLot(prev => prev ? {
+            ...prev,
+            current_bid: result.current_bid ?? prev.current_bid,
+            status: (result.status as Lot['status']) ?? prev.status,
+            extended_until: result.deadline ?? prev.extended_until,
+            current_bidder_name: bidderName.trim(),
+          } : prev)
+        } else {
+          showToast(ERROR_MESSAGES[result?.code || ''] || 'Bid rejected', 'error')
+        }
       }
     } catch {
       showToast('Network error — please try again', 'error')
@@ -181,7 +174,7 @@ export function AuctionDetail() {
     )
   }
 
-  if (!lot || !lot.vehicles) {
+  if (!lot) {
     return (
       <Section>
         <div style={{ textAlign: 'center', padding: 'var(--space-6)' }}>
@@ -192,14 +185,33 @@ export function AuctionDetail() {
     )
   }
 
-  const v = lot.vehicles
-  const img = v.media?.find(m => m.is_primary) ?? v.media?.[0]
-  const timeLeft = Math.max(0, new Date(lot.closes_at).getTime() - Date.now())
+  const images: (LotMedia | undefined)[] = lot.media?.length
+    ? [...lot.media].sort((a, b) => a.sort_order - b.sort_order)
+    : (lot.vehicles?.media as unknown as LotMedia[] | undefined) || []
+  const imagesList = images.filter(Boolean)
+  const sortedByPrimary = [...imagesList].sort((a, b) => (b?.is_primary ? 1 : 0) - (a?.is_primary ? 1 : 0))
+  const active = sortedByPrimary[Math.min(activeImage, sortedByPrimary.length - 1)]
+
+  const title = lotTitle(lot)
+  const year = lot.year || lot.vehicles?.year || null
+  const mileage = lot.mileage || lot.vehicles?.mileage || 0
+  const transmission = lot.transmission || lot.vehicles?.transmission || '—'
+  const fuel = lot.fuel_type || lot.vehicles?.fuel_type || '—'
+  const colour = lot.colour || lot.vehicles?.colour || '—'
+  const vCondition = lot.vehicles?.condition || '—'
+
+  const deadline = getLotDeadline(lot)
+  const timeLeft = Math.max(0, new Date(deadline).getTime() - Date.now())
   const isOpen = lot.status === 'open' || lot.status === 'closing'
+  const reserveMet = lot.reserve_price > 0 && lot.current_bid >= lot.reserve_price
+  const hasReserve = lot.reserve_price > 0
+  const nextIncrement = computeBidIncrement(lot.current_bid, lot.bid_increment)
+
   const siteUrl = import.meta.env.VITE_SITE_URL || 'https://www.emphatonautos.com'
-  const auctionTitle = `${v.make} ${v.model} Auction | Empathon Autos`
-  const auctionDesc = `Bidding on a ${v.make} ${v.model} (${v.year}). Current bid: ${formatPrice(lot.current_bid)}. ${formatMileage(v.mileage)}, ${v.transmission}.`
-  const auctionImg = img?.url || '/og-image.jpg'
+  const auctionTitle = `${title} Auction | Empathon Autos`
+  const auctionDesc = `Bidding on a ${title} (${year || 'year TBD'}). Current bid: ${formatPrice(lot.current_bid)}. ${formatMileage(mileage)}, ${transmission}.`
+  const auctionImg = active?.url || '/og-image.jpg'
+  const winner = lot.status === 'sold' ? firstName(lot.winner_name) : null
 
   return (
     <>
@@ -216,21 +228,55 @@ export function AuctionDetail() {
         <Link to="/auctions" style={{ fontSize: 'var(--text-sm)', color: 'var(--navy)', display: 'inline-flex', alignItems: 'center', gap: 4, marginBottom: 'var(--space-1)' }}>&larr; Back to Auctions</Link>
       </Section>
 
+      {lightbox && (
+        <div
+          onClick={() => setLightbox(null)}
+          style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out' }}
+          role="presentation"
+        >
+          <img src={lightbox} alt="Full size" style={{ maxWidth: '90vw', maxHeight: '90vh', borderRadius: 8 }} />
+        </div>
+      )}
+
       <div className="responsive-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', maxWidth: 1200, margin: '0 auto', padding: '0 var(--space-3) var(--space-4)' }}>
         <div>
-          {img ? (
-            <img src={img.url} alt={`${v.make} ${v.model}`} style={{ width: '100%', aspectRatio: '4/3', objectFit: 'cover', borderRadius: 'var(--radius-lg)' }} />
+          {active ? (
+            <img
+              src={active.url}
+              alt={title}
+              onClick={() => setLightbox(active.url)}
+              style={{ width: '100%', aspectRatio: '4/3', objectFit: 'cover', borderRadius: 'var(--radius-lg)', cursor: 'zoom-in' }}
+            />
           ) : (
             <div style={{ width: '100%', aspectRatio: '4/3', background: 'var(--paper-warm)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--stone-light)' }}>No image</div>
+          )}
+
+          {sortedByPrimary.length > 1 && (
+            <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+              {sortedByPrimary.map((img, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setActiveImage(i)}
+                  style={{
+                    padding: 0, border: i === Math.min(activeImage, sortedByPrimary.length - 1) ? '2px solid var(--navy)' : '1px solid var(--border)',
+                    borderRadius: 6, overflow: 'hidden', cursor: 'pointer', background: 'none',
+                  }}
+                  aria-label={`Image ${i + 1}`}
+                >
+                  <img src={img?.url} alt="" style={{ width: 64, height: 48, objectFit: 'cover', display: 'block' }} />
+                </button>
+              ))}
+            </div>
           )}
 
           <div style={{ marginTop: 'var(--space-2)' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--text-sm)' }}>
               <tbody>
                 {[
-                  ['Make', v.make], ['Model', v.model], ['Year', String(v.year)],
-                  ['Mileage', formatMileage(v.mileage)], ['Transmission', v.transmission],
-                  ['Fuel', v.fuel_type], ['Colour', v.colour], ['Condition', v.condition],
+                  ['Make', lot.make || lot.vehicles?.make || '—'], ['Model', lot.model || lot.vehicles?.model || '—'],
+                  ['Year', year ? String(year) : '—'], ['Mileage', formatMileage(mileage)],
+                  ['Transmission', transmission], ['Fuel', fuel], ['Colour', colour], ['Condition', vCondition],
                 ].map(([label, val]) => (
                   <tr key={label} style={{ borderBottom: '1px solid var(--border-light)' }}>
                     <td style={{ padding: '6px var(--space-1)', color: 'var(--stone)', width: '40%' }}>{label}</td>
@@ -240,29 +286,82 @@ export function AuctionDetail() {
               </tbody>
             </table>
           </div>
+
+          {(lot.condition_grade || (lot.faults && lot.faults.length > 0)) && (
+            <div style={{ marginTop: 'var(--space-2)', padding: 'var(--space-3)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)' }}>
+              <h3 style={{ fontSize: 'var(--text-base)', marginBottom: 'var(--space-1-5)' }}>Condition Report</h3>
+              {lot.condition_grade && GRADE_META[lot.condition_grade] && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 'var(--space-1-5)' }}>
+                  <span style={{ display: 'inline-block', minWidth: 28, textAlign: 'center', padding: '3px 10px', borderRadius: 'var(--radius-sm)', background: GRADE_META[lot.condition_grade].bg, color: GRADE_META[lot.condition_grade].color, fontWeight: 700 }}>{lot.condition_grade}</span>
+                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)' }}>{GRADE_META[lot.condition_grade].label}</span>
+                </div>
+              )}
+              {(lot.faults && lot.faults.length > 0) ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {[...lot.faults].sort((a, b) => a.sort_order - b.sort_order).map(f => {
+                    const meta = SEVERITY_META[f.severity]
+                    return (
+                      <div key={f.id} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                        <span style={{ flexShrink: 0, marginTop: 2, fontSize: 'var(--text-2xs)', fontWeight: 700, padding: '2px 8px', borderRadius: 'var(--radius-sm)', background: meta.bg, color: meta.color, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{meta.label}</span>
+                        <div style={{ flex: 1 }}>
+                          <p style={{ fontSize: 'var(--text-sm)', fontWeight: 600 }}>{f.title}</p>
+                          {f.description && <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)', marginTop: 2 }}>{f.description}</p>}
+                          {f.image_url && (
+                            <button type="button" onClick={() => setLightbox(f.image_url)} style={{ marginTop: 6, padding: 0, border: 'none', background: 'none', cursor: 'zoom-in', display: 'block' }}>
+                              <img src={f.image_url} alt={`Proof: ${f.title}`} style={{ width: 88, height: 62, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--border)' }} />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)' }}>No faults recorded.</p>
+              )}
+            </div>
+          )}
         </div>
 
         <div>
           <div style={{ padding: 'var(--space-3)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', background: 'var(--surface)' }}>
-            <Badge variant={lot.status === 'open' ? 'live' : lot.status === 'closing' ? 'live' : 'sold'} />
-            <h2 style={{ fontSize: 'var(--text-2xl)', marginTop: 'var(--space-1)' }}>{v.make} {v.model}</h2>
-            <p style={{ color: 'var(--stone)', fontSize: 'var(--text-sm)' }}>{v.year} &middot; {formatMileage(v.mileage)}</p>
+            <Badge variant={isOpen ? 'live' : lot.status === 'sold' ? 'sold' : 'draft'} label={isOpen ? 'Live' : lot.status} />
+            <h2 style={{ fontSize: 'var(--text-2xl)', marginTop: 'var(--space-1)' }}>{title}</h2>
+            <p style={{ color: 'var(--stone)', fontSize: 'var(--text-sm)' }}>{year ? `${year} · ` : ''}{formatMileage(mileage)}</p>
 
-            <div style={{ margin: 'var(--space-2) 0', padding: 'var(--space-2)', background: 'var(--navy-light)', borderRadius: 'var(--radius-md)' }}>
-              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--navy-muted)' }}>Current Bid</p>
-              <p className="tabular-nums" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--navy)' }}>
-                {formatPrice(lot.current_bid)}
-              </p>
-              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>
-                Opening bid: {formatPrice(lot.opening_bid)}
-              </p>
-            </div>
+            {lot.status === 'sold' ? (
+              <div style={{ margin: 'var(--space-2) 0', padding: 'var(--space-2)', background: 'var(--navy-light)', borderRadius: 'var(--radius-md)' }}>
+                <p style={{ fontSize: 'var(--text-xs)', color: 'var(--navy-muted)' }}>{winner ? `Sold to ${winner}` : 'Sold'}</p>
+                <p className="tabular-nums" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--navy)' }}>{formatPrice(lot.current_bid)}</p>
+                {lot.sold_at && <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>Closed {new Date(lot.sold_at).toLocaleDateString()}</p>}
+              </div>
+            ) : (
+              <div style={{ margin: 'var(--space-2) 0', padding: 'var(--space-2)', background: 'var(--navy-light)', borderRadius: 'var(--radius-md)' }}>
+                <p style={{ fontSize: 'var(--text-xs)', color: 'var(--navy-muted)' }}>Current Bid</p>
+                <p className="tabular-nums" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--navy)' }}>
+                  {formatPrice(lot.current_bid)}
+                </p>
+                <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>
+                  Opening bid: {formatPrice(lot.opening_bid)}
+                </p>
+                {hasReserve && isOpen && (
+                  <p style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: reserveMet ? 'var(--success)' : 'var(--live)', marginTop: 4 }}>
+                    {reserveMet ? 'Reserve met' : 'Reserve not met yet'}
+                  </p>
+                )}
+              </div>
+            )}
 
             <div style={{ marginBottom: 'var(--space-2)' }}>
               <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>Time Remaining</p>
               <p style={{ fontSize: 'var(--text-xl)', fontWeight: 600, color: auctionTimeColor(timeLeft) }}>
-                <AuctionTimer closesAt={lot.closes_at} />
+                <AuctionTimer closesAt={deadline} />
               </p>
+              {isOpen && timeLeft <= 3 * 60_000 && (
+                <p style={{ fontSize: 'var(--text-xs)', color: 'var(--live)', marginTop: 4 }}>
+                  Ending soon — bids in the last 3 minutes extend the auction by 5.
+                </p>
+              )}
             </div>
 
             {isOpen && (
@@ -292,7 +391,7 @@ export function AuctionDetail() {
                   placeholder="+234 800 000 0000"
                 />
                 <Input
-                  label={`Your bid (₦) — must exceed ${formatPrice(lot.current_bid)}`}
+                  label={`Your bid (₦) — next bid must be at least ${formatPrice(Math.max(lot.current_bid + nextIncrement, lot.opening_bid))}`}
                   type="text"
                   inputMode="numeric"
                   value={bidAmount}
@@ -304,8 +403,10 @@ export function AuctionDetail() {
               </form>
             )}
 
-            {!isOpen && lot.status !== 'sold' && lot.status !== 'unsold' && (
-              <p style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)', textAlign: 'center' }}>This auction is {lot.status}.</p>
+            {!isOpen && lot.status !== 'sold' && (
+              <p style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)', textAlign: 'center', marginTop: 'var(--space-1)' }}>
+                This auction is {lot.status}.
+              </p>
             )}
           </div>
 

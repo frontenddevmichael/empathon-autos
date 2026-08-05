@@ -6,10 +6,17 @@ import { Modal } from '@/components/ui/Modal'
 import { TableSkeleton } from '@/components/ui/Skeleton'
 import { ChevronDown, Gavel } from 'lucide-react'
 import { useAutoCloseLots } from '@/hooks/useAutoCloseLots'
+import { GRADE_META } from '@/lib/auction'
+import type { ConditionGrade } from '@/types'
 
 interface LotWithVehicle {
   id: string
-  vehicle_id: string
+  vehicle_id: string | null
+  title: string | null
+  make: string | null
+  model: string | null
+  year: number | null
+  condition_grade: ConditionGrade | null
   opening_bid: number
   reserve_price: number
   current_bid: number
@@ -17,6 +24,8 @@ interface LotWithVehicle {
   closes_at: string
   created_at: string
   vehicles: { make: string; model: string; year: number } | null
+  media: { id: string; url: string; is_primary: boolean }[]
+  faults: { count: number }[]
 }
 
 interface BidWithBidder {
@@ -46,6 +55,14 @@ function timeAgo(dateStr: string): string {
   return `${days}d ago`
 }
 
+function lotTitle(l: LotWithVehicle): string {
+  if (l.title) return l.title
+  const own = [l.make, l.model].filter(Boolean).join(' ')
+  if (own) return own
+  if (l.vehicles) return `${l.vehicles.make} ${l.vehicles.model}`
+  return 'Untitled lot'
+}
+
 export function AdminAuctions() {
   const [lots, setLots] = useState<LotWithVehicle[]>([])
   const [loading, setLoading] = useState(true)
@@ -61,7 +78,7 @@ export function AdminAuctions() {
       try {
         const { data, error } = await supabase
           .from('lots')
-          .select('*, vehicles:vehicle_id(make, model, year)')
+          .select('*, vehicles:vehicle_id(make, model, year), media:lot_media(id, url, is_primary), faults:lot_faults(count)')
           .order('created_at', { ascending: false })
         if (error) console.error('[AdminAuctions] Failed to load lots:', error.message)
         if (data) setLots(data as unknown as LotWithVehicle[])
@@ -74,7 +91,7 @@ export function AdminAuctions() {
 
   useEffect(() => { fetchLots() }, [fetchLots])
 
-  // Auto-close expired lots every 60s, re-fetch the list afterward
+  // Poll for server-side status transitions, re-fetch the list afterward.
   useAutoCloseLots(fetchLots)
 
   const fetchBids = useCallback(async (lotId: string) => {
@@ -108,7 +125,7 @@ export function AdminAuctions() {
   const updateStatus = async (id: string, status: string) => {
     const { data: lot } = await supabase.from('lots').select('vehicle_id').eq('id', id).single()
     await supabase.from('lots').update({ status }).eq('id', id)
-    if (lot) {
+    if (lot && lot.vehicle_id) {
       const vehicleStatus = status === 'sold' ? 'sold' : ['closed', 'unsold'].includes(status) ? 'published' : 'in-auction'
       await supabase.from('vehicles').update({ status: vehicleStatus }).eq('id', lot.vehicle_id)
     }
@@ -120,7 +137,7 @@ export function AdminAuctions() {
     setSaving(true)
     const { data: lot } = await supabase.from('lots').select('vehicle_id').eq('id', deleteId).single()
     await supabase.from('lots').delete().eq('id', deleteId)
-    if (lot) {
+    if (lot && lot.vehicle_id) {
       await supabase.from('vehicles').update({ status: 'published' }).eq('id', lot.vehicle_id)
     }
     setSaving(false)
@@ -149,17 +166,20 @@ export function AdminAuctions() {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--text-sm)' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid var(--border)' }}>
-                {['', 'Vehicle', 'Opening Bid', 'Current Bid', 'Status', 'Closes', 'Actions'].map(h => (
+                {['', '', 'Lot', 'Grade', 'Faults', 'Opening Bid', 'Current Bid', 'Status', 'Closes', 'Actions'].map(h => (
                   <th key={h} style={{ textAlign: 'left', padding: 'var(--space-1) var(--space-2)', fontWeight: 600, whiteSpace: 'nowrap' }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {lots.length === 0 && (
-                <tr><td colSpan={7} style={{ padding: 'var(--space-3)', textAlign: 'center', color: 'var(--stone)' }}>No lots created yet.</td></tr>
+                <tr><td colSpan={10} style={{ padding: 'var(--space-3)', textAlign: 'center', color: 'var(--stone)' }}>No lots created yet.</td></tr>
               )}
               {lots.map(l => {
                 const isExpanded = expandedLot === l.id
+                const primary = l.media?.find(m => m.is_primary) ?? l.media?.[0]
+                const faultCount = l.faults?.[0]?.count ?? 0
+                const grade = l.condition_grade ? GRADE_META[l.condition_grade] : null
                 return (
                   <Fragment key={l.id}>
                     <tr
@@ -185,9 +205,20 @@ export function AdminAuctions() {
                           <ChevronDown size={12} />
                         </span>
                       </td>
-                      <td style={{ padding: 'var(--space-1) var(--space-2)', fontWeight: 500 }}>
-                        {l.vehicles ? `${l.vehicles.make} ${l.vehicles.model} (${l.vehicles.year})` : '—'}
+                      <td style={{ padding: 'var(--space-1) var(--space-2)', width: 56 }}>
+                        {primary
+                          ? <img src={primary.url} alt="" style={{ width: 48, height: 36, objectFit: 'cover', borderRadius: 6, display: 'block' }} />
+                          : <div style={{ width: 48, height: 36, borderRadius: 6, background: 'var(--paper-warm)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--stone-light)', fontSize: 10 }}>No img</div>}
                       </td>
+                      <td style={{ padding: 'var(--space-1) var(--space-2)', fontWeight: 500 }}>
+                        {lotTitle(l)}{l.year ? ` (${l.year})` : ''}
+                      </td>
+                      <td style={{ padding: 'var(--space-1) var(--space-2)' }}>
+                        {grade
+                          ? <span style={{ display: 'inline-block', minWidth: 22, textAlign: 'center', padding: '1px 8px', borderRadius: 'var(--radius-sm)', background: grade.bg, color: grade.color, fontWeight: 700, fontSize: 'var(--text-xs)' }}>{l.condition_grade}</span>
+                          : <span style={{ color: 'var(--stone-light)' }}>—</span>}
+                      </td>
+                      <td style={{ padding: 'var(--space-1) var(--space-2)', color: faultCount > 0 ? 'var(--stone)' : 'var(--stone-light)' }}>{faultCount}</td>
                       <td className="tabular-nums" style={{ padding: 'var(--space-1) var(--space-2)' }}>{formatNaira(l.opening_bid)}</td>
                       <td className="tabular-nums" style={{ padding: 'var(--space-1) var(--space-2)', fontWeight: 600 }}>{formatNaira(l.current_bid)}</td>
                       <td style={{ padding: 'var(--space-1) var(--space-2)' }} onClick={e => e.stopPropagation()}>
@@ -209,7 +240,7 @@ export function AdminAuctions() {
                     </tr>
                     {isExpanded && (
                       <tr>
-                        <td colSpan={7} style={{ padding: 0, borderBottom: '1px solid var(--border)' }}>
+                        <td colSpan={10} style={{ padding: 0, borderBottom: '1px solid var(--border)' }}>
                           <div style={{
                             background: 'rgba(0,51,102,0.015)',
                             borderTop: '1px solid rgba(0,51,102,0.06)',
@@ -227,7 +258,6 @@ export function AdminAuctions() {
                               <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)', padding: 'var(--space-1) 0' }}>No bids yet on this lot.</p>
                             ) : (
                               <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                {/* Header row */}
                                 <div style={{
                                   display: 'grid', gridTemplateColumns: '1fr 120px 100px 80px',
                                   gap: 'var(--space-2)', padding: '4px var(--space-1)',
@@ -239,7 +269,6 @@ export function AdminAuctions() {
                                   <span>Time</span>
                                   <span>Outcome</span>
                                 </div>
-                                {/* Bid rows */}
                                 {bids.map((bid, i) => (
                                   <div
                                     key={bid.id}
@@ -288,7 +317,7 @@ export function AdminAuctions() {
       )}
 
       <Modal open={deleteId !== null} onClose={() => setDeleteId(null)} title="Delete Lot">
-        <p style={{ marginBottom: 'var(--space-2)' }}>Delete this lot and all associated bids?</p>
+        <p style={{ marginBottom: 'var(--space-2)' }}>Delete this lot and all associated bids, media, and faults?</p>
         <div style={{ display: 'flex', gap: 'var(--space-1)', justifyContent: 'flex-end' }}>
           <Button variant="ghost" onClick={() => setDeleteId(null)}>Cancel</Button>
           <Button onClick={handleDelete} loading={saving} style={{ background: 'var(--error)', color: 'white' }}>Delete</Button>
@@ -297,4 +326,3 @@ export function AdminAuctions() {
     </div>
   )
 }
-
