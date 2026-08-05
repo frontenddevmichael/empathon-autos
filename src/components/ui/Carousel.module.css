@@ -5,121 +5,60 @@
 
 .carouselViewport {
   overflow: hidden;
+  padding: var(--space-3) 0;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 15%, black 85%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, black 15%, black 85%, transparent 100%);
 }
 
 .carouselTrack {
   display: flex;
-  transition: transform 500ms var(--ease-out);
+  width: max-content;
+  animation: carousel-marquee var(--carousel-duration, 36s) linear infinite;
   will-change: transform;
 }
 
+.carousel:hover .carouselTrack,
+.carousel:focus-within .carouselTrack {
+  animation-play-state: paused;
+}
+
+@keyframes carousel-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 .carouselSlide {
-  flex: 0 0 100%;
-  min-width: 100%;
+  flex: 0 0 auto;
+  width: clamp(280px, 30vw, 384px);
+  min-width: clamp(280px, 30vw, 384px);
+  padding: 0 var(--space-2);
+  box-sizing: border-box;
 }
 
-/* Arrows */
-.carouselArrow {
-  position: absolute;
-  top: 42%;
-  transform: translateY(-50%);
-  z-index: 10;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--ink);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 200ms var(--ease-out);
-  box-shadow: 0 4px 16px rgba(10,10,10,0.08);
-}
-
-.carouselArrow:hover {
-  background: var(--navy);
-  border-color: var(--navy);
-  color: white;
-  transform: translateY(-50%) scale(1.05);
-}
-
-.carouselArrow:focus-visible {
-  outline: 2px solid var(--navy);
-  outline-offset: 2px;
-}
-
-.carouselArrowPrev {
-  left: 12px;
-}
-
-.carouselArrowNext {
-  right: 12px;
-}
-
-/* Dots */
-.carouselDots {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-1-5);
-  padding-top: var(--space-3);
-}
-
-.carouselDot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 2px solid rgba(0,51,102,0.3);
-  background: transparent;
-  cursor: pointer;
-  padding: 0;
-  transition: all 200ms var(--ease-out);
-}
-
-.carouselDot:hover {
-  border-color: var(--navy);
-  background: rgba(0,51,102,0.1);
-}
-
-.carouselDotActive {
-  background: var(--navy);
-  border-color: var(--navy);
-  transform: scale(1.15);
-}
-
-.carouselDot:focus-visible {
-  outline: 2px solid var(--navy);
-  outline-offset: 2px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .carouselArrow {
-    width: 40px;
-    height: 40px;
-  }
-  .carouselArrowPrev {
-    left: 8px;
-  }
-  .carouselArrowNext {
-    right: 8px;
+@media (max-width: 900px) {
+  .carouselSlide {
+    width: clamp(260px, 44vw, 360px);
+    min-width: clamp(260px, 44vw, 360px);
   }
 }
 
 @media (max-width: 640px) {
-  .carouselArrow {
-    display: none;
+  .carouselViewport {
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 10%, black 90%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, black 10%, black 90%, transparent 100%);
+  }
+  .carouselSlide {
+    width: min(74vw, 320px);
+    min-width: min(74vw, 320px);
   }
 }
 
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .carouselTrack {
-    transition: none;
-  }
-  .carouselArrow,
-  .carouselDot {
-    transition: none;
+    animation: none;
   }
 }

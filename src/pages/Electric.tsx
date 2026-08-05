@@ -88,11 +88,7 @@ export function Electric() {
           </p>
           <Carousel
             items={BENEFITS}
-            autoPlay={true}
-            interval={5000}
-            showArrows={true}
-            showDots={true}
-            pauseOnHover={true}
+            speed={36}
             renderItem={(b) => (
               <div style={{ maxWidth: 720, margin: '0 auto', padding: 'var(--space-5)', border: '1px solid rgba(10,10,10,0.06)', borderRadius: 'var(--radius-xl)', background: 'var(--surface)', transition: 'all 300ms var(--ease-out)', height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <b.icon size={28} style={{ color: 'var(--navy)', marginBottom: 'var(--space-1-5)' }} />
