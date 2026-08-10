@@ -140,7 +140,14 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { -webkit-text-size-adjust: 100%; }
+html {
+  -webkit-text-size-adjust: 100%;
+  /* Clip — not hidden — so it never creates a scroll container (which would
+     break position:sticky). Guards against horizontal scroll from pre-reveal
+     transforms (reveal-left/right translateX offsets) and stray fixed widths. */
+  overflow-x: clip;
+}
+body { overflow-x: clip; }
 
 body {
   font-family: var(--font-body);
