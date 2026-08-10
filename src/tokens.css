@@ -1,19 +1,20 @@
 :root {
-  /* ── Core Palette ── */
-  --navy: #003366;
-  --navy-light: rgba(0,51,102,0.06);
-  --navy-hover: #00407f;
-  --navy-muted: rgba(0,51,102,0.45);
-  --ink: #000000;
-  --ink-light: rgba(0,0,0,0.5);
+  /* ── Core Palette — near-monochrome + one deep automotive accent ── */
+  --navy: #0b2e59;
+  --navy-light: rgba(11,46,89,0.06);
+  --navy-hover: #10407a;
+  --navy-muted: rgba(11,46,89,0.45);
+  --navy-deep: #081a33;
+  --ink: #1d1d1f;
+  --ink-light: rgba(29,29,31,0.5);
   --paper: #ffffff;
-  --paper-warm: #f4f4f4;
+  --paper-warm: #f5f5f7;
   --paper-light: #ffffff;
   --surface: #ffffff;
-  --stone: #555555;
-  --stone-light: #767676;
-  --border: rgba(0,0,0,0.10);
-  --border-light: rgba(0,0,0,0.05);
+  --stone: #86868b;
+  --stone-light: #a1a1a6;
+  --border: rgba(29,29,31,0.08);
+  --border-light: rgba(29,29,31,0.04);
 
   /* ── Semantic Colors ── */
   --error: #dc2626;
@@ -24,9 +25,12 @@
   --live-light: rgba(220,38,38,0.07);
   --secondary: #d0d0d0;
   --secondary-muted: rgba(208,208,208,0.4);
-  --gold: #c4c4c4;
-  --gold-light: rgba(208,208,208,0.35);
-  --gold-dark: #b8b8b8;
+  
+  /* Premium Gold — reserved for tiny brand marks only */
+  --gold: #c4a265;
+  --gold-light: rgba(196,162,101,0.15);
+  --gold-dark: #a68a4b;
+  
   --accent-warm: #c2410c;
   --accent-warm-light: rgba(194,65,12,0.08);
 
@@ -36,22 +40,38 @@
   --text-secondary: var(--stone);
   --accent: var(--navy);
 
-  /* ── Typography ── */
-  --font-display: 'DM Sans', 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  /* ── Typography — one confident family, strict scale ── */
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
 
+  /* Line Heights */
+  --leading-tight: 1.05;
+  --leading-snug: 1.15;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.7;
+
+  /* Letter Spacing */
+  --tracking-tighter: -0.04em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+
+  /* Font Sizes — strict scale */
   --text-2xs: 0.625rem;
   --text-xs: 0.75rem;
   --text-sm: 0.8125rem;
-  --text-base: 0.9375rem;
-  --text-lg: 1.0625rem;
-  --text-xl: 1.25rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
   --text-2xl: 1.5rem;
-  --text-3xl: 2rem;
-  --text-4xl: 2.75rem;
-  --text-5xl: 3.75rem;
-  --text-6xl: 5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 2.75rem;
+  --text-6xl: 3.5rem;
+  --text-display: clamp(3rem, 6vw, 5rem);
+  --text-h2: clamp(2rem, 3.5vw, 3.25rem);
 
   /* ── Spacing ── */
   --space-0-5: 4px;
@@ -65,7 +85,8 @@
   --space-6: 64px;
   --space-7: 96px;
   --space-8: 128px;
-  --space-9: 160px; /* used on mobile */
+  --space-9: 200px;
+  --space-10: 240px;
 
   /* ── Radii ── */
   --radius-xs: 4px;
@@ -76,15 +97,26 @@
   --radius-2xl: 28px;
   --radius-full: 9999px;
 
-  /* ── Shadows (layered for depth) ── */
-  --shadow-xs: 0 1px 2px rgba(10,10,10,0.04);
-  --shadow-sm: 0 1px 3px rgba(10,10,10,0.06), 0 1px 2px rgba(10,10,10,0.04);
-  --shadow-md: 0 4px 6px -1px rgba(10,10,10,0.06), 0 2px 4px -2px rgba(10,10,10,0.04);
-  --shadow-lg: 0 10px 15px -3px rgba(10,10,10,0.07), 0 4px 6px -4px rgba(10,10,10,0.04);
-  --shadow-xl: 0 20px 25px -5px rgba(10,10,10,0.08), 0 8px 10px -6px rgba(10,10,10,0.04);
-  --shadow-2xl: 0 25px 50px -12px rgba(10,10,10,0.15);
-  --shadow-inner: inset 0 2px 4px rgba(10,10,10,0.04);
-  --shadow-glow: 0 0 20px rgba(0,51,102,0.12);
+  /* ── Shadows — one soft diffuse layer; depth comes from layering ── */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.06);
+  --shadow-xl: 0 12px 40px rgba(0,0,0,0.08);
+  --shadow-2xl: 0 20px 60px rgba(0,0,0,0.1);
+  --shadow-inner: inset 0 2px 4px rgba(0,0,0,0.04);
+  
+  /* Premium — single soft layer */
+  --shadow-premium: 0 4px 20px rgba(0,0,0,0.05);
+  
+  --shadow-premium-hover: 0 8px 30px rgba(0,0,0,0.08);
+  
+  /* Brand-Colored Shadows — extremely soft */
+  --shadow-navy: 0 4px 20px rgba(11,46,89,0.15);
+  
+  --shadow-gold: 0 4px 20px rgba(196,162,101,0.2);
+  
+  --shadow-glow: 0 0 20px rgba(11,46,89,0.1);
 
   /* ── Motion ── */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -99,11 +131,11 @@
   --transition-spring: 500ms var(--ease-spring);
 
   /* ── Layout ── */
-  --nav-height: 80px;
-  --container-max: 1240px;
+  --nav-height: 64px;
+  --container-max: 1280px;
   --container-narrow: 680px;
-
-
+  --section-gap: 80px;
+  --section-y: clamp(5rem, 10vw, 8.5rem);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -113,7 +145,7 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   font-family: var(--font-body);
   font-size: var(--text-base);
-  line-height: 1.65;
+  line-height: var(--leading-normal);
   color: var(--text-primary);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
@@ -131,16 +163,16 @@ ul, ol { list-style: none; }
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   font-weight: 700;
-  line-height: 1.08;
-  letter-spacing: -0.025em;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
   color: var(--text-primary);
 }
-h1 { font-size: var(--text-5xl); letter-spacing: -0.035em; font-weight: 800; }
-h2 { font-size: var(--text-4xl); letter-spacing: -0.03em; }
+h1 { font-size: var(--text-5xl); letter-spacing: var(--tracking-tighter); font-weight: 700; }
+h2 { font-size: var(--text-4xl); letter-spacing: var(--tracking-tight); }
 h3 { font-size: var(--text-2xl); }
 h4 { font-size: var(--text-xl); }
 
-p { color: var(--text-primary); line-height: 1.7; }
+p { color: var(--text-secondary); line-height: var(--leading-relaxed); }
 
 ::selection { background: var(--navy); color: white; }
 
@@ -162,14 +194,44 @@ p { color: var(--text-primary); line-height: 1.7; }
 
 @media (max-width: 768px) {
   :root {
-    --text-5xl: 2.25rem;
-    --text-4xl: 1.875rem;
+    --text-6xl: 2.5rem;
+    --text-5xl: 2rem;
+    --text-4xl: 1.75rem;
     --text-3xl: 1.5rem;
-    --text-6xl: 3rem;
     --space-6: 48px;
     --space-7: 64px;
     --space-8: 80px;
     --space-9: 112px;
+    --space-10: 160px;
+    --nav-height: 56px;
+    --container-max: 100%;
+    --section-y: clamp(4rem, 14vw, 6rem);
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --text-6xl: 2rem;
+    --text-5xl: 1.75rem;
+    --text-4xl: 1.5rem;
+    --text-3xl: 1.375rem;
+    --text-2xl: 1.25rem;
+    --space-5: 32px;
+    --space-6: 40px;
+    --space-7: 48px;
+    --space-8: 64px;
+    --space-9: 80px;
+    --space-10: 112px;
+    --section-y: clamp(3.5rem, 16vw, 4.5rem);
+  }
+}
+
+/* Tablet landscape and small desktop */
+@media (min-width: 769px) and (max-width: 1024px) {
+  :root {
+    --container-max: 960px;
+    --space-9: 160px;
+    --space-10: 200px;
   }
 }
 

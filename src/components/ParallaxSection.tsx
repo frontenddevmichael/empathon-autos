@@ -19,8 +19,10 @@ export function ParallaxSection({ children, speed = 0.3, className, style }: Par
       frame = requestAnimationFrame(() => {
         const rect = el.getBoundingClientRect()
         const scrollProgress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height)
-        const offset = Math.max(-20, Math.min(20, (scrollProgress - 0.5) * speed * 100))
-        el.style.transform = `translateY(${offset}%)`
+        // Small fixed-pixel drift (never a percentage of height) so content
+        // never clips into or overlaps neighbouring sections.
+        const offset = Math.max(-12, Math.min(12, (scrollProgress - 0.5) * speed * 80))
+        el.style.transform = `translateY(${offset}px)`
       })
     }
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -32,6 +34,8 @@ export function ParallaxSection({ children, speed = 0.3, className, style }: Par
   }, [speed])
 
   return (
+    // Sections carry their own generous vertical padding (var(--section-y)),
+    // which absorbs the small drift — content never clips or overlaps neighbours.
     <div className={className} style={{ position: 'relative', overflow: 'hidden', ...style }}>
       <div ref={bgRef} className="scroll-parallax" style={{ willChange: 'transform' }}>
         {children}

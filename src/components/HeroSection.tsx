@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef, type ReactNode } from 'react'
-import { Squiggle, HandCircle, HandDots, CarSilhouette } from '@/components/DecoSvgs'
+import { HandCircle, HandDots, CarSilhouette } from '@/components/DecoSvgs'
 import { SplitHeading } from '@/components/SplitHeading'
 
 interface HeroImage {
@@ -217,10 +217,6 @@ export function HeroSection({
         ) : (
           title
         )}
-
-        <div style={{ animation: 'fadeInUp 600ms 250ms var(--ease-out) both' }}>
-          <Squiggle />
-        </div>
 
         {subtitle && (
           <p

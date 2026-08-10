@@ -1,61 +1,234 @@
 .footer {
-  background: var(--ink);
+  position: relative;
+  background: linear-gradient(180deg, #0a1b33 0%, #06121f 100%);
   color: rgba(255,255,255,0.7);
-  padding: var(--space-7) 0 var(--space-4);
+  padding: 0 0 var(--space-4);
   font-size: var(--text-sm);
+  overflow: hidden;
+}
+
+/* Gold hairline — the closing echo of the hero's brand tick */
+.goldLine {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(196,162,101,0) 0%,
+    rgba(196,162,101,0.45) 50%,
+    rgba(196,162,101,0) 100%
+  );
 }
 
 .inner {
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: 0 var(--space-4);
+  padding: var(--space-6) var(--space-4) 0;
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-columns: 1.6fr 1fr 1fr 1.1fr;
   gap: var(--space-5);
+}
+
+.logo {
+  width: 100%;
+  max-width: 190px;
+  height: auto;
+  object-fit: contain;
+  object-position: left center;
+  margin-bottom: var(--space-3);
 }
 
 .brand p {
   color: rgba(255,255,255,0.4);
-  margin-top: var(--space-2);
-  max-width: 340px;
+  max-width: 320px;
   line-height: 1.8;
   font-size: var(--text-sm);
 }
 
-.col h4 {
+.social {
+  display: flex;
+  gap: var(--space-1-5);
+  margin-top: var(--space-4);
+}
+.social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.55);
+  transition:
+    border-color 200ms var(--ease-out),
+    color 200ms var(--ease-out),
+    transform 200ms var(--ease-out);
+}
+.social a:hover {
+  border-color: rgba(255,255,255,0.6);
   color: white;
+  transform: translateY(-2px);
+}
+
+.col h4 {
+  color: rgba(255,255,255,0.35);
   font-size: var(--text-xs);
-  font-weight: 700;
-  margin-bottom: var(--space-2);
+  font-weight: 600;
+  margin-bottom: var(--space-2-5);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.16em;
 }
-.col a, .col p {
+.col a,
+.col p {
   display: block;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.5);
   margin-bottom: var(--space-1-5);
-  transition: color 150ms var(--ease-out);
   font-size: var(--text-sm);
+  transition: color 200ms var(--ease-out);
+  position: relative;
+  width: fit-content;
 }
-.col a:hover { color: rgba(255,255,255,0.85); }
+.col a:hover {
+  color: rgba(255,255,255,0.95);
+}
+
+/* Underline grows in from the left on hover */
+.col a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: rgba(255,255,255,0.5);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 250ms var(--ease-out);
+}
+.col a:hover::after {
+  transform: scaleX(1);
+}
+
+/* Live count badge — echoes the homepage stats band */
+.liveBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  margin-left: var(--space-1-5);
+  border-radius: var(--radius-full);
+  background: rgba(196, 162, 101, 0.14);
+  border: 1px solid rgba(196, 162, 101, 0.35);
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+/* Contact rows — icon + text */
+.contactItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-1-5);
+  color: rgba(255,255,255,0.5);
+}
+.contactItem svg {
+  color: rgba(255,255,255,0.3);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
 
 .bottom {
   max-width: var(--container-max);
-  margin: 0 auto;
-  padding: var(--space-4) var(--space-4) 0;
+  margin: var(--space-5) auto 0;
+  padding: var(--space-3) var(--space-4) 0;
   border-top: 1px solid rgba(255,255,255,0.06);
-  margin-top: var(--space-5);
-  padding-top: var(--space-3);
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-1);
-  color: rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.28);
   font-size: var(--text-xs);
 }
 
+.tagline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  letter-spacing: 0.2em;
+  font-weight: 500;
+  color: rgba(255,255,255,0.35);
+}
+.taglineDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+/* ── Tablet (769px–1024px) ── */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .inner {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+  .brand {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ── Mobile (≤768px) ── */
 @media (max-width: 768px) {
-  .inner { grid-template-columns: 1fr; gap: var(--space-4); }
-  .bottom { flex-direction: column; text-align: center; }
+  .footer {
+    padding-bottom: var(--space-3);
+  }
+  .inner {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    padding-top: var(--space-5);
+  }
+  .brand {
+    text-align: center;
+  }
+  .logo {
+    margin: 0 auto var(--space-3);
+  }
+  .brand p {
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .social {
+    justify-content: center;
+  }
+  .col {
+    text-align: center;
+  }
+  .col h4 {
+    margin-bottom: var(--space-1-5);
+  }
+  .col a,
+  .col p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .contactItem {
+    justify-content: center;
+  }
+  .bottom {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-1-5);
+  }
+}
+
+/* ── Small Mobile (≤480px) ── */
+@media (max-width: 480px) {
+  .inner {
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
+  }
 }

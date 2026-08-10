@@ -1,38 +1,68 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(10,10,10,0.6);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  z-index: 200;
+  z-index: 500;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-3);
   animation: fadeIn 200ms var(--ease-out);
 }
+
 .dialog {
-  background: var(--surface);
-  border-radius: var(--radius-xl);
-  padding: var(--space-4);
   width: 100%;
-  max-width: 520px;
-  max-height: 80vh;
+  max-width: 480px;
+  max-height: 85vh;
+  max-height: 85dvh;
   overflow-y: auto;
-  position: relative;
-  box-shadow:
-    0 4px 8px rgba(10,10,10,0.04),
-    0 16px 32px rgba(10,10,10,0.08),
-    0 32px 64px rgba(10,10,10,0.06);
-  animation: slideUp 250ms var(--ease-out);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2xl);
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 10px 15px rgba(0, 0, 0, 0.1),
+    0 20px 25px rgba(0, 0, 0, 0.1),
+    0 40px 50px rgba(0, 0, 0, 0.1);
+  padding: var(--space-4);
+  animation: scaleIn 200ms var(--ease-out);
 }
+
+@media (max-width: 480px) {
+  .overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .dialog {
+    max-width: 100%;
+    max-height: 90vh;
+    max-height: 90dvh;
+    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+    padding: var(--space-4) var(--space-3);
+    animation: sheetUp 300ms var(--ease-out);
+  }
+}
+
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: var(--space-3);
 }
-.title { font-size: var(--text-xl); font-weight: 700; letter-spacing: -0.02em; }
+
+.title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+}
+
 .close {
   width: 32px;
   height: 32px;
@@ -43,4 +73,18 @@
   color: var(--stone);
   transition: all 150ms var(--ease-out);
 }
-.close:hover { background: var(--navy-light); color: var(--ink); }
+
+.close:hover {
+  background: var(--navy-light);
+  color: var(--ink);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}

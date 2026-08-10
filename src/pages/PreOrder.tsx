@@ -4,22 +4,22 @@ import { ArrowRight } from 'lucide-react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { Input, TextArea } from '@/components/ui/Input'
 import { Section } from '@/components/PageLayout'
-import { DecoMark } from '@/components/DecoMark'
+import { SectionHeader } from '@/components/ui/SectionHeader'
 import { useToast } from '@/context/ToastContext'
-import { ShieldCheck, HandDots } from '@/components/DecoSvgs'
-import { SplitHeading } from '@/components/SplitHeading'
 import { RippleButton } from '@/components/RippleButton'
 import { HeroSection } from '@/components/HeroSection'
+import { CarKey, RoadDraw } from '@/components/DecoSvgs'
 import { VehicleCard } from '@/components/ui/VehicleCard'
 import { VehicleCardSkeleton } from '@/components/ui/Skeleton'
 import { useMounted } from '@/hooks/useMounted'
 import type { Vehicle, VehicleMedia } from '@/types'
+import styles from './PreOrder.module.css'
 
 const steps = [
-  { icon: 'shield', title: '1. Tell Us What You Want', desc: 'Make, model, trim, colour, year, budget — the more specific you are, the better we can hunt.' },
-  { icon: 'arrow', title: '2. Secure It With a Deposit', desc: 'A refundable deposit locks in your place. We\'ll give you a timeline and keep you posted.' },
-  { icon: 'split', title: '3. We Handle Everything', desc: 'Sourcing, shipping, customs clearance — we\'ve done it hundreds of times. You just wait for the call.' },
-  { icon: 'shield', title: '4. Inspect & Drive Away', desc: 'When it arrives at our Ikeja showroom, come inspect it. If everything checks out, you drive home.' },
+  { title: '1. Tell Us What You Want', desc: 'Make, model, trim, colour, year, budget — the more specific you are, the better we can hunt.' },
+  { title: '2. Secure It With a Deposit', desc: "A refundable deposit locks in your place. We'll give you a timeline and keep you posted." },
+  { title: '3. We Handle Everything', desc: "Sourcing, shipping, customs clearance — we've done it hundreds of times. You just wait for the call." },
+  { title: '4. Inspect & Drive Away', desc: 'When it arrives at our Ikeja showroom, come inspect it. If everything checks out, you drive home.' },
 ]
 
 export function PreOrder() {
@@ -87,14 +87,13 @@ export function PreOrder() {
         deco="circle"
       />
 
-      <Section style={{ position: 'relative' }}>
-        <ShieldCheck className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', opacity: 0.04 }} size={48} />
-        <p style={{ fontSize: 'var(--text-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--navy)', marginBottom: 'var(--space-1)' }}>Pre-Order Fleet</p>
-        <SplitHeading as="h2">Inbound &amp; Available to Order</SplitHeading>
-        <div className="section-divider" />
-        <p style={{ color: 'var(--stone)', marginBottom: 'var(--space-4)', maxWidth: 560, lineHeight: 1.8 }}>
-          These vehicles are already sourced or inbound. Reserve one with a deposit, or tell us about something completely different below.
-        </p>
+      {/* Pre-Order Fleet */}
+      <Section className="scroll-reveal reveal-right" style={{ position: 'relative' }}>
+        <SectionHeader
+          label="Pre-Order Fleet"
+          title="Inbound & Available to Order"
+          desc="These vehicles are already sourced or inbound. Reserve one with a deposit, or tell us about something completely different below."
+        />
 
         {loading ? (
           <div className="stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-4)', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
@@ -105,43 +104,49 @@ export function PreOrder() {
             <div className="scroll-reveal stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-4)', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
               {vehicles.map(v => <VehicleCard key={v.id} vehicle={v} />)}
             </div>
-            <div style={{ textAlign: 'center', marginTop: 'var(--space-3)' }}>
+            <div style={{ textAlign: 'center', marginTop: 'var(--space-4)' }}>
               <Link to="/inventory?status=pre-order">
                 <RippleButton variant="secondary">View All Pre-Order Vehicles <ArrowRight size={14} /></RippleButton>
               </Link>
             </div>
           </>
         ) : (
-          <div style={{ textAlign: 'center', padding: 'var(--space-5)', border: '1px dashed var(--border)', borderRadius: 'var(--radius-xl)', color: 'var(--stone)' }}>
-            No pre-order vehicles right now — tell us what you want below and we'll find it.
-          </div>
+          <p className={styles.emptyState}>
+            No pre-order vehicles right now — <Link to="#request">tell us what you want below</Link> and we'll find it.
+          </p>
         )}
       </Section>
 
-      <Section style={{ position: 'relative' }}>
-        <ShieldCheck className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', opacity: 0.04 }} size={48} />
-        <SplitHeading as="h2">How It Works</SplitHeading>
-        <div className="section-divider" />
-        <p style={{ color: 'var(--stone)', marginBottom: 'var(--space-4)', maxWidth: 560, lineHeight: 1.8 }}>
-          You tell us what you want. We find it, ship it, clear it, and call you when it's ready. Simple.
-        </p>
-        <div className="scroll-reveal responsive-grid-2 stagger-fade-in" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
-          {steps.map(s => (
-            <div key={s.title} style={{ padding: 'var(--space-4)', border: '1px solid rgba(10,10,10,0.06)', borderRadius: 'var(--radius-xl)', background: 'var(--surface)', transition: 'all 300ms var(--ease-out)' }}>
-              <DecoMark variant={s.icon as any} size={32} />
-              <h3 style={{ fontSize: 'var(--text-base)', marginTop: 'var(--space-1-5)', marginBottom: 4, letterSpacing: '-0.02em' }}>{s.title}</h3>
-              <p style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)', lineHeight: 1.7 }}>{s.desc}</p>
+      {/* How It Works */}
+      <Section className="scroll-reveal reveal-scale" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
+        <CarKey className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', opacity: 0.08 }} size={64} />
+        <SectionHeader
+          label="How It Works"
+          title="Four Simple Steps"
+          desc="You tell us what you want. We find it, ship it, clear it, and call you when it's ready. Simple."
+        />
+        {/* Hand-drawn road — the journey from request to delivery, draws on reveal */}
+        <RoadDraw className="deco-positioned" style={{ margin: 'var(--space-1) auto var(--space-4)', maxWidth: 620 }} />
+        <div className={`scroll-reveal stagger-fade-in ${styles.stepsGrid}`}>
+          {steps.map((s, i) => (
+            <div key={s.title} className={styles.stepCard}>
+              <span className={styles.stepIndex}>{String(i + 1).padStart(2, '0')}</span>
+              <h3 className={styles.stepTitle}>{s.title}</h3>
+              <p className={styles.stepText}>{s.desc}</p>
             </div>
           ))}
         </div>
       </Section>
 
-      <Section style={{ background: 'var(--paper-light)', position: 'relative' }}>
-        <HandDots className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.25 }} />
-        <div style={{ maxWidth: 520, margin: '0 auto' }}>
-          <SplitHeading as="h2" style={{ marginBottom: 'var(--space-2)' }}>Tell Us What You Want</SplitHeading>
-          <div className="section-divider" />
-          <p style={{ color: 'var(--stone)', marginBottom: 'var(--space-3)' }}>Fill in the details and we'll start the search. No obligation, no pressure.</p>
+      {/* Request Form */}
+      <Section className="scroll-reveal reveal-big" style={{ position: 'relative' }}>
+        <div id="request" style={{ maxWidth: 520, margin: '0 auto' }}>
+          <SectionHeader
+            label="Start the Search"
+            title="Tell Us What You Want"
+            desc="Fill in the details and we'll start the search. No obligation, no pressure."
+            align="center"
+          />
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1-5)' }}>
             <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
               <input tabIndex={-1} value={form.honeypot} onChange={e => setForm(f => ({ ...f, honeypot: e.target.value }))} />

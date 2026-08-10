@@ -431,4 +431,366 @@ export function ChatBubble({ className, style, size = 40 }: DecoProps & { size?:
   )
 }
 
+/** Hand-drawn car under a magnifying glass — empty-search state, draws on reveal */
+export function EmptyCarSearch({ className, style, size = 120 }: DecoProps & { size?: number }) {
+  return (
+    <svg
+      className={`deco-svg ${className ?? ''}`.trim()}
+      style={{ display: 'block', ...style }}
+      width={size}
+      height={(size * 70) / 120}
+      viewBox="0 0 120 70"
+      fill="none"
+      aria-hidden="true"
+    >
+      {/* Magnifying glass */}
+      <circle
+        className="deco-draw-reveal"
+        pathLength={1}
+        cx="89" cy="21" r="12"
+        stroke="var(--gold)"
+        strokeWidth="1.6"
+        opacity="0.55"
+      />
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M97.5 29.5 L108 40"
+        stroke="var(--gold)"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        opacity="0.55"
+      />
+      {/* Car — monoline side profile */}
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M13 55 C10 55 9 52 9 49 C9 46 12 45 16 44 C23 39 32 37 44 36 C55 35 65 38 71 42 C76 45 80 47 83 50 C85 52 85 55 80 56"
+        stroke="var(--navy)"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.55"
+      />
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M9 57 C28 58 58 58 81 57"
+        stroke="var(--navy)"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        opacity="0.4"
+      />
+      <circle
+        className="deco-draw-reveal"
+        pathLength={1}
+        cx="27" cy="61" r="7"
+        stroke="var(--navy)"
+        strokeWidth="1.6"
+        opacity="0.55"
+      />
+      <circle
+        className="deco-draw-reveal"
+        pathLength={1}
+        cx="66" cy="61" r="7"
+        stroke="var(--navy)"
+        strokeWidth="1.6"
+        opacity="0.55"
+      />
+      <circle cx="27" cy="61" r="2.2" fill="var(--navy)" opacity="0.45" />
+      <circle cx="66" cy="61" r="2.2" fill="var(--navy)" opacity="0.45" />
+    </svg>
+  )
+}
+
+/** Hand-drawn open book with pencil — empty-learning state, draws on reveal */
+export function EmptyOpenBook({ className, style, size = 120 }: DecoProps & { size?: number }) {
+  return (
+    <svg
+      className={`deco-svg ${className ?? ''}`.trim()}
+      style={{ display: 'block', ...style }}
+      width={size}
+      height={(size * 80) / 120}
+      viewBox="0 0 120 80"
+      fill="none"
+      aria-hidden="true"
+    >
+      {/* Spine */}
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M60 20 C58 34 58 48 60 62"
+        stroke="var(--navy)"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        opacity="0.55"
+      />
+      {/* Left page */}
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M60 20 C40 15 18 17 10 23 C13 38 34 50 60 62"
+        stroke="var(--navy)"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.55"
+      />
+      {/* Right page */}
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M60 20 C80 15 102 17 110 23 C107 38 86 50 60 62"
+        stroke="var(--navy)"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.55"
+      />
+      {/* Text lines */}
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M20 29 C30 28 42 29 50 32"
+        stroke="var(--navy)"
+        strokeWidth="1"
+        strokeLinecap="round"
+        opacity="0.35"
+      />
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M22 36 C32 35 44 36 52 39"
+        stroke="var(--navy)"
+        strokeWidth="1"
+        strokeLinecap="round"
+        opacity="0.35"
+      />
+      {/* Pencil */}
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M86 12 L46 52"
+        stroke="var(--gold)"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M46 52 L41 55 M40 53 L38 57"
+        stroke="var(--gold)"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+    </svg>
+  )
+}
+
+/** Hand-drawn auction gavel — empty-auctions state, draws on reveal */
+export function EmptyAuctionGavel({ className, style, size = 120 }: DecoProps & { size?: number }) {
+  return (
+    <svg
+      className={`deco-svg ${className ?? ''}`.trim()}
+      style={{ display: 'block', ...style }}
+      width={size}
+      height={(size * 80) / 120}
+      viewBox="0 0 120 80"
+      fill="none"
+      aria-hidden="true"
+    >
+      {/* Gavel head — two loose monoline curves */}
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M13 24 C15 13 36 8 54 11 C66 13 68 22 60 25"
+        stroke="var(--navy)"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        opacity="0.55"
+      />
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M13 24 C22 31 42 32 58 26"
+        stroke="var(--navy)"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        opacity="0.55"
+      />
+      {/* Handle */}
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M38 22 C45 34 53 46 59 58"
+        stroke="var(--navy)"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        opacity="0.55"
+      />
+      {/* Sound block / podium */}
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M28 64 L88 64"
+        stroke="var(--navy)"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M32 70 L84 70"
+        stroke="var(--navy)"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        opacity="0.4"
+      />
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M28 64 L32 70 M88 64 L84 70"
+        stroke="var(--navy)"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        opacity="0.35"
+      />
+      {/* Gold bid paddle accent */}
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M92 10 C100 12 106 16 108 22"
+        stroke="var(--gold)"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        opacity="0.55"
+      />
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M92 10 L92 30"
+        stroke="var(--gold)"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+    </svg>
+  )
+}
+
+/** Hand-drawn road line — connects the pre-order steps, draws on reveal */
+export function RoadDraw({ className, style }: DecoProps) {
+  return (
+    <svg
+      className={`deco-svg ${className ?? ''}`.trim()}
+      style={{ display: 'block', ...style }}
+      width="100%"
+      height="40"
+      viewBox="0 0 600 60"
+      preserveAspectRatio="none"
+      fill="none"
+      aria-hidden="true"
+    >
+      {/* Road edges */}
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M0 24 C 100 16, 200 32, 300 24 C 400 16, 500 32, 600 24"
+        stroke="var(--navy)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity="0.4"
+      />
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M0 36 C 100 28, 200 44, 300 36 C 400 28, 500 44, 600 36"
+        stroke="var(--navy)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity="0.4"
+      />
+      {/* Dashed centreline — dashes light up left to right */}
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M30 30 L80 30 M130 30 L180 30 M230 30 L280 30 M330 30 L380 30 M430 30 L480 30 M530 30 L580 30"
+        stroke="var(--navy)"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        opacity="0.3"
+      />
+    </svg>
+  )
+}
+
+/** Hand-drawn fork-in-the-road — draws on scroll reveal */
+export function ForkRoad({ className, style, size = 140 }: DecoProps & { size?: number }) {
+  return (
+    <svg
+      className={`deco-svg ${className ?? ''}`.trim()}
+      style={{ display: 'block', ...style }}
+      width={size}
+      height={(size * 120) / 140}
+      viewBox="0 0 140 120"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M70 118 C69 100 71 84 70 70 M70 70 C54 50 34 28 20 10 M70 70 C86 50 106 28 120 10"
+        stroke="var(--navy)"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        opacity="0.32"
+      />
+      <circle
+        className="deco-draw-reveal"
+        pathLength={1}
+        cx="20" cy="9" r="3.2"
+        stroke="var(--gold)"
+        strokeWidth="1.4"
+        opacity="0.5"
+      />
+      <circle
+        className="deco-draw-reveal"
+        pathLength={1}
+        cx="120" cy="9" r="3.2"
+        stroke="var(--gold)"
+        strokeWidth="1.4"
+        opacity="0.5"
+      />
+    </svg>
+  )
+}
+
+/** Hand-drawn underline swoosh — draws on scroll reveal */
+export function UnderlineFlourish({ className, style }: DecoProps) {
+  return (
+    <svg
+      className={`deco-svg ${className ?? ''}`.trim()}
+      style={{ display: 'block', ...style }}
+      width="200"
+      height="16"
+      viewBox="0 0 200 16"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        className="deco-draw-reveal"
+        pathLength={1}
+        d="M6 11 C 44 5, 84 3, 128 5 C 156 6, 176 9, 194 13 C 186 10, 172 8, 150 8 C 110 8, 64 10, 8 13"
+        stroke="var(--gold)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity="0.45"
+      />
+    </svg>
+  )
+}
+
 

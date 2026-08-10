@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 interface ContentBlock {
   id: string
@@ -11,7 +11,7 @@ interface ContentBlock {
 
 /**
  * Fetches content blocks for a given page key from the content_blocks table.
- * Falls back gracefully to empty data if Supabase isn't configured.
+ * Falls back gracefully to empty data if Supabase isn't configured or table is missing.
  */
 export function useSiteContent(pageKey: string) {
   const [content, setContent] = useState<ContentBlock[]>([])
@@ -19,7 +19,7 @@ export function useSiteContent(pageKey: string) {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!supabase) { setLoading(false); return }
+    if (!isSupabaseConfigured()) { setLoading(false); return }
     let cancelled = false
     ;(async () => {
       try {
@@ -30,15 +30,21 @@ export function useSiteContent(pageKey: string) {
           .order('id')
         if (cancelled) return
         if (dbError) {
-          console.error(`[useSiteContent] Error loading content for '${pageKey}':`, dbError.message)
-          setError(dbError.message)
+          // Gracefully handle missing table or column errors (400/404)
+          if (dbError.code === 'PGRST204' || dbError.message?.includes('does not exist') || dbError.code?.startsWith('42')) {
+            // Table or column doesn't exist yet — not an error, just empty
+            setContent([])
+          } else {
+            console.error(`[useSiteContent] Error loading content for '${pageKey}':`, dbError.message)
+            setError(dbError.message)
+          }
         } else if (data) {
           setContent(data)
         }
       } catch (err) {
         if (cancelled) return
-        console.error(`[useSiteContent] Unexpected error for '${pageKey}':`, err)
-        setError('Failed to load content')
+        // Silently handle network errors — content_blocks is optional
+        console.debug(`[useSiteContent] Could not load content for '${pageKey}':`, err)
       }
       if (!cancelled) setLoading(false)
     })()

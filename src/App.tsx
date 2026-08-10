@@ -72,6 +72,10 @@ const AdminBlog = namedLazy(() => import('@/pages/admin/AdminBlog'), 'AdminBlog'
 const AdminTestimonials = namedLazy(() => import('@/pages/admin/AdminTestimonials'), 'AdminTestimonials')
 const NotFound = namedLazy(() => import('@/pages/NotFound'), 'NotFound')
 
+// New pages
+const UserDashboard = namedLazy(() => import('@/pages/UserDashboard'), 'UserDashboard')
+const KYCRegistration = namedLazy(() => import('@/pages/KYCRegistration'), 'KYCRegistration')
+
 function PublicLayout({ children }: { children: React.ReactNode }) {
   const [leadOpen, setLeadOpen] = useState(false)
   return (
@@ -126,6 +130,10 @@ export function App() {
           <Route path="/blog/:slug" element={<PublicLayout><Lazy cmp={BlogPost} /></PublicLayout>} />
           <Route path="/privacy" element={<PublicLayout><Lazy cmp={Privacy} /></PublicLayout>} />
           <Route path="/terms" element={<PublicLayout><Lazy cmp={Terms} /></PublicLayout>} />
+          
+          {/* New Routes */}
+          <Route path="/dashboard" element={<PublicLayout><Lazy cmp={UserDashboard} /></PublicLayout>} />
+          <Route path="/register" element={<PublicLayout><Lazy cmp={KYCRegistration} /></PublicLayout>} />
 
           <Route path="/admin/login" element={<Suspense fallback={<LoadingScreen height="60vh" />}><AdminLogin /></Suspense>} />
           <Route path="/admin" element={<AdminGuard><AdminLayout /></AdminGuard>}>

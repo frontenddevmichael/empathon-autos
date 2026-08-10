@@ -7,3 +7,8 @@ supabase/.temp/
 **/desktop*.db
 **/desktop*.db-shm
 **/desktop*.db-wal
+
+# Stray artifacts — never commit
+emphaton-autos/
+*.zip
+test.html

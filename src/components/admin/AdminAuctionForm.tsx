@@ -10,19 +10,23 @@ import { SEVERITY_META, GRADE_META } from '@/lib/auction'
 import type { ConditionGrade, FaultSeverity } from '@/types'
 
 const TRANSMISSION_OPTIONS = [
-  { value: 'automatic', label: 'Automatic' }, { value: 'manual', label: 'Manual' },
+  { value: 'automatic', label: 'Automatic' },
+  { value: 'manual', label: 'Manual' },
   { value: 'semi-automatic', label: 'Semi-Automatic' },
 ]
 const FUEL_OPTIONS = [
-  { value: 'petrol', label: 'Petrol' }, { value: 'diesel', label: 'Diesel' },
-  { value: 'electric', label: 'Electric' }, { value: 'hybrid', label: 'Hybrid' },
+  { value: 'petrol', label: 'Petrol' },
+  { value: 'diesel', label: 'Diesel' },
+  { value: 'electric', label: 'Electric' },
+  { value: 'hybrid', label: 'Hybrid' },
   { value: 'plug-in-hybrid', label: 'Plug-in Hybrid' },
 ]
 const BODY_OPTIONS = [
   { value: 'sedan', label: 'Sedan' }, { value: 'suv', label: 'SUV' },
   { value: 'hatchback', label: 'Hatchback' }, { value: 'coupe', label: 'Coupe' },
   { value: 'pickup', label: 'Pickup' }, { value: 'truck', label: 'Truck' },
-  { value: 'wagon', label: 'Wagon' }, { value: 'van', label: 'Van' }, { value: 'convertible', label: 'Convertible' },
+  { value: 'wagon', label: 'Wagon' }, { value: 'van', label: 'Van' },
+  { value: 'convertible', label: 'Convertible' },
 ]
 
 /** Max full-naira value NUMERIC(12,2) can hold (9,999,999,999.99). */
@@ -53,6 +57,7 @@ interface LoadedLot {
   condition_grade: string | null
   opening_bid: number
   reserve_price: number
+  buy_now_price: number | null
   bid_increment: number
   current_bid: number
   status: string
@@ -123,7 +128,7 @@ export function AdminAuctionForm() {
     vehicle_id: '', title: '', make: '', model: '', trim: '', year: new Date().getFullYear(),
     mileage: 0, transmission: 'automatic', fuel_type: 'petrol', colour: '', body_type: 'sedan', description: '',
     condition_grade: 'B' as ConditionGrade,
-    opening_bid: '', reserve_price: '', bid_increment: '', current_bid: '0',
+    opening_bid: '', reserve_price: '', buy_now_price: '', bid_increment: '', current_bid: '0',
     status: 'scheduled', closes_at: '', opens_at: '',
   })
   const [media, setMedia] = useState<MediaDraft[]>([])
@@ -155,13 +160,12 @@ export function AdminAuctionForm() {
         if (lot) {
           setForm({
             vehicle_id: lot.vehicle_id || '', title: lot.title || '',
-            make: lot.make || '', model: lot.model || '', trim: lot.trim || '',
-            year: lot.year || new Date().getFullYear(), mileage: lot.mileage || 0,
-            transmission: lot.transmission, fuel_type: lot.fuel_type, colour: lot.colour || '',
-            body_type: lot.body_type, description: lot.description || '',
-            condition_grade: (lot.condition_grade || 'B') as ConditionGrade,
+            make: lot.make || '', model: lot.model || '', trim: lot.trim || '', year: lot.year || new Date().getFullYear(), mileage: lot.mileage || 0,
+            transmission: lot.transmission, fuel_type: lot.fuel_type, colour: lot.colour || '', body_type: lot.body_type,
+            description: lot.description || '', condition_grade: (lot.condition_grade || 'B') as ConditionGrade,
             opening_bid: String(lot.opening_bid / 1_000_000),
             reserve_price: String(lot.reserve_price / 1_000_000),
+            buy_now_price: lot.buy_now_price ? String(lot.buy_now_price / 1_000_000) : '',
             bid_increment: lot.bid_increment > 0 ? String(lot.bid_increment / 1_000_000) : '',
             current_bid: String(lot.current_bid / 1_000_000),
             status: lot.status, closes_at: lot.closes_at.slice(0, 16), opens_at: lot.opens_at?.slice(0, 16) || '',
@@ -221,6 +225,7 @@ export function AdminAuctionForm() {
     const reservePrice = toFullNaira(form.reserve_price)
     const currentBid = toFullNaira(form.current_bid)
     const bidIncrement = form.bid_increment.trim() === '' ? 0 : toFullNaira(form.bid_increment)
+    const buyNowPrice = form.buy_now_price.trim() === '' ? null : toFullNaira(form.buy_now_price)
     if (openingBid === null || reservePrice === null || currentBid === null || bidIncrement === null) {
       showToast('Amount too large — enter values in ₦ millions (e.g. 85 = ₦85M, max ~₦9,999M)', 'error')
       return
@@ -246,6 +251,7 @@ export function AdminAuctionForm() {
       bid_increment: bidIncrement,
       opening_bid: openingBid,
       reserve_price: reservePrice,
+      buy_now_price: buyNowPrice,
       status: form.status,
       closes_at: closesAt,
       opens_at: toSafeISO(form.opens_at),
@@ -433,6 +439,7 @@ export function AdminAuctionForm() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-1)' }}>
             <Input label="Opening Bid (₦M)" type="number" step="0.1" min="0" value={form.opening_bid} onChange={e => set({ opening_bid: e.target.value })} placeholder="e.g. 85 = ₦85,000,000" required />
             <Input label="Reserve Price (₦M)" type="number" step="0.1" min="0" value={form.reserve_price} onChange={e => set({ reserve_price: e.target.value })} placeholder="e.g. 95 = ₦95,000,000" />
+            <Input label="Buy Now Price (₦M)" type="number" step="0.1" min="0" value={form.buy_now_price} onChange={e => set({ buy_now_price: e.target.value })} placeholder="Optional — e.g. 120 = ₦120,000,000" />
             <Input label="Min Bid Increment (₦M)" type="number" step="0.1" min="0" value={form.bid_increment} onChange={e => set({ bid_increment: e.target.value })} placeholder="blank = auto (max ₦500k, 5% of bid)" />
             {id && <Input label="Current Bid (₦M)" type="number" step="0.1" min="0" value={form.current_bid} onChange={e => set({ current_bid: e.target.value })} placeholder="e.g. 90 = ₦90,000,000" />}
           </div>

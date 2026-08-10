@@ -3,7 +3,7 @@ export type BodyType = 'sedan' | 'suv' | 'hatchback' | 'coupe' | 'convertible' |
 export type Transmission = 'automatic' | 'manual' | 'semi-automatic'
 export type FuelType = 'petrol' | 'diesel' | 'electric' | 'hybrid' | 'plug-in-hybrid'
 export type VehicleCondition = 'new' | 'used' | 'certified-pre-owned'
-export type LeadType = 'enquiry' | 'test-drive' | 'corporate-quote' | 'pre-order' | 'contact'
+export type LeadType = 'enquiry' | 'test-drive' | 'corporate-quote' | 'pre-order' | 'contact' | 'ev-enquiry' | 'kyc-registration'
 export type LeadStatus = 'new' | 'contacted' | 'in-progress' | 'won' | 'lost'
 export type LotStatus = 'scheduled' | 'open' | 'closing' | 'closed' | 'sold' | 'unsold'
 export type MediaType = 'image' | 'video'
@@ -116,6 +116,7 @@ export interface Lot {
   bid_increment: number
   opening_bid: number
   reserve_price: number
+  buy_now_price: number | null
   current_bid: number
   current_bidder_id: string | null
   current_bidder_name: string | null

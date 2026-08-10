@@ -5,7 +5,7 @@ export function Section({ children, dark, className = '', style }: { children: R
     <section
       className={className}
       style={{
-        padding: 'var(--space-7) var(--space-4)',
+        padding: 'var(--section-y) var(--space-4)',
         background: dark ? 'var(--navy)' : undefined,
         color: dark ? 'white' : undefined,
         ...style,

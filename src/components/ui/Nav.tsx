@@ -7,7 +7,6 @@ const links = [
   { to: '/inventory', label: 'Inventory' },
   { to: '/ev', label: 'EV' },
   { to: '/pre-order', label: 'Pre-Order' },
-  { to: '/track-order', label: 'Track Order' },
   { to: '/auctions', label: 'Auctions' },
   { to: '/corporate', label: 'Corporate' },
   { to: '/about', label: 'About' },
@@ -42,6 +41,7 @@ export function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const { pathname } = useLocation()
   const menuRef = useRef<HTMLDivElement>(null)
+  const hamburgerRef = useRef<HTMLButtonElement>(null)
 
   // Scroll detection — adds blur/shadow after 40px
   useEffect(() => {
@@ -54,24 +54,44 @@ export function Nav() {
     return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(frame) }
   }, [])
 
+  // Close the mobile menu on route change
   useEffect(() => {
     const t = setTimeout(() => setMobileOpen(false), 50)
     return () => clearTimeout(t)
   }, [pathname])
 
+  // Mobile dialog — body scroll lock, outside-click close, focus trap,
+  // Escape at document level, and focus restore to the hamburger on close.
   useEffect(() => {
     if (!mobileOpen) {
       document.body.style.overflow = ''
       return
     }
     document.body.style.overflow = 'hidden'
-    const handler = (e: MouseEvent) => {
+    const previouslyFocused = document.activeElement as HTMLElement | null
+    const firstFocusable = menuRef.current?.querySelector<HTMLElement>('a, button')
+    firstFocusable?.focus()
+
+    const onMouseDown = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMobileOpen(false)
     }
-    document.addEventListener('mousedown', handler)
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setMobileOpen(false); return }
+      if (e.key !== 'Tab' || !menuRef.current) return
+      const items = Array.from(menuRef.current.querySelectorAll<HTMLElement>('a, button'))
+      if (!items.length) return
+      const first = items[0]
+      const last = items[items.length - 1]
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
+    }
+    document.addEventListener('mousedown', onMouseDown)
+    document.addEventListener('keydown', onKeyDown)
     return () => {
       document.body.style.overflow = ''
-      document.removeEventListener('mousedown', handler)
+      document.removeEventListener('mousedown', onMouseDown)
+      document.removeEventListener('keydown', onKeyDown)
+      previouslyFocused?.focus?.()
     }
   }, [mobileOpen])
 
@@ -80,13 +100,8 @@ export function Nav() {
     return pathname.startsWith(to)
   }
 
-  // Determine nav classes:
-  // - .nav → always navy bg, white text
-  // - .scrolled → adds blur + shadow
-  const navClasses = [
-    styles.nav,
-    scrolled ? styles.scrolled : '',
-  ].filter(Boolean).join(' ')
+  // The nav is always white — light theme is the only theme.
+  const navClasses = [styles.nav, styles.light, scrolled ? styles.scrolled : ''].filter(Boolean).join(' ')
 
   return (
     <>
@@ -109,15 +124,18 @@ export function Nav() {
               </Link>
             ))}
             <div className={styles.cta}>
+              <Button as="a" href="/register" size="sm" variant="ghost">Register</Button>
               <Button as="a" href="/contact" size="sm" variant="primary" magnetic className={styles.navContact}>Contact</Button>
             </div>
           </div>
 
           <button
+            ref={hamburgerRef}
             className={styles.hamburger}
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileOpen}
+            aria-controls="site-mobile-nav"
           >
             <span className={styles.hamburgerInner}>
               <span className={`${styles.hamburgerLine} ${mobileOpen ? styles.hamburgerOpen : ''}`} />
@@ -128,9 +146,10 @@ export function Nav() {
 
       <div
         ref={menuRef}
-        className={`${styles.mobileMenu} ${mobileOpen ? styles.mobileOpen : ''}`}
+        id="site-mobile-nav"
+        className={`${styles.mobileMenu} ${styles.mobileMenuLight} ${mobileOpen ? styles.mobileOpen : ''}`}
         role="dialog" aria-modal="true" aria-label="Navigation"
-        onKeyDown={e => { if (e.key === 'Escape') setMobileOpen(false) }}
+        aria-hidden={!mobileOpen}
       >
         <div className={styles.mobileLinks}>
           {links.map((link, i) => (
@@ -139,6 +158,7 @@ export function Nav() {
               to={link.to}
               className={styles.mobileLink}
               tabIndex={mobileOpen ? 0 : -1}
+              aria-current={isActive(link.to) ? 'page' : undefined}
               style={{ animationDelay: `${i * 60}ms` }}
             >
               {link.label}
@@ -147,6 +167,28 @@ export function Nav() {
               </svg>
             </Link>
           ))}
+          <Link
+            to="/register"
+            className={styles.mobileLink}
+            tabIndex={mobileOpen ? 0 : -1}
+            style={{ animationDelay: `${links.length * 60}ms`, color: 'var(--navy)' }}
+          >
+            Register to Bid
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style={{ opacity: 0.3, marginLeft: 'auto' }}>
+              <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </Link>
+          <Link
+            to="/dashboard"
+            className={styles.mobileLink}
+            tabIndex={mobileOpen ? 0 : -1}
+            style={{ animationDelay: `${(links.length + 1) * 60}ms`, color: 'var(--navy)' }}
+          >
+            My Dashboard
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style={{ opacity: 0.3, marginLeft: 'auto' }}>
+              <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </Link>
         </div>
         <div className={styles.mobileCta}>
           <Button as="a" href="/contact" fullWidth>Contact</Button>

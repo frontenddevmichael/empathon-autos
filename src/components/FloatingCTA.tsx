@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { MessageCircle, X, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Magnetic } from '@/components/Magnetic'
+import { config } from '@/lib/config'
 
 interface FloatingCTAProps {
   onEnquire?: () => void
@@ -92,7 +93,7 @@ export function FloatingCTA({ onEnquire, showEnquire = true }: FloatingCTAProps)
               </Button>
             )}
             <a
-              href="https://wa.me/2348023392388?text=Hi%20Empathon%20Autos!%20I%27d%20like%20to%20make%20an%20enquiry."
+              href={config.whatsapp.getDeepLink("Hi Empathon Autos! I'd like to make an enquiry.")}
               target="_blank"
               rel="noopener noreferrer"
               style={{

@@ -13,6 +13,7 @@ import { Section } from '@/components/PageLayout'
 import { useToast } from '@/context/ToastContext'
 import { useAutoCloseLots } from '@/hooks/useAutoCloseLots'
 import type { Lot, Bid, LotMedia } from '@/types'
+import { Zap, ShoppingCart } from 'lucide-react'
 
 const ERROR_MESSAGES: Record<string, string> = {
   LOT_NOT_FOUND: 'Auction not found',
@@ -128,9 +129,13 @@ export function AuctionDetail() {
       if (error) {
         showToast(error.message || 'Failed to place bid', 'error')
       } else {
-        const result = data as { ok?: boolean; code?: string; current_bid?: number; status?: string; deadline?: string }
+        const result = data as { ok?: boolean; code?: string; current_bid?: number; status?: string; deadline?: string; is_buy_now?: boolean }
         if (result?.ok) {
-          showToast('Bid placed successfully')
+          if (result.is_buy_now) {
+            showToast('Buy Now purchase successful! This lot is now yours.')
+          } else {
+            showToast('Bid placed successfully')
+          }
           setBidAmount('')
           setLot(prev => prev ? {
             ...prev,
@@ -138,6 +143,9 @@ export function AuctionDetail() {
             status: (result.status as Lot['status']) ?? prev.status,
             extended_until: result.deadline ?? prev.extended_until,
             current_bidder_name: bidderName.trim(),
+            winner_name: result.is_buy_now ? bidderName.trim() : prev.winner_name,
+            winner_email: result.is_buy_now ? bidderEmail.trim() : prev.winner_email,
+            sold_at: result.is_buy_now ? new Date().toISOString() : prev.sold_at,
           } : prev)
         } else {
           showToast(ERROR_MESSAGES[result?.code || ''] || 'Bid rejected', 'error')
@@ -206,6 +214,11 @@ export function AuctionDetail() {
   const reserveMet = lot.reserve_price > 0 && lot.current_bid >= lot.reserve_price
   const hasReserve = lot.reserve_price > 0
   const nextIncrement = computeBidIncrement(lot.current_bid, lot.bid_increment)
+
+  // Buy Now logic: show button only if buy_now_price is set AND current bid is below it
+  const hasBuyNow = (lot as any).buy_now_price != null && (lot as any).buy_now_price > 0
+  const buyNowPrice = (lot as any).buy_now_price as number | null
+  const showBuyNow = hasBuyNow && isOpen && buyNowPrice != null && lot.current_bid < buyNowPrice
 
   const siteUrl = import.meta.env.VITE_SITE_URL || 'https://www.emphatonautos.com'
   const auctionTitle = `${title} Auction | Empathon Autos`
@@ -364,6 +377,32 @@ export function AuctionDetail() {
               )}
             </div>
 
+            {/* Buy Now Button - Only shows when current bid is below buy_now_price */}
+            {showBuyNow && buyNowPrice && (
+              <div style={{ marginBottom: 'var(--space-2)' }}>
+                <Button
+                  onClick={() => {
+                    setBidAmount(buyNowPrice.toString())
+                    showToast(`Buy Now price: ${formatPrice(buyNowPrice)} — enter your details below to purchase`)
+                  }}
+                  style={{ 
+                    width: '100%', 
+                    background: 'var(--success)', 
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 'var(--space-1)',
+                  }}
+                >
+                  <ShoppingCart size={16} /> Buy Now — {formatPrice(buyNowPrice)}
+                </Button>
+                <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)', textAlign: 'center', marginTop: 4 }}>
+                  Skip the bidding — purchase immediately at this price
+                </p>
+              </div>
+            )}
+
             {isOpen && (
               <form onSubmit={placeBid} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
                 <p style={{ fontSize: 'var(--text-sm)', fontWeight: 600 }}>Place a bid</p>
@@ -399,7 +438,9 @@ export function AuctionDetail() {
                   placeholder="e.g. 85,000,000"
                   required
                 />
-                <Button type="submit" loading={saving}>Place Bid</Button>
+                <Button type="submit" loading={saving}>
+                  <Zap size={16} /> Place Bid
+                </Button>
               </form>
             )}
 

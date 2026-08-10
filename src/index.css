@@ -1,12 +1,22 @@
 @import './tokens.css';
 
 /* ── Google Fonts ── */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400;1,9..40,500&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   scrollbar-width: thin;
   scrollbar-color: var(--stone-light) transparent;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 15px;
+    line-height: 1.65;
+  }
 }
 body::-webkit-scrollbar { width: 5px; }
 body::-webkit-scrollbar-track { background: transparent; }
@@ -94,6 +104,17 @@ body::-webkit-scrollbar-thumb { background: var(--stone-light); border-radius: 1
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
+@keyframes pressDown {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
 /* ── Utility Animations ── */
 .animate-fade-in { animation: fadeIn 400ms var(--ease-out) forwards; }
 .animate-fade-in-up { animation: fadeInUp 500ms var(--ease-out) forwards; }
@@ -119,6 +140,24 @@ body::-webkit-scrollbar-thumb { background: var(--stone-light); border-radius: 1
   opacity: 1;
   transform: translateY(0);
 }
+
+/* ── Directional & degree variants — pair with .scroll-reveal for varied motion ── */
+.scroll-reveal.reveal-left { transform: translateX(-44px); }
+.scroll-reveal.reveal-left.revealed { transform: translateX(0); }
+.scroll-reveal.reveal-right { transform: translateX(44px); }
+.scroll-reveal.reveal-right.revealed { transform: translateX(0); }
+.scroll-reveal.reveal-scale { transform: translateY(24px) scale(0.9); }
+.scroll-reveal.reveal-scale.revealed { transform: translateY(0) scale(1); }
+.scroll-reveal.reveal-blur {
+  transform: translateY(14px);
+  filter: blur(10px);
+  transition: opacity 800ms var(--ease-out), transform 800ms var(--ease-out), filter 800ms var(--ease-out);
+}
+.scroll-reveal.reveal-blur.revealed { transform: translateY(0); filter: blur(0); }
+.scroll-reveal.reveal-fade { transform: none; }
+.scroll-reveal.reveal-fade.revealed { transform: none; }
+.scroll-reveal.reveal-big { transform: translateY(60px) scale(0.965); }
+.scroll-reveal.reveal-big.revealed { transform: translateY(0) scale(1); }
 
 /* Children cascade AFTER the parent is revealed — never on mount.
    Delay comes from --reveal-delay (set inline per child for true stagger). */
@@ -192,10 +231,17 @@ body::-webkit-scrollbar-thumb { background: var(--stone-light); border-radius: 1
 /* ── Reduced Motion ── */
 @media (prefers-reduced-motion: reduce) {
   .scroll-reveal,
+  .scroll-reveal.reveal-left,
+  .scroll-reveal.reveal-right,
+  .scroll-reveal.reveal-scale,
+  .scroll-reveal.reveal-blur,
+  .scroll-reveal.reveal-fade,
+  .scroll-reveal.reveal-big,
   .scroll-reveal-child,
   .stagger-fade-in > * {
     opacity: 1;
     transform: none;
+    filter: none;
     transition: none;
   }
   .page-transition {
@@ -213,13 +259,12 @@ body::-webkit-scrollbar-thumb { background: var(--stone-light); border-radius: 1
   animation: split-text-reveal 800ms var(--ease-out) forwards;
 }
 
-/* ── Section Gold Dividers ── */
+/* ── Section Dividers — thin hairline, quiet ── */
 .section-divider {
-  width: 60px;
-  height: 2px;
-  background: var(--gold);
+  width: 40px;
+  height: 1px;
+  background: var(--border);
   margin: var(--space-3) 0;
-  animation: gold-divider 800ms var(--ease-out) forwards;
 }
 
 .section-divider-center {
@@ -285,53 +330,46 @@ body::-webkit-scrollbar-thumb { background: var(--stone-light); border-radius: 1
 /* ── Premium Utilities ── */
 .glass {
   background: rgba(255,255,255,0.72);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
 }
 
 .glass-dark {
   background: rgba(10,10,10,0.75);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
 }
 
 .premium-shadow {
-  box-shadow:
-    0 1px 2px rgba(10,10,10,0.03),
-    0 4px 8px rgba(10,10,10,0.04),
-    0 12px 24px rgba(10,10,10,0.05),
-    0 24px 48px rgba(10,10,10,0.03);
+  box-shadow: var(--shadow-premium);
 }
 
 .premium-shadow-lg {
-  box-shadow:
-    0 2px 4px rgba(10,10,10,0.02),
-    0 8px 16px rgba(10,10,10,0.04),
-    0 20px 40px rgba(10,10,10,0.06),
-    0 40px 80px rgba(10,10,10,0.04);
+  box-shadow: var(--shadow-premium-hover);
 }
 
 .premium-border {
-  border: 1px solid rgba(10,10,10,0.06);
+  border: 1px solid var(--border);
 }
 
 .premium-card {
   background: var(--surface);
-  border: 1px solid rgba(10,10,10,0.06);
+  border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  box-shadow:
-    0 1px 2px rgba(10,10,10,0.03),
-    0 4px 12px rgba(10,10,10,0.04);
+  box-shadow: var(--shadow-premium);
   transition: all 300ms var(--ease-out);
 }
 
 .premium-card:hover {
   border-color: rgba(0,51,102,0.12);
-  box-shadow:
-    0 2px 4px rgba(10,10,10,0.03),
-    0 8px 20px rgba(10,10,10,0.06),
-    0 20px 40px rgba(10,10,10,0.04);
-  transform: translateY(-3px);
+  box-shadow: var(--shadow-premium-hover);
+  transform: translateY(-4px) scale(1.01);
+}
+
+/* ── Button Press Feedback ── */
+.press-feedback:active {
+  transform: scale(0.97);
+  transition: 0.1s;
 }
 
 /* ── Section Noise Texture ── */
@@ -367,6 +405,16 @@ body::-webkit-scrollbar-thumb { background: var(--stone-light); border-radius: 1
 /* Hover: path draw animation (Squiggle, WavyDivider) */
 .deco-hover-draw {
   transition: opacity 400ms var(--ease-out);
+}
+
+/* Scroll-triggered stroke draw-on — pathLength-normalized, draws when an ancestor .scroll-reveal reveals */
+.deco-draw-reveal {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.6s var(--ease-in-out);
+}
+.scroll-reveal.revealed .deco-draw-reveal {
+  stroke-dashoffset: 0;
 }
 .deco-draw-target {
   stroke-dasharray: 300;
@@ -412,7 +460,8 @@ body::-webkit-scrollbar-thumb { background: var(--stone-light); border-radius: 1
   .deco-hover-draw,
   .deco-draw-target,
   .deco-draw-target-long,
-  .deco-dot {
+  .deco-dot,
+  .deco-draw-reveal {
     animation: none !important;
     transition: none !important;
   }
@@ -420,23 +469,37 @@ body::-webkit-scrollbar-thumb { background: var(--stone-light); border-radius: 1
   .deco-hover-scale:hover { opacity: inherit; transform: none; }
   .deco-draw-target { stroke-dashoffset: 0; }
   .deco-draw-target-long { stroke-dashoffset: 0; }
+  .deco-draw-reveal { stroke-dashoffset: 0; }
   .deco-dot { opacity: var(--deco-dot-opacity, 0.12); transform: scale(1); }
 }
 
-/* ── Responsive ── */
+/* ── Responsive Grid Utilities ── */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .responsive-grid-3 { grid-template-columns: repeat(2, 1fr) !important; }
+  .responsive-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
 @media (max-width: 768px) {
   .responsive-grid-2 { grid-template-columns: 1fr !important; }
   .responsive-grid-3 { grid-template-columns: 1fr !important; }
-  .responsive-grid-4 { grid-template-columns: 1fr 1fr !important; }
+  .responsive-grid-4 { grid-template-columns: 1fr !important; }
   .responsive-stack { flex-direction: column !important; }
 
   /* Hide positioned hand-drawn decorative SVGs on mobile to prevent overlap */
   .deco-positioned {
     display: none !important;
   }
+
+  /* Ensure minimum touch target sizes */
+  a, button, [role='button'] {
+    min-height: 44px;
+    min-width: 44px;
+  }
 }
 
-@media (min-width: 769px) and (max-width: 1024px) {
-  .responsive-grid-3 { grid-template-columns: 1fr 1fr !important; }
-  .responsive-grid-4 { grid-template-columns: 1fr 1fr !important; }
+/* ── Touch-friendly mobile overrides ── */
+@media (pointer: coarse) {
+  button, a, [role='button'] {
+    min-height: 48px;
+  }
 }

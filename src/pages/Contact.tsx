@@ -7,16 +7,19 @@ import { useToast } from '@/context/ToastContext'
 import { HandDots, Handshake } from '@/components/DecoSvgs'
 import { RippleButton } from '@/components/RippleButton'
 import { HeroSection } from '@/components/HeroSection'
+import { config } from '@/lib/config'
+import { useRateLimit } from '@/hooks/useRateLimit'
 
 const contactDetails = [
-  { icon: MapPin, label: 'Address', value: '123 Ajao Road, off Awolowo Way, Ikeja, Lagos' },
-  { icon: Phone, label: 'Phone', value: '+234 802 339 2388 / +234 810 383 2403' },
-  { icon: Mail, label: 'Email', value: 'empathonautos@gmail.com' },
-  { icon: Clock, label: 'Hours', value: 'Mon\u2013Sat, 8:00 AM \u2013 6:00 PM' },
+  { icon: MapPin, label: 'Address', value: config.company.address },
+  { icon: Phone, label: 'Phone', value: `${config.company.phone1} / ${config.company.phone2}` },
+  { icon: Mail, label: 'Email', value: config.company.email },
+  { icon: Clock, label: 'Hours', value: config.company.hours },
 ]
 
 export function Contact() {
   const { showToast } = useToast()
+  const { canSubmit } = useRateLimit()
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '', honeypot: '' })
   const [saving, setSaving] = useState(false)
 
@@ -24,6 +27,7 @@ export function Contact() {
     e.preventDefault()
     if (form.honeypot) return
     if (!form.name || !form.email || !form.message) return
+    if (!canSubmit()) { showToast('Please wait before submitting again', 'error'); return }
     if (!isSupabaseConfigured()) {
       showToast('Contact form is not available right now. Please try again later.', 'error')
       return
@@ -56,7 +60,7 @@ export function Contact() {
       <Section style={{ position: 'relative' }}>
         <Handshake className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-3)', left: 'var(--space-3)', opacity: 0.04 }} size={64} />
         <HandDots className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.35 }} />
-        <div className="scroll-reveal responsive-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', alignItems: 'start' }}>
+        <div className="scroll-reveal reveal-fade responsive-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', alignItems: 'start' }}>
           <div className="scroll-reveal-child">
             <div style={{ display: 'grid', gap: 'var(--space-2)' }}>
               {contactDetails.map(d => (
@@ -70,7 +74,7 @@ export function Contact() {
               ))}
             </div>
             <a
-              href="https://wa.me/2348023392388"
+              href={config.whatsapp.link}
               target="_blank" rel="noopener noreferrer"
               style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', marginTop: 'var(--space-2)', padding: 'var(--space-1-5) var(--space-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--ink)', fontSize: 'var(--text-sm)', fontWeight: 500, transition: 'background var(--transition-fast)' }}
             >

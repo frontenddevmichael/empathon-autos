@@ -1,6 +1,6 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
-import { X, MessageCircle, Search, HelpCircle, ChevronDown } from 'lucide-react'
+import { X, MessageCircle, HelpCircle, ChevronDown, Filter, SlidersHorizontal } from 'lucide-react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { useMounted } from '@/hooks/useMounted'
 import type { Vehicle, VehicleMedia } from '@/types'
@@ -9,22 +9,65 @@ import { Input } from '@/components/ui/Input'
 import { VehicleCard } from '@/components/ui/VehicleCard'
 import { VehicleCardSkeleton } from '@/components/ui/Skeleton'
 import { CarSilhouette, Sparkle, Compass, ChatBubble } from '@/components/DecoSvgs'
+import { EmptyState } from '@/components/ui/EmptyState'
 import styles from './Inventory.module.css'
 import { RippleButton } from '@/components/RippleButton'
+import { config } from '@/lib/config'
 
 const PAGE_SIZE = 12
 const MAX_WITH_FILTERS = 200
 
-const MAKES = ['All Makes', 'Toyota', 'Honda', 'Mercedes-Benz', 'BMW', 'Lexus', 'Ford', 'Hyundai', 'Nissan']
+const MAKES = ['All Makes', 'Toyota', 'Honda', 'Mercedes-Benz', 'BMW', 'Lexus', 'Ford', 'Hyundai', 'Nissan', 'Audi', 'Porsche', 'Volkswagen']
 const BODY_TYPES = [
   { value: '', label: 'All Body Types' },
   { value: 'sedan', label: 'Sedan' }, { value: 'suv', label: 'SUV' },
   { value: 'hatchback', label: 'Hatchback' }, { value: 'coupe', label: 'Coupe' },
   { value: 'pickup', label: 'Pickup' }, { value: 'truck', label: 'Truck' },
+  { value: 'wagon', label: 'Wagon' }, { value: 'minivan', label: 'Minivan' },
 ]
 const STATUS_OPTIONS = [
   { value: '', label: 'All Statuses' },
   { value: 'walk-in', label: 'In Stock' }, { value: 'pre-order', label: 'Pre-Order' },
+]
+const FUEL_TYPES = [
+  { value: '', label: 'All Fuel Types' },
+  { value: 'petrol', label: 'Petrol' }, { value: 'diesel', label: 'Diesel' },
+  { value: 'electric', label: 'Electric' }, { value: 'hybrid', label: 'Hybrid' },
+]
+const TRANSMISSIONS = [
+  { value: '', label: 'All Transmissions' },
+  { value: 'automatic', label: 'Automatic' }, { value: 'manual', label: 'Manual' },
+]
+const CONDITIONS = [
+  { value: '', label: 'All Conditions' },
+  { value: 'new', label: 'New' }, { value: 'used', label: 'Used' },
+  { value: 'certified', label: 'Certified Pre-Owned' },
+]
+const YEAR_RANGES = [
+  { value: '', label: 'All Years' },
+  { value: '2024-2026', label: '2024-2026 (Newest)' },
+  { value: '2022-2023', label: '2022-2023' },
+  { value: '2020-2021', label: '2020-2021' },
+  { value: '2018-2019', label: '2018-2019' },
+  { value: '2015-2017', label: '2015-2017' },
+  { value: '0-2014', label: '2014 & Older' },
+]
+const PRICE_RANGES = [
+  { value: '', label: 'All Prices' },
+  { value: '0-10000000', label: 'Under ₦10M' },
+  { value: '10000000-20000000', label: '₦10M - ₦20M' },
+  { value: '20000000-30000000', label: '₦20M - ₦30M' },
+  { value: '30000000-50000000', label: '₦30M - ₦50M' },
+  { value: '50000000-100000000', label: '₦50M - ₦100M' },
+  { value: '100000000-999999999', label: '₦100M+' },
+]
+const MILEAGE_RANGES = [
+  { value: '', label: 'All Mileage' },
+  { value: '0-10000', label: 'Under 10,000 km' },
+  { value: '10000-30000', label: '10,000 - 30,000 km' },
+  { value: '30000-50000', label: '30,000 - 50,000 km' },
+  { value: '50000-100000', label: '50,000 - 100,000 km' },
+  { value: '100000-999999', label: '100,000+ km' },
 ]
 
 export function Inventory() {
@@ -38,13 +81,20 @@ export function Inventory() {
   const [make, setMake] = useState(searchParams.get('make') || '')
   const [bodyType, setBodyType] = useState('')
   const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || '')
+  const [fuelType, setFuelType] = useState('')
+  const [transmission, setTransmission] = useState('')
+  const [condition, setCondition] = useState('')
+  const [yearRange, setYearRange] = useState('')
+  const [priceRange, setPriceRange] = useState('')
+  const [mileageRange, setMileageRange] = useState('')
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
 
-  const hasAnyFilter = make || bodyType || statusFilter || search
-  const activeFilterCount = [make, bodyType, statusFilter, search].filter(Boolean).length
+  const hasAnyFilter = make || bodyType || statusFilter || fuelType || transmission || condition || yearRange || priceRange || mileageRange || search
+  const activeFilterCount = [make, bodyType, statusFilter, fuelType, transmission, condition, yearRange, priceRange, mileageRange, search].filter(Boolean).length
   const maxResults = hasAnyFilter ? MAX_WITH_FILTERS : PAGE_SIZE
 
   // Reset pagination when filters change
-  useEffect(() => { setLoadedAll(false) }, [search, make, bodyType, statusFilter])
+  useEffect(() => { setLoadedAll(false) }, [search, make, bodyType, statusFilter, fuelType, transmission, condition, yearRange, priceRange, mileageRange])
 
   const fetchVehicles = (append: boolean) => {
     if (!isSupabaseConfigured()) { setLoading(false); return }
@@ -55,10 +105,39 @@ export function Inventory() {
         const to = from + maxResults - 1
         let q = supabase.from('vehicles').select('*, media:vehicle_media(*)', { count: 'exact' })
           .neq('status', 'sold').neq('status', 'draft')
+        
         if (search) q = q.or(`make.ilike.%${search}%,model.ilike.%${search}%,trim.ilike.%${search}%`)
         if (make) q = q.eq('make', make)
         if (bodyType) q = q.eq('body_type', bodyType)
         if (statusFilter) q = q.eq('status', statusFilter)
+        if (fuelType) q = q.eq('fuel', fuelType)
+        if (transmission) q = q.eq('transmission', transmission)
+        if (condition) q = q.eq('condition', condition)
+        
+        // Parse year range
+        if (yearRange) {
+          const [minYear, maxYear] = yearRange.split('-').map(Number)
+          if (minYear && maxYear) {
+            q = q.gte('year', minYear).lte('year', maxYear)
+          }
+        }
+        
+        // Parse price range
+        if (priceRange) {
+          const [minPrice, maxPrice] = priceRange.split('-').map(Number)
+          if (minPrice && maxPrice) {
+            q = q.gte('price', minPrice).lte('price', maxPrice)
+          }
+        }
+        
+        // Parse mileage range
+        if (mileageRange) {
+          const [minMileage, maxMileage] = mileageRange.split('-').map(Number)
+          if (minMileage && maxMileage) {
+            q = q.gte('mileage', minMileage).lte('mileage', maxMileage)
+          }
+        }
+        
         const { data, count } = await q.order('created_at', { ascending: false }).range(from, to)
         if (!mounted.current) return
         if (append && data) {
@@ -80,27 +159,40 @@ export function Inventory() {
   useEffect(() => {
     if (!isSupabaseConfigured()) { setLoading(false); return }
     fetchVehicles(false)
-  }, [search, make, bodyType, statusFilter])
+  }, [search, make, bodyType, statusFilter, fuelType, transmission, condition, yearRange, priceRange, mileageRange])
 
-  const clearAll = () => { setSearch(''); setMake(''); setBodyType(''); setStatusFilter(''); setSearchParams({}) }
+  const clearAll = () => {
+    setSearch(''); setMake(''); setBodyType(''); setStatusFilter('')
+    setFuelType(''); setTransmission(''); setCondition('')
+    setYearRange(''); setPriceRange(''); setMileageRange('')
+    setSearchParams({})
+  }
   const hasMore = !loadedAll && vehicles.length < total
 
   return (
     <>
       <header className={styles.slimHeader}>
         <div className={styles.slimHeaderInner}>
-          <p className={styles.slimHeaderLabel}>Inventory</p>
-          <h1 className={styles.slimHeaderTitle}>Browse Our Collection</h1>
-          <p className={styles.slimHeaderSub}>Real cars. Real prices. Ready to drive.</p>
+          <p className={styles.slimHeaderLabel} style={{ animation: 'fadeInUp 600ms var(--ease-out) both' }}>Inventory</p>
+          <h1 className={styles.slimHeaderTitle} style={{ animation: 'fadeInUp 600ms 120ms var(--ease-out) both' }}>Browse Our Collection</h1>
+          <p className={styles.slimHeaderSub} style={{ animation: 'fadeInUp 600ms 240ms var(--ease-out) both' }}>Real cars. Real prices. Ready to drive.</p>
         </div>
       </header>
 
       <div className={styles.content} style={{ position: 'relative' }}>
-      <div className={styles.toolbar}>
+      <div className={`scroll-reveal reveal-fade ${styles.toolbar}`}>
         <div className={styles.searchRow}>
           <div className={styles.searchInput}>
             <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by make, model, or trim..." />
           </div>
+          <button 
+            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)} 
+            className={styles.filterToggle}
+          >
+            <SlidersHorizontal size={14} />
+            {showAdvancedFilters ? 'Hide Filters' : 'Show Filters'}
+            {activeFilterCount > 0 && <span className={styles.filterBadge}>{activeFilterCount}</span>}
+          </button>
           {hasAnyFilter && (
             <button onClick={clearAll} className={styles.clearBtn}>
               <X size={12} /> Clear {activeFilterCount > 1 ? `(${activeFilterCount})` : ''}
@@ -108,6 +200,7 @@ export function Inventory() {
           )}
         </div>
 
+        {/* Basic Filters */}
         <div className={styles.filterRow}>
           <div className={styles.filterGroup}>
             <span className={styles.filterGroupLabel}>Make</span>
@@ -150,7 +243,96 @@ export function Inventory() {
               ))}
             </select>
           </div>
+
+          <div className={styles.filterGroup}>
+            <span className={styles.filterGroupLabel}>Transmission</span>
+            <select
+              value={transmission}
+              onChange={e => setTransmission(e.target.value)}
+              className={styles.filterSelect}
+              aria-label="Filter by transmission"
+            >
+              {TRANSMISSIONS.map(t => (
+                <option key={t.value} value={t.value}>{t.label}</option>
+              ))}
+            </select>
+          </div>
         </div>
+
+        {/* Advanced Filters */}
+        {showAdvancedFilters && (
+          <div className={`${styles.filterRow} ${styles.advancedFilters}`}>
+            <div className={styles.filterGroup}>
+              <span className={styles.filterGroupLabel}>Year</span>
+              <select
+                value={yearRange}
+                onChange={e => setYearRange(e.target.value)}
+                className={styles.filterSelect}
+                aria-label="Filter by year"
+              >
+                {YEAR_RANGES.map(y => (
+                  <option key={y.value} value={y.value}>{y.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.filterGroup}>
+              <span className={styles.filterGroupLabel}>Price</span>
+              <select
+                value={priceRange}
+                onChange={e => setPriceRange(e.target.value)}
+                className={styles.filterSelect}
+                aria-label="Filter by price"
+              >
+                {PRICE_RANGES.map(p => (
+                  <option key={p.value} value={p.value}>{p.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.filterGroup}>
+              <span className={styles.filterGroupLabel}>Mileage</span>
+              <select
+                value={mileageRange}
+                onChange={e => setMileageRange(e.target.value)}
+                className={styles.filterSelect}
+                aria-label="Filter by mileage"
+              >
+                {MILEAGE_RANGES.map(m => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.filterGroup}>
+              <span className={styles.filterGroupLabel}>Fuel</span>
+              <select
+                value={fuelType}
+                onChange={e => setFuelType(e.target.value)}
+                className={styles.filterSelect}
+                aria-label="Filter by fuel type"
+              >
+                {FUEL_TYPES.map(f => (
+                  <option key={f.value} value={f.value}>{f.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.filterGroup}>
+              <span className={styles.filterGroupLabel}>Condition</span>
+              <select
+                value={condition}
+                onChange={e => setCondition(e.target.value)}
+                className={styles.filterSelect}
+                aria-label="Filter by condition"
+              >
+                {CONDITIONS.map(c => (
+                  <option key={c.value} value={c.value}>{c.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
       </div>
 
       {!loading && total > 0 && (
@@ -165,11 +347,17 @@ export function Inventory() {
         {loading ? (
           Array.from({ length: 6 }).map((_, i) => <VehicleCardSkeleton key={i} />)
         ) : vehicles.length === 0 ? (
-          <div className={styles.empty} style={{ gridColumn: '1 / -1' }}>
-            <Search size={28} style={{ color: 'var(--stone-light)', marginBottom: 'var(--space-1)' }} />
-            <p>No vehicles match these criteria.</p>
-            <button onClick={clearAll} style={{ color: 'var(--navy)', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', marginTop: 'var(--space-1)' }}>Clear all filters</button>
-          </div>
+          <EmptyState
+            className={styles.emptyState}
+            art="search"
+            title="No vehicles found"
+            message={hasAnyFilter
+              ? 'Try widening your search or clearing a few filters — there may be more to see.'
+              : "We're restocking the lot. Tell us what you're after and we'll hunt it down."}
+            action={hasAnyFilter
+              ? <Button variant="secondary" size="sm" onClick={clearAll}>Clear all filters</Button>
+              : <Link to="/pre-order"><RippleButton size="sm" variant="secondary">Request a Vehicle</RippleButton></Link>}
+          />
         ) : (
           vehicles.map(v => <VehicleCard key={v.id} vehicle={v} />)
         )}
@@ -212,7 +400,7 @@ export function Inventory() {
                 </RippleButton>
               </Link>
               <a
-                href="https://wa.me/2348023392388?text=Hi%20Empathon%20Autos!%20I%20need%20help%20finding%20a%20vehicle."
+                href={config.whatsapp.getDeepLink("Hi Empathon Autos! I need help finding a vehicle.")}
                 target="_blank" rel="noopener noreferrer"
               >
                 <RippleButton variant="secondary" size="md">

@@ -12,6 +12,8 @@ import { Section } from '@/components/PageLayout'
 import styles from './Auctions.module.css'
 import { RippleButton } from '@/components/RippleButton'
 import { HeroSection } from '@/components/HeroSection'
+import { CarSilhouette } from '@/components/DecoSvgs'
+import { EmptyState } from '@/components/ui/EmptyState'
 import type { Lot } from '@/types'
 
 const LIVE_STATUSES = ['scheduled', 'open', 'closing']
@@ -86,6 +88,7 @@ export function Auctions() {
 
   return (
     <Section style={{ position: 'relative' }}>
+      <CarSilhouette className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.06 }} size={96} />
       <HeroSection
         images={[
           { url: 'https://images.unsplash.com/photo-1774578432996-54e195b3c5b0?w=1400&q=90&fit=crop' },
@@ -130,11 +133,18 @@ export function Auctions() {
         </div>
       ) : tab === 'live' ? (
         liveLots.length === 0 ? (
-          <div className={styles.empty}>
-            <p>No active auctions right now. <Link to="/inventory" style={{ color: 'var(--navy)', textDecoration: 'underline' }}>Browse inventory</Link> instead.</p>
-          </div>
+          <EmptyState
+            art="auction"
+            title="No Live Auctions Right Now"
+            message="We're preparing the next round of lots. While you wait, the full collection is ready to explore."
+            action={
+              <Link to="/inventory">
+                <RippleButton size="sm" variant="secondary">Browse Inventory</RippleButton>
+              </Link>
+            }
+          />
         ) : (
-          <div className={`scroll-reveal ${styles.grid} stagger-fade-in`}>
+          <div className={`scroll-reveal reveal-scale ${styles.grid} stagger-fade-in`}>
             {liveLots.map(lot => {
               const img = primaryImage(lot)
               const isOpen = lot.status === 'open' || lot.status === 'closing'
@@ -171,11 +181,16 @@ export function Auctions() {
         )
       ) : (
         pastLots.length === 0 ? (
-          <div className={styles.empty}>
-            <p>No past auctions yet. Check back after the first lot closes.</p>
-          </div>
+          <EmptyState
+            art="auction"
+            title="No Past Auctions Yet"
+            message="Once the first lot closes, its results — winning bid and final price — will appear here."
+            action={
+              <RippleButton size="sm" variant="secondary" onClick={() => setTab('live')}>View Live Auctions</RippleButton>
+            }
+          />
         ) : (
-          <div className={`scroll-reveal ${styles.grid} stagger-fade-in`}>
+          <div className={`scroll-reveal reveal-left ${styles.grid} stagger-fade-in`}>
             {pastLots.map(lot => {
               const img = primaryImage(lot)
               const title = lotTitle(lot)

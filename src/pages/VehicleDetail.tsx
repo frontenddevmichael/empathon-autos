@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button'
 import { LeadForm } from '@/components/LeadForm'
 import { Section } from '@/components/PageLayout'
 import { SteeringWheel, Speedometer, CarSilhouette } from '@/components/DecoSvgs'
+import { config } from '@/lib/config'
 import styles from './VehicleDetail.module.css'
 
 type VehicleWithMedia = Vehicle & { media: VehicleMedia[] }
@@ -84,26 +85,67 @@ export function VehicleDetail() {
   }
   const price = formatPrice(vehicle.price)
   const vehicleAlt = `${vehicle.make} ${vehicle.model}${vehicle.trim ? ` ${vehicle.trim}` : ''} ${vehicle.year}`
-  const whatsappMsg = encodeURIComponent(`Hi, I'm interested in the ${vehicleAlt} at Empathon Autos.`)
+  const whatsappMsg = `Hi, I'm interested in the ${vehicleAlt} at Empathon Autos.`
 
   const DEFAULT_IMG = '/og-image.jpg'
   const vehicleTitle = `${vehicle.make} ${vehicle.model} ${vehicle.trim || ''} ${vehicle.year}`.trim()
   const vehicleDesc = vehicle.description?.slice(0, 200) || `${vehicleTitle} — ${formatPrice(vehicle.price)}, ${formatMileage(vehicle.mileage)}, ${vehicle.transmission}`
   const vehicleImg = activeImage?.url || DEFAULT_IMG
 
+  // Schema.org JSON-LD structured data
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Car',
+    'name': vehicleTitle,
+    'description': vehicle.description || vehicleDesc,
+    'image': vehicleImg,
+    'url': `${config.seo.siteUrl}/inventory/${vehicle.id}`,
+    'brand': {
+      '@type': 'Brand',
+      'name': vehicle.make,
+    },
+    'model': vehicle.model,
+    'vehicleConfiguration': vehicle.trim || undefined,
+    'modelDate': vehicle.year.toString(),
+    'mileageFromOdometer': {
+      '@type': 'QuantitativeValue',
+      'value': vehicle.mileage,
+      'unitCode': 'KMT',
+    },
+    'vehicleTransmission': vehicle.transmission === 'automatic' ? 'Automatic' : vehicle.transmission === 'manual' ? 'Manual' : 'Semi-automatic',
+    'fuelType': vehicle.fuel_type.charAt(0).toUpperCase() + vehicle.fuel_type.slice(1).replace('-', ' '),
+    'vehicleColor': vehicle.colour || undefined,
+    'bodyType': vehicle.body_type.charAt(0).toUpperCase() + vehicle.body_type.slice(1),
+    'vehicleCondition': vehicle.condition === 'new' ? 'New' : vehicle.condition === 'used' ? 'Used' : 'CertifiedPreOwned',
+    'offers': {
+      '@type': 'Offer',
+      'price': vehicle.price,
+      'priceCurrency': vehicle.currency,
+      'availability': vehicle.status === 'sold' ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
+      'seller': {
+        '@type': 'AutoDealer',
+        'name': config.company.name,
+        'url': config.seo.siteUrl,
+      },
+    },
+  }
+
   return (
     <>
       <Helmet>
-        <title>{vehicleTitle} | Empathon Autos</title>
+        <title>{vehicleTitle} | {config.company.name}</title>
         <meta name="description" content={vehicleDesc} />
-        <meta property="og:title" content={`${vehicleTitle} | Empathon Autos`} />
+        <meta property="og:title" content={`${vehicleTitle} | ${config.company.name}`} />
         <meta property="og:description" content={vehicleDesc} />
         <meta property="og:image" content={vehicleImg} />
-        <meta property="og:url" content={`https://www.emphatonautos.com/inventory/${vehicle.id}`} />
-        <meta name="twitter:title" content={`${vehicleTitle} | Empathon Autos`} />
+        <meta property="og:url" content={`${config.seo.siteUrl}/inventory/${vehicle.id}`} />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:title" content={`${vehicleTitle} | ${config.company.name}`} />
         <meta name="twitter:description" content={vehicleDesc} />
         <meta name="twitter:image" content={vehicleImg} />
-        <link rel="canonical" href={`https://www.emphatonautos.com/inventory/${vehicle.id}`} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <link rel="canonical" href={`${config.seo.siteUrl}/inventory/${vehicle.id}`} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </Helmet>
       <section className={styles.hero}>
         <div className={styles.heroBg}>
@@ -228,7 +270,7 @@ export function VehicleDetail() {
                 <Button variant="secondary" onClick={() => setLeadType('test-drive')}>Book Test Drive</Button>
                 {vehicle.status === 'pre-order' && <Button variant="secondary" onClick={() => setLeadType('pre-order')}>Pre-Order</Button>}
                 <a
-                  href={`https://wa.me/2348023392388?text=${whatsappMsg}`}
+                  href={config.whatsapp.getDeepLink(whatsappMsg)}
                   target="_blank" rel="noopener noreferrer"
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-1)', height: 40, borderRadius: 'var(--radius-md)', fontSize: 'var(--text-sm)', fontWeight: 500, border: '1px solid var(--border)', color: 'var(--ink)', transition: 'all var(--transition-fast)' }}
                 >

@@ -1,0 +1,66 @@
+/* ── How It Works steps ── */
+.stepsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+.stepCard {
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  transition: transform 350ms var(--ease-out), border-color 350ms var(--ease-out), box-shadow 350ms var(--ease-out);
+}
+.stepCard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(11,46,89,0.16);
+  box-shadow: var(--shadow-sm);
+}
+.stepIndex {
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--stone);
+  margin-bottom: var(--space-1-5);
+  font-variant-numeric: tabular-nums;
+}
+.stepTitle {
+  font-size: var(--text-base);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.stepText {
+  font-size: var(--text-sm);
+  color: var(--stone);
+  line-height: 1.7;
+}
+
+/* ── Empty state — quiet, one clear next action ── */
+.emptyState {
+  text-align: center;
+  padding: var(--space-5) var(--space-3);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--stone);
+  font-size: var(--text-sm);
+  line-height: 1.7;
+}
+.emptyState a {
+  color: var(--navy);
+  font-weight: 600;
+  transition: color 200ms var(--ease-out);
+}
+.emptyState a:hover {
+  color: var(--navy-hover);
+}
+
+/* ── Mobile (≤768px) ── */
+@media (max-width: 768px) {
+  .stepsGrid {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+}

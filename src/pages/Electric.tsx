@@ -1,46 +1,58 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Battery, Zap, Gauge, Leaf, Plug, ShieldCheck as ShieldCheckIcon, Wind, PiggyBank } from 'lucide-react'
+import { ArrowRight, Battery, Zap, Gauge, Leaf, Plug, ShieldCheck as ShieldCheckIcon, Wind, PiggyBank, TrendingDown, Clock, Wrench } from 'lucide-react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { Input, TextArea } from '@/components/ui/Input'
 import { Section } from '@/components/PageLayout'
+import { SectionHeader } from '@/components/ui/SectionHeader'
 import { useToast } from '@/context/ToastContext'
 import { RippleButton } from '@/components/RippleButton'
-import { SplitHeading } from '@/components/SplitHeading'
 import { HeroSection } from '@/components/HeroSection'
 import { ParallaxSection } from '@/components/ParallaxSection'
-import { HandDots, HandCircle, Speedometer, ShieldCheck } from '@/components/DecoSvgs'
-import { Carousel } from '@/components/ui/Carousel'
+import { Sparkle } from '@/components/DecoSvgs'
 import styles from './Electric.module.css'
 
+const EV_BRANDS = [
+  { name: 'Mercedes-Benz', logo: '/brands/mercedes.svg', models: 8, tagline: 'Luxury Electric Innovation' },
+  { name: 'BMW', logo: '/brands/bmw.svg', models: 5, tagline: 'Ultimate Electric Driving Machine' },
+  { name: 'Tesla', logo: '/brands/tesla.svg', models: 4, tagline: 'Leading the EV Revolution' },
+  { name: 'Audi', logo: '/brands/audi.svg', models: 3, tagline: 'Vorsprung durch Technik' },
+  { name: 'Porsche', logo: '/brands/porsche.svg', models: 2, tagline: 'Electric Performance' },
+  { name: 'Hyundai', logo: '/brands/hyundai.svg', models: 3, tagline: 'Smart Mobility Solutions' },
+]
+
 const EV_MODELS = [
-  { name: 'Mercedes-Benz EQS', range: '680 km', power: '516 hp', tag: 'Flagship Electric Saloon', img: 'https://images.unsplash.com/photo-1636578929419-fc62088fd08f?w=900&q=80&fit=crop' },
-  { name: 'Mercedes-Benz EQE', range: '620 km', power: '288 hp', tag: 'Executive Electric Sedan', img: 'https://images.unsplash.com/photo-1708903517532-03bea2418854?w=900&q=80&fit=crop' },
-  { name: 'Mercedes-Benz EQB', range: '440 km', power: '215 hp', tag: 'Electric Family SUV', img: 'https://images.unsplash.com/photo-1568559598349-dbf322d50a48?w=900&q=80&fit=crop' },
-  { name: 'Mercedes-Benz EQS SUV', range: '600 km', power: '536 hp', tag: 'Electric Luxury SUV', img: 'https://images.unsplash.com/photo-1668248835473-c2f28c752663?w=900&q=80&fit=crop' },
-  { name: 'Mercedes-Benz EQA 250', range: '426 km', power: '188 hp', tag: 'Entry Electric SUV', img: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=900&q=80&fit=crop' },
-  { name: 'Mercedes-Benz EQC 400', range: '450 km', power: '402 hp', tag: 'First Electric SUV', img: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=900&q=80&fit=crop' },
-  { name: 'Mercedes-Benz EQV 300', range: '353 km', power: '201 hp', tag: 'Electric Luxury MPV', img: 'https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=900&q=80&fit=crop' },
-  { name: 'Mercedes-Benz EQS 680 Maybach', range: '600 km', power: '649 hp', tag: 'Ultra-Luxury Electric', img: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=900&q=80&fit=crop' },
-  { name: 'Mercedes-Benz EQE 500 SUV', range: '550 km', power: '402 hp', tag: 'Executive Electric SUV', img: 'https://images.unsplash.com/photo-1689544796442-3e6b1d075440?w=900&q=80&fit=crop' },
-  { name: 'Mercedes-Benz EQG (Concept)', range: '450 km*', power: '402 hp*', tag: 'Electric G-Class', img: 'https://images.unsplash.com/photo-1520031282539-3c1951a5e7c4?w=900&q=80&fit=crop' },
+  { name: 'Mercedes-Benz EQS', range: '680 km', power: '516 hp', tag: 'Flagship Electric Saloon', price: '₦85M+', img: 'https://images.unsplash.com/photo-1636578929419-fc62088fd08f?w=900&q=80&fit=crop' },
+  { name: 'Mercedes-Benz EQE', range: '620 km', power: '288 hp', tag: 'Executive Electric Sedan', price: '₦65M+', img: 'https://images.unsplash.com/photo-1708903517532-03bea2418854?w=900&q=80&fit=crop' },
+  { name: 'BMW iX', range: '600 km', power: '516 hp', tag: 'Luxury Electric SUV', price: '₦70M+', img: 'https://images.unsplash.com/photo-1568559598349-dbf322d50a48?w=900&q=80&fit=crop' },
+  { name: 'Tesla Model S', range: '650 km', power: '670 hp', tag: 'Performance Sedan', price: '₦75M+', img: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=900&q=80&fit=crop' },
+  { name: 'Mercedes-Benz EQB', range: '440 km', power: '215 hp', tag: 'Electric Family SUV', price: '₦45M+', img: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=900&q=80&fit=crop' },
+  { name: 'BMW i4', range: '520 km', power: '335 hp', tag: 'Electric Gran Coupe', price: '₦55M+', img: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=900&q=80&fit=crop' },
+]
+
+const COST_SAVINGS = [
+  { icon: TrendingDown, title: 'Fuel Savings', desc: 'Save up to ₦2M annually on fuel costs compared to petrol vehicles.', amount: '₦2M+/year' },
+  { icon: Wrench, title: 'Maintenance Savings', desc: '60% fewer moving parts means 60% less maintenance. No oil changes, fewer brake replacements.', amount: '₦500K+/year' },
+  { icon: Clock, title: 'Time Savings', desc: 'Charge overnight at home. No more trips to the petrol station. Wake up to a full battery.', amount: '100+ hrs/year' },
+  { icon: PiggyBank, title: 'Total Cost of Ownership', desc: 'Over 5 years, EVs cost 30-40% less to own than equivalent petrol luxury vehicles.', amount: '30-40% less' },
 ]
 
 const BENEFITS = [
-  { icon: Battery, title: 'Long Real-World Range', desc: 'Modern EQs deliver 400–700 km on a single charge — plenty for Lagos and beyond.', link: '/blog/ev-guide' },
-  { icon: Zap, title: 'Serious Performance', desc: 'Instant torque, a green, whisper-quiet drivetrain, and 0–100 in under 5 seconds on flagship models.', link: '/blog/ev-guide' },
-  { icon: Leaf, title: 'Lower Running Costs', desc: 'No fuel bills. Charging costs a fraction, and fewer moving parts means fewer repairs.', link: '/blog/ev-guide' },
-  { icon: Gauge, title: 'Tech That Leads', desc: 'MBUX hyperscreen, over-the-air updates, and autonomous-ready driving aids.', link: '/blog/ev-guide' },
-  { icon: Plug, title: 'Charging Made Simple', desc: 'Charge overnight at home or the office. We help you plan the setup — from a standard outlet to a fast wallbox.', link: '/blog/ev-guide' },
-  { icon: ShieldCheckIcon, title: 'Battery Health & Warranty', desc: 'Verified battery health on every unit, with care guidance that keeps range strong for years to come.', link: '/blog/ev-guide' },
-  { icon: Wind, title: 'Quiet, Refined Ride', desc: 'No engine noise, no gearbox lag. Just smooth, near-silent acceleration that makes every trip calmer.', link: '/blog/ev-guide' },
-  { icon: PiggyBank, title: 'Long-Term Value', desc: 'Fewer moving parts, less maintenance, and strong resale demand for premium EVs in Nigeria.', link: '/blog/ev-guide' },
+  { icon: Battery, title: 'Long Real-World Range', desc: 'Modern EVs deliver 400–700 km on a single charge — plenty for Lagos and beyond.' },
+  { icon: Zap, title: 'Serious Performance', desc: 'Instant torque, whisper-quiet drivetrain, and 0–100 in under 5 seconds on flagship models.' },
+  { icon: Leaf, title: 'Zero Emissions', desc: 'No tailpipe emissions. Reduce your carbon footprint while enjoying luxury driving.' },
+  { icon: Gauge, title: 'Tech That Leads', desc: 'MBUX hyperscreen, over-the-air updates, and autonomous-ready driving aids.' },
+  { icon: Plug, title: 'Charging Made Simple', desc: 'Charge overnight at home or the office. We help you plan the setup.' },
+  { icon: ShieldCheckIcon, title: 'Battery Health & Warranty', desc: 'Verified battery health on every unit, with care guidance for years to come.' },
+  { icon: Wind, title: 'Quiet, Refined Ride', desc: 'No engine noise, no gearbox lag. Just smooth, near-silent acceleration.' },
+  { icon: PiggyBank, title: 'Long-Term Value', desc: 'Fewer moving parts, less maintenance, and strong resale demand in Nigeria.' },
 ]
 
 export function Electric() {
   const { showToast } = useToast()
   const [form, setForm] = useState({ name: '', email: '', phone: '', model: '', notes: '', honeypot: '' })
   const [saving, setSaving] = useState(false)
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -63,6 +75,10 @@ export function Electric() {
     setForm({ name: '', email: '', phone: '', model: '', notes: '', honeypot: '' })
   }
 
+  const filteredModels = selectedBrand
+    ? EV_MODELS.filter(m => m.name.includes(selectedBrand))
+    : EV_MODELS
+
   return (
     <>
       <HeroSection
@@ -72,62 +88,113 @@ export function Electric() {
         ]}
         label="Electric Vehicles"
         title="GO Electric. GO Green."
-        subtitle="Premium electric vehicles — Mercedes-Benz EQ series and more — imported, prepped, and ready for Nigerian roads."
+        subtitle="Premium electric vehicles imported, prepped, and ready for Nigerian roads. Save money, save time, save the planet."
         deco="circle"
       />
 
+      {/* Brands — first thing users see */}
       <ParallaxSection>
-        <Section style={{ position: 'relative' }}>
-          <Speedometer className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.05 }} size={64} />
-          <HandCircle className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-2)', left: 'var(--space-3)', opacity: 0.15 }} size={56} />
-          <p style={{ fontSize: 'var(--text-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--navy)', marginBottom: 'var(--space-1)' }}>Why Go Electric</p>
-          <SplitHeading as="h2">The Future Is Already Here</SplitHeading>
-          <div className="section-divider" />
-          <p style={{ color: 'var(--stone)', maxWidth: 560, lineHeight: 1.8, marginBottom: 'var(--space-4)' }}>
-            Electric vehicles are no longer the future — they're the smartest choice on the market today. We source only the cleanest, most reliable EVs from trusted partners and handle everything from import to charging setup.
-          </p>
-          <Carousel
-            items={BENEFITS}
-            speed={36}
-            renderItem={(b) => (
-              <div style={{ maxWidth: 720, margin: '0 auto', padding: 'var(--space-5)', border: '1px solid rgba(10,10,10,0.06)', borderRadius: 'var(--radius-xl)', background: 'var(--surface)', transition: 'all 300ms var(--ease-out)', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <b.icon size={28} style={{ color: 'var(--navy)', marginBottom: 'var(--space-1-5)' }} />
-                <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: 6, letterSpacing: '-0.02em' }}>{b.title}</h3>
-                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)', lineHeight: 1.7, flex: 1, marginBottom: 'var(--space-3)' }}>{b.desc}</p>
-                <Link to={b.link} style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--navy)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                  Learn More <ArrowRight size={14} />
-                </Link>
-              </div>
-            )}
+        <Section className="scroll-reveal reveal-fade" style={{ position: 'relative' }}>
+          <SectionHeader
+            label="Our EV Partners"
+            title="Premium Electric Brands"
+            desc="We partner with the world's leading electric vehicle manufacturers to bring you the best selection of premium EVs."
           />
+
+          <div className={`scroll-reveal stagger-fade-in ${styles.brandsGrid}`}>
+            {EV_BRANDS.map((brand) => (
+              <button
+                key={brand.name}
+                onClick={() => setSelectedBrand(selectedBrand === brand.name ? null : brand.name)}
+                className={`${styles.brandCard} ${selectedBrand === brand.name ? styles.brandSelected : ''}`}
+              >
+                <img src={brand.logo} alt={brand.name} className={styles.brandLogo} loading="lazy" />
+                <p className={styles.brandName}>{brand.name}</p>
+                <p className={styles.brandTagline}>{brand.tagline}</p>
+                <p className={styles.brandCount}>{brand.models} models</p>
+              </button>
+            ))}
+          </div>
         </Section>
       </ParallaxSection>
 
+      {/* Cost Savings */}
       <ParallaxSection>
-        <Section style={{ background: 'var(--paper-light)', position: 'relative' }}>
-          <HandDots className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.3 }} />
-          <ShieldCheck className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-2)', left: 'var(--space-2)', opacity: 0.05 }} size={52} />
-          <SplitHeading as="h2" style={{ marginBottom: 'var(--space-2)' }}>Available EV Models</SplitHeading>
-          <div className="section-divider" />
-          <p style={{ color: 'var(--stone)', marginBottom: 'var(--space-4)', maxWidth: 560, lineHeight: 1.8 }}>
-            A taste of what we can source. Can't see your exact spec? Ask — we'll track it down.
-          </p>
-          <div className={`scroll-reveal stagger-fade-in ${styles.modelsGrid}`}>
-            {EV_MODELS.map((m) => (
-              <div key={m.name} style={{ borderRadius: 'var(--radius-xl)', overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', background: 'var(--surface)', boxShadow: '0 1px 3px rgba(10,10,10,0.03)', transition: 'transform 350ms var(--ease-out), box-shadow 350ms var(--ease-out)' }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(10,10,10,0.08)' }}
-                onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
+        <Section className="scroll-reveal reveal-scale" style={{ background: 'var(--navy-deep)', color: 'white', position: 'relative' }}>
+          <Sparkle className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-3)', right: '18%', opacity: 0.12 }} size={36} />
+          <SectionHeader
+            label="Cost Savings"
+            title="Save Money with Electric"
+            desc="Electric vehicles aren't just better for the environment — they're better for your wallet. Here's how much you can save."
+            align="center"
+            dark
+          />
+
+          <div className={`scroll-reveal stagger-fade-in ${styles.savingsGrid}`}>
+            {COST_SAVINGS.map((saving) => (
+              <div key={saving.title} className={styles.savingCard}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
+                  <div className={styles.savingIcon}>
+                    <saving.icon size={22} />
+                  </div>
+                  <div>
+                    <p className={styles.savingTitle}>{saving.title}</p>
+                    <p className={styles.savingAmount}>{saving.amount}</p>
+                  </div>
+                </div>
+                <p className={styles.savingDesc}>{saving.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ textAlign: 'center', marginTop: 'var(--space-4)' }}>
+            <Link to="/contact">
+              <RippleButton size="md" variant="white">
+                Calculate Your Savings <ArrowRight size={16} />
+              </RippleButton>
+            </Link>
+          </div>
+        </Section>
+      </ParallaxSection>
+
+      {/* Models */}
+      <ParallaxSection>
+        <Section className="scroll-reveal reveal-left" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 'var(--space-2)' }}>
+            <SectionHeader
+              label="Available Models"
+              title="Explore Our EV Collection"
+              desc={selectedBrand
+                ? `Showing ${selectedBrand} models. Can't see your exact spec? Ask — we'll track it down.`
+                : 'A taste of what we can source. Click a brand above to filter, or ask about any model.'}
+            />
+            {selectedBrand && (
+              <button
+                onClick={() => setSelectedBrand(null)}
+                className={styles.filterChip}
+                style={{ marginBottom: 'var(--space-5)', flexShrink: 0 }}
               >
-                <img src={m.img} alt={m.name} loading="lazy" style={{ width: '100%', height: 200, objectFit: 'cover', display: 'block' }} />
-                <div style={{ padding: 'var(--space-4)' }}>
-                  <p style={{ fontSize: 'var(--text-2xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--gold)', marginBottom: 4 }}>{m.tag}</p>
-                  <h3 style={{ fontSize: 'var(--text-xl)', letterSpacing: '-0.02em', marginBottom: 'var(--space-2)' }}>{m.name}</h3>
-                  <div style={{ display: 'flex', gap: 'var(--space-3)', fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>
+                Clear filter ×
+              </button>
+            )}
+          </div>
+
+          <div className={`scroll-reveal stagger-fade-in ${styles.modelsGrid}`}>
+            {filteredModels.map((m) => (
+              <div key={m.name} className={styles.modelCard}>
+                <img src={m.img} alt={m.name} loading="lazy" className={styles.modelImage} />
+                <div className={styles.modelContent}>
+                  <p className={styles.modelTag}>{m.tag}</p>
+                  <h3 className={styles.modelName}>{m.name}</h3>
+                  <div className={styles.modelSpecs}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Battery size={13} /> {m.range}</span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Zap size={13} /> {m.power}</span>
                   </div>
+                  <p className={styles.modelPrice}>{m.price}</p>
                   <div style={{ marginTop: 'var(--space-3)' }}>
-                    <Link to="/contact"><RippleButton size="sm" variant="secondary">Enquire About This Model <ArrowRight size={13} /></RippleButton></Link>
+                    <Link to="/contact">
+                      <RippleButton size="sm" variant="secondary">Enquire Now <ArrowRight size={13} /></RippleButton>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -136,12 +203,35 @@ export function Electric() {
         </Section>
       </ParallaxSection>
 
-      <Section style={{ position: 'relative' }}>
-        <HandDots className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.3 }} />
+      {/* Benefits */}
+      <ParallaxSection>
+        <Section className="scroll-reveal reveal-right" style={{ position: 'relative' }}>
+          <SectionHeader
+            label="Why Go Electric"
+            title="The Future Is Already Here"
+            desc="Electric vehicles are no longer the future — they're the smartest choice on the market today. Here's why."
+          />
+          <div className={`scroll-reveal stagger-fade-in ${styles.benefitsGrid}`}>
+            {BENEFITS.map((b) => (
+              <div key={b.title} className={styles.benefitCard}>
+                <b.icon size={28} className={styles.benefitIcon} />
+                <h3 className={styles.benefitTitle}>{b.title}</h3>
+                <p className={styles.benefitDesc}>{b.desc}</p>
+              </div>
+            ))}
+          </div>
+        </Section>
+      </ParallaxSection>
+
+      {/* Contact Section */}
+      <Section className="scroll-reveal reveal-big" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
         <div style={{ maxWidth: 520, margin: '0 auto' }}>
-          <SplitHeading as="h2" style={{ marginBottom: 'var(--space-2)', textAlign: 'center' }}>Interested in an EV?</SplitHeading>
-          <div className="section-divider" />
-          <p style={{ color: 'var(--stone)', marginBottom: 'var(--space-3)', textAlign: 'center' }}>Tell us which model you're after and we'll source it — with charging advice included.</p>
+          <SectionHeader
+            label="EV Enquiry"
+            title="Interested in an EV?"
+            desc="Tell us which model you're after and we'll source it — with charging advice included."
+            align="center"
+          />
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1-5)' }}>
             <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
               <input tabIndex={-1} value={form.honeypot} onChange={e => setForm(f => ({ ...f, honeypot: e.target.value }))} />

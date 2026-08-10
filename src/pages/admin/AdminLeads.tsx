@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
 import { TableSkeleton } from '@/components/ui/Skeleton'
+import { activity } from '@/lib/activityLog'
 
 const PAGE_SIZE = 30
 
@@ -61,11 +62,13 @@ export function AdminLeads() {
   useEffect(() => { fetchLeads() }, [page, typeFilter, statusFilter])
 
   const updateStatus = async (id: string, status: LeadStatus) => {
+    const lead = leads.find(l => l.id === id)
     setSaving(true)
     await supabase.from('leads').update({ status }).eq('id', id)
     setSaving(false)
     setSelected(null)
     fetchLeads()
+    activity.lead.statusChanged(id, lead?.status || 'unknown', status)
   }
 
   const handleDelete = async () => {
@@ -73,6 +76,7 @@ export function AdminLeads() {
     setSaving(true)
     await supabase.from('leads').delete().eq('id', deleteId)
     setSaving(false)
+    activity.lead.deleted(deleteId)
     setDeleteId(null)
     fetchLeads()
   }

@@ -3,8 +3,8 @@ import styles from './Button.module.css'
 import { Magnetic } from '@/components/Magnetic'
 
 interface ButtonBase {
-  variant?: 'primary' | 'secondary' | 'ghost'
-  size?: 'md' | 'sm'
+  variant?: 'primary' | 'secondary' | 'ghost' | 'ghostLight' | 'white'
+  size?: 'lg' | 'md' | 'sm'
   loading?: boolean
   fullWidth?: boolean
   magnetic?: boolean
@@ -20,7 +20,7 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPr
     const cls = [
       styles.btn,
       styles[variant],
-      size === 'sm' ? styles.sm : '',
+      size === 'sm' ? styles.sm : size === 'lg' ? styles.lg : '',
       loading ? styles.loading : '',
       fullWidth ? styles.full : '',
       className,

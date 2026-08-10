@@ -5,60 +5,148 @@
   right: 0;
   z-index: 200;
   height: var(--nav-height);
-  background: var(--navy);
+  background: rgba(8, 26, 51, 0.5);
   color: white;
-  transition: all 400ms var(--ease-out);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-bottom: 1px solid transparent;
+  transition: background-color 400ms var(--ease-out), box-shadow 400ms var(--ease-out), border-color 400ms var(--ease-out), height 400ms var(--ease-out);
 }
 .nav .wordmark { color: white; }
-.nav .accent { color: var(--gold, #c4c4c4); }
+.nav .accent { color: var(--gold, #c4a265); }
 .nav .link {
-  color: rgba(255,255,255,0.85);
+  color: rgba(255, 255, 255, 0.75);
 }
 .nav .link:hover {
   color: white;
-  background: rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.08);
 }
 .nav .active {
   color: white;
   font-weight: 600;
 }
+
+/* Keyboard focus — always visible, theme-aware */
+.nav :is(.link, .hamburger, .navContact):focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: var(--radius-full);
+}
+.nav.light :is(.link, .hamburger, .navContact):focus-visible {
+  outline-color: var(--navy);
+}
 .nav .hamburger {
   color: white;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
 }
 .nav .hamburger:hover {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
 }
 
-/* When scrolled — add blur + shadow + shrink */
+/* When scrolled — solid frosted glass, hairline border, subtle shrink */
 .scrolled {
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-  height: 60px;
+  background: rgba(8, 26, 51, 0.92);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  box-shadow: 0 4px 24px rgba(8, 26, 51, 0.18);
+  height: 56px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 .scrolled .inner {
   padding-top: 0;
   padding-bottom: 0;
 }
 .scrolled .logo {
-  height: 40px;
+  height: 34px;
 }
 
-/* Contact button — always white bg, navy text
-   .nav .navContact beats Button's .primary via higher specificity (0,2,0) */
+/* Scrolled — compact links: slightly smaller, tighter gaps */
+.scrolled .links {
+  gap: 0;
+}
+.scrolled .link {
+  padding: 5px 9px;
+  font-size: 0.8125rem;
+}
+.scrolled .cta {
+  margin-left: var(--space-1);
+  gap: var(--space-0-5);
+}
+.scrolled .cta .navContact,
+.scrolled .cta a[class*='_ghost'] {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+/* Contact button — navy fill, white text (the white nav's only CTA style) */
 .nav .navContact {
-  background: white;
-  color: var(--navy);
-  border-color: white;
+  background: var(--navy);
+  color: white;
+  border-color: var(--navy);
 }
 .nav .navContact:hover {
-  background: rgba(255,255,255,0.9);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  transform: translateY(-1px);
+  background: var(--navy-deep);
+  box-shadow: var(--shadow-navy);
+  transform: translateY(-2px);
+}
+.nav .navContact:active {
+  transform: translateY(0) scale(0.97);
 }
 
+/* ── White theme — the nav is always white now ── */
+.nav.light {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  color: var(--navy);
+  border-bottom: 1px solid rgba(11, 46, 89, 0.08);
+}
+.nav.light .wordmark { color: var(--navy); }
+.nav.light .accent { color: var(--gold); }
+.nav.light .logo img { filter: invert(1); }
+.nav .logo img { transition: filter 300ms var(--ease-out); }
+.nav.light .link {
+  color: rgba(11, 46, 89, 0.72);
+}
+.nav.light .link:hover {
+  color: var(--navy);
+  background: rgba(11, 46, 89, 0.06);
+}
+.nav.light .active {
+  color: var(--navy);
+  background: rgba(11, 46, 89, 0.08);
+}
+.nav.light .hamburger {
+  color: var(--navy);
+  background: rgba(11, 46, 89, 0.06);
+}
+.nav.light .hamburger:hover {
+  background: rgba(11, 46, 89, 0.12);
+}
 
+/* White theme — scrolled: near-solid white, soft shadow */
+.nav.light.scrolled {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  box-shadow: 0 4px 24px rgba(11, 46, 89, 0.08);
+  border-bottom: 1px solid rgba(11, 46, 89, 0.08);
+}
+
+/* White theme — Contact button stays navy fill (redundant but explicit) */
+.nav.light .navContact {
+  background: var(--navy);
+  color: white;
+  border-color: var(--navy);
+}
+.nav.light .navContact:hover {
+  background: var(--navy-deep);
+  box-shadow: var(--shadow-navy);
+  transform: translateY(-2px);
+}
+.nav.light .navContact:active {
+  transform: translateY(0) scale(0.97);
+}
 
 .inner {
   max-width: var(--container-max);
@@ -77,29 +165,41 @@
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--text-lg);
-  letter-spacing: -0.02em;
-  transition: opacity 200ms var(--ease-out);
-  height: 52px;
+  letter-spacing: var(--tracking-tight);
+  transition: all 200ms var(--ease-out);
+  height: 40px;
   width: auto;
   overflow: visible;
 }
-.logo:hover { opacity: 0.75; }
-.wordmark { color: var(--ink); letter-spacing: -0.03em; }
+.logo:hover {
+  opacity: 0.85;
+  transform: scale(1.02);
+}
+.wordmark { color: var(--ink); letter-spacing: var(--tracking-tighter); }
 .accent { color: var(--navy); }
 
 .links { display: flex; align-items: center; gap: 2px; }
 .link {
-  padding: 6px 14px;
-  font-size: var(--text-sm);
+  position: relative;
+  padding: 7px 12px;
+  font-size: 0.875rem;
   font-weight: 500;
-  color: var(--stone);
-  border-radius: var(--radius-md);
-  transition: all 150ms var(--ease-out);
+  letter-spacing: -0.01em;
+  color: rgba(255, 255, 255, 0.75);
+  border-radius: var(--radius-full);
+  transition: color 150ms var(--ease-out), background-color 150ms var(--ease-out);
 }
-.link:hover { color: var(--ink); background: rgba(0,51,102,0.04); }
-.active { color: var(--navy); font-weight: 600; }
+.link:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+}
+.active {
+  color: white;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.1);
+}
 
-.cta { margin-left: var(--space-2); }
+.cta { margin-left: var(--space-2); display: flex; align-items: center; gap: var(--space-1); }
 
 /* ── Animated Hamburger ── */
 .hamburger {
@@ -108,16 +208,16 @@
   height: 40px;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-md);
-  color: var(--ink);
-  background: rgba(0,51,102,0.04);
+  border-radius: var(--radius-full);
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
   transition: all 150ms var(--ease-out);
 }
-.hamburger:hover { background: rgba(0,51,102,0.08); }
+.hamburger:hover { background: rgba(255, 255, 255, 0.15); }
 
 .hamburgerInner {
-  width: 18px;
-  height: 14px;
+  width: 16px;
+  height: 12px;
   position: relative;
   display: flex;
   align-items: center;
@@ -146,29 +246,14 @@
   left: 0;
 }
 
-.hamburgerLine::before {
-  top: -6px;
-}
+.hamburgerLine::before { top: -5px; }
+.hamburgerLine::after { top: 5px; }
 
-.hamburgerLine::after {
-  top: 6px;
-}
+.hamburgerOpen { background: transparent; }
+.hamburgerOpen::before { top: 0; transform: rotate(45deg); }
+.hamburgerOpen::after { top: 0; transform: rotate(-45deg); }
 
-.hamburgerOpen {
-  background: transparent;
-}
-
-.hamburgerOpen::before {
-  top: 0;
-  transform: rotate(45deg);
-}
-
-.hamburgerOpen::after {
-  top: 0;
-  transform: rotate(-45deg);
-}
-
-/* ── Mobile Menu ── */
+/* ── Mobile Menu — light sheet, quiet links ── */
 .mobileMenu {
   position: fixed;
   top: var(--nav-height);
@@ -180,13 +265,15 @@
   flex-direction: column;
   padding: var(--space-3) var(--space-4);
   z-index: 99;
-  transform: translateY(-8px);
+  transform: translateX(100%);
   opacity: 0;
   transition: all 300ms var(--ease-out);
   pointer-events: none;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .mobileOpen {
-  transform: translateY(0);
+  transform: translateX(0);
   opacity: 1;
   pointer-events: auto;
 }
@@ -203,27 +290,78 @@
   align-items: center;
   padding: 16px var(--space-3);
   font-size: var(--text-lg);
-  font-weight: 600;
+  font-weight: 500;
   border-radius: var(--radius-lg);
   color: var(--ink);
   transition: all 200ms var(--ease-out);
   opacity: 0;
-  transform: translateY(4px);
+  transform: translateX(20px);
   animation: mobileLinkIn 300ms var(--ease-out) forwards;
 }
-.mobileLink:hover { background: var(--navy-light); }
+.mobileLink:hover {
+  background: var(--navy-light);
+  transform: translateX(4px);
+}
+.mobileLink:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: -2px;
+  background: var(--navy-light);
+}
 
 @keyframes mobileLinkIn {
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
 }
 
 .mobileCta { margin-top: var(--space-2); }
 
+/* Light-theme mobile menu — white sheet, navy links (matches .nav.light) */
+.mobileMenuLight {
+  background: var(--surface);
+  border-top: 1px solid rgba(11, 46, 89, 0.08);
+}
+.mobileMenuLight .mobileLink {
+  color: rgba(11, 46, 89, 0.8);
+}
+.mobileMenuLight .mobileLink:hover {
+  background: rgba(11, 46, 89, 0.06);
+  color: var(--navy);
+}
+
 @media (max-width: 768px) {
   .links { display: none; }
-  .hamburger { display: flex; }
-  .logo { height: 40px; }
+  .hamburger {
+    display: flex;
+    width: 44px;
+    height: 44px;
+  }
+  .logo { height: 34px; }
+  .inner {
+    padding: 0 var(--space-3);
+  }
+  .mobileMenu {
+    padding: var(--space-3);
+    top: var(--nav-height);
+  }
+  .mobileLink {
+    padding: 14px var(--space-3);
+    font-size: var(--text-xl);
+    min-height: 52px;
+  }
+  .scrolled {
+    height: 52px;
+  }
+  .scrolled .logo {
+    height: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobileLink {
+    padding: 16px var(--space-3);
+    font-size: var(--text-xl);
+    min-height: 56px;
+  }
 }
