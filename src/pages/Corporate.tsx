@@ -159,7 +159,7 @@ export function Corporate() {
             dark
           />
           <div className={`scroll-reveal stagger-fade-in ${styles.tiersGrid}`}>
-            {VOLUME_TIERS.map((tier, i) => (
+            {VOLUME_TIERS.map((tier) => (
               <div key={tier.units} className={`${styles.tier} ${tier.featured ? styles.tierFeatured : ''}`}>
                 <p className={styles.tierUnits}>{tier.units}</p>
                 <p className={styles.tierDiscount}>{tier.discount}</p>

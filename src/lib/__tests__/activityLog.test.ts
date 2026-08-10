@@ -7,7 +7,8 @@ vi.mock('@/lib/supabase', () => ({
     auth: {
       getSession: vi.fn().mockResolvedValue({
         data: { session: { user: { id: 'test-user-id' } } },
-      }),
+        error: null,
+      } as any),
     },
     from: vi.fn().mockReturnThis(),
     insert: vi.fn().mockResolvedValue({ error: null }),
@@ -40,7 +41,8 @@ describe('logActivity', () => {
     const { supabase } = await import('@/lib/supabase')
     vi.mocked(supabase.auth.getSession).mockResolvedValue({
       data: { session: null },
-    })
+      error: null,
+    } as any)
 
     // Should not throw
     await logActivity('created', 'vehicle', 'test-id')
@@ -56,7 +58,8 @@ describe('activity helpers', () => {
     const { supabase } = await import('@/lib/supabase')
     vi.mocked(supabase.auth.getSession).mockResolvedValue({
       data: { session: { user: { id: 'test-user-id' } } },
-    })
+      error: null,
+    } as any)
   })
 
   it('vehicle.created logs correctly', async () => {

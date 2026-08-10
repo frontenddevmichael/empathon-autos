@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { User, Mail, Phone, Building, Shield, CheckCircle, ArrowRight } from 'lucide-react'
+import { User, Shield, CheckCircle, ArrowRight } from 'lucide-react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { Input, TextArea } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'

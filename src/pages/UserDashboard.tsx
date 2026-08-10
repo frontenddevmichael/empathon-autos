@@ -6,7 +6,6 @@ import { formatPrice } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Section } from '@/components/PageLayout'
-import { SplitHeading } from '@/components/SplitHeading'
 import { HeroSection } from '@/components/HeroSection'
 import { config } from '@/lib/config'
 
@@ -79,15 +78,6 @@ export function UserDashboard() {
 
     fetchData()
   }, [])
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'won': return 'available'
-      case 'outbid': return 'pre-order'
-      case 'lost': return 'draft'
-      default: return 'live'
-    }
-  }
 
   const formatTimeAgo = (date: string) => {
     const now = new Date()

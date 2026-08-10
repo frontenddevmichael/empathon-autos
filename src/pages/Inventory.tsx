@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
-import { X, MessageCircle, HelpCircle, ChevronDown, Filter, SlidersHorizontal } from 'lucide-react'
+import { X, MessageCircle, HelpCircle, ChevronDown, SlidersHorizontal } from 'lucide-react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { useMounted } from '@/hooks/useMounted'
 import type { Vehicle, VehicleMedia } from '@/types'
