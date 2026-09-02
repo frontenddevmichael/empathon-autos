@@ -149,7 +149,7 @@ export function KYCRegistration() {
               <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: 'var(--space-2)', display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
                 <User size={18} /> Personal Information
               </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-2)' }}>
+              <div className="formGrid2" style={{ gap: 'var(--space-2)' }}>
                 <Input 
                   label="Full Name *" 
                   value={form.fullName} 
@@ -185,7 +185,7 @@ export function KYCRegistration() {
             {/* Additional Details */}
             <div style={{ marginBottom: 'var(--space-4)' }}>
               <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: 'var(--space-2)' }}>Additional Details</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-2)' }}>
+              <div className="formGrid2" style={{ gap: 'var(--space-2)' }}>
                 <Input 
                   label="Occupation" 
                   value={form.occupation} 

@@ -117,7 +117,7 @@ export function UserDashboard() {
       />
 
       <Section>
-        <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 'var(--space-4)', alignItems: 'start' }}>
+        <div className="responsive-grid-2 userDashLayout" style={{ display: 'grid', gap: 'var(--space-4)', alignItems: 'start' }}>
           {/* Sidebar */}
           <div style={{ position: 'sticky', top: 'calc(var(--nav-height) + var(--space-3))' }}>
             <div style={{ 

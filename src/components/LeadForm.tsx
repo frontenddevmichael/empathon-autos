@@ -108,7 +108,7 @@ export function LeadForm({ open, onClose, type = 'enquiry', vehicleId, initialMe
             <p style={{ fontSize: 'var(--text-sm)', fontWeight: 600, marginBottom: 'var(--space-1-5)', display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
               <Calendar size={16} /> Select Preferred Date & Time
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-1-5)' }}>
+            <div className="testDriveFields" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-1-5)' }}>
               <div>
                 <label style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)', marginBottom: 4, display: 'block' }}>Date *</label>
                 <input

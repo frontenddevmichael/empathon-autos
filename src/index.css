@@ -180,6 +180,10 @@ body::-webkit-scrollbar-thumb { background: var(--stone-light); border-radius: 1
 /* ── Page Transitions ── */
 .page-transition {
   animation: pageEnter 400ms var(--ease-out) forwards;
+  /* Defensive: pre-reveal translateX offsets and any stray flow overflow are
+     clipped here so they can never inflate the page's scroll width (clip is
+     not a scroll container, so position: sticky inside stays intact). */
+  overflow-x: clip;
 }
 
 @keyframes pageEnter {
@@ -226,6 +230,33 @@ body::-webkit-scrollbar-thumb { background: var(--stone-light); border-radius: 1
   outline: 2px solid var(--navy);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
+}
+
+/* ── Lead Form Responsive ── */
+@media (max-width: 480px) {
+  .testDriveFields { grid-template-columns: 1fr !important; }
+}
+
+/* ── User Dashboard Layout ── */
+.userDashLayout {
+  grid-template-columns: 280px 1fr;
+}
+@media (max-width: 768px) {
+  .userDashLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Form 2-col grid — stacks on mobile ── */
+.formGrid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-1-5);
+}
+@media (max-width: 480px) {
+  .formGrid2 {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ── Reduced Motion ── */

@@ -59,7 +59,7 @@ export function About() {
               <p style={{ color: 'var(--error, #dc2626)', fontSize: 'var(--text-sm)' }}>Could not load page content. Showing defaults.</p>
             </div>
           )}
-          <div className="responsive-grid-2 stagger-fade-in" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+          <div className="responsive-grid-2 stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-4)' }}>
             <div className="scroll-reveal-child">
               <p className={styles.introLabel}>What We're About</p>
               <p className={styles.introText}>
@@ -81,7 +81,7 @@ export function About() {
         <Section className="scroll-reveal reveal-left" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
           <Speedometer className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-3)', right: 'var(--space-3)', opacity: 0.08 }} size={72} />
           <SectionHeader label="Our Principles" title="Core Values" />
-          <div className="responsive-grid-4 stagger-fade-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-3)' }}>
+          <div className="responsive-grid-4 stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-3)' }}>
             {VALUES.map((v, i) => (
               <div key={v.title} className={`${styles.card} scroll-reveal-child`} style={{ ['--reveal-delay' as string]: `${i * 80}ms` }}>
                 <h3 className={styles.cardTitle}>{v.title}</h3>
@@ -97,7 +97,7 @@ export function About() {
         <Section className="scroll-reveal reveal-right" style={{ position: 'relative' }}>
           <ShieldCheck className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', opacity: 0.08 }} size={56} />
           <SectionHeader label="What We Do" title="Our Services" />
-          <div className="responsive-grid-4 stagger-fade-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-3)' }}>
+          <div className="responsive-grid-4 stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-3)' }}>
             {SERVICES.map((s, i) => (
               <div key={s.title} className={`${styles.card} scroll-reveal-child`} style={{ ['--reveal-delay' as string]: `${i * 80}ms` }}>
                 <h3 className={styles.cardTitle}>{s.title}</h3>
@@ -113,7 +113,7 @@ export function About() {
         <ParallaxSection>
           <Section className="scroll-reveal reveal-scale" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
             <SectionHeader label="Leadership" title="The Team" align="center" />
-            <div className="responsive-grid-4 stagger-fade-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-3)' }}>
+            <div className="responsive-grid-4 stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-3)' }}>
               {leadership.map((person, i) => (
                 <div key={person.name} className={`${styles.teamCard} scroll-reveal-child`} style={{ ['--reveal-delay' as string]: `${i * 80}ms` }}>
                   {person.photo ? (

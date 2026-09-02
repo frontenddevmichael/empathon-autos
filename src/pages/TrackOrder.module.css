@@ -209,13 +209,42 @@
   .summary {
     border-right: none;
     border-bottom: 1px solid var(--border-light);
+    padding: var(--space-3);
   }
   .resultHeader {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-1-5);
+    padding: var(--space-3);
   }
   .resultHeader > div:last-child {
     text-align: left;
+  }
+  .details {
+    padding: var(--space-3);
+  }
+  .details dt {
+    font-size: var(--text-2xs);
+  }
+  .details dd {
+    font-size: var(--text-xs);
+  }
+  .lookup {
+    padding: var(--space-4) var(--space-3);
+  }
+  .refValue {
+    font-size: var(--text-base);
+  }
+}
+
+@media (max-width: 480px) {
+  .form {
+    gap: var(--space-1);
+  }
+  .resultHeader {
+    padding: var(--space-2-5);
+  }
+  .timeline {
+    padding: var(--space-3);
   }
 }

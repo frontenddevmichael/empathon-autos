@@ -253,6 +253,12 @@
   .whyCard {
     padding: var(--space-3);
   }
+  .tier {
+    padding: var(--space-3);
+  }
+  .tierUnits {
+    font-size: var(--text-xl);
+  }
 }
 
 /* ── Small Mobile (≤480px) ── */
@@ -263,5 +269,8 @@
   }
   .whyGrid {
     grid-template-columns: 1fr;
+  }
+  .sectorTitle {
+    font-size: var(--text-base);
   }
 }

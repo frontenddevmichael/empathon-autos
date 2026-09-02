@@ -192,7 +192,7 @@ export function VehicleDetail() {
           </div>
         )}
 
-        <div className="responsive-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', alignItems: 'start' }}>
+        <div className="responsive-grid-2" style={{ display: 'grid', gap: 'var(--space-4)', alignItems: 'start' }}>
           <div>
             <div className={styles.metaGrid}>
               <div className={styles.metaItem}>

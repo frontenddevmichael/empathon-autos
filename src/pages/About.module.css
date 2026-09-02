@@ -76,3 +76,28 @@
   margin: 0 auto var(--space-1-5);
   border: 2px solid var(--border);
 }
+
+/* ── Mobile (≤768px) ── */
+@media (max-width: 768px) {
+  .teamPhoto {
+    width: 72px;
+    height: 72px;
+  }
+  .card {
+    padding: var(--space-3);
+  }
+  .introText {
+    font-size: var(--text-base);
+  }
+}
+
+/* ── Small Mobile (≤480px) ── */
+@media (max-width: 480px) {
+  .teamPhoto {
+    width: 64px;
+    height: 64px;
+  }
+  .cardTitle {
+    font-size: var(--text-sm);
+  }
+}

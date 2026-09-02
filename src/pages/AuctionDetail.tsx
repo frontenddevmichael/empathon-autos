@@ -160,7 +160,7 @@ export function AuctionDetail() {
   if (loading) {
     return (
       <Section>
-        <div className="responsive-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', maxWidth: 1200, margin: '0 auto' }}>
+        <div className="responsive-grid-2" style={{ display: 'grid', gap: 'var(--space-4)', maxWidth: 1200, margin: '0 auto' }}>
           <div>
             <div style={{ aspectRatio: '4/3', background: 'var(--paper-warm)', borderRadius: 'var(--radius-lg)', marginBottom: 'var(--space-2)' }} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -251,7 +251,7 @@ export function AuctionDetail() {
         </div>
       )}
 
-      <div className="responsive-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', maxWidth: 1200, margin: '0 auto', padding: '0 var(--space-3) var(--space-4)' }}>
+      <div className="responsive-grid-2" style={{ display: 'grid', gap: 'var(--space-4)', maxWidth: 1200, margin: '0 auto', padding: '0 var(--space-3) var(--space-4)' }}>
         <div>
           {active ? (
             <img

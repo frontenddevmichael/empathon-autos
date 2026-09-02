@@ -96,12 +96,12 @@ export function PreOrder() {
         />
 
         {loading ? (
-          <div className="stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-4)', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
+          <div className="stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-4)', gridTemplateColumns: 'repeat(auto-fill, minmax(min(300px, 100%), 1fr))' }}>
             {Array.from({ length: 3 }).map((_, i) => <VehicleCardSkeleton key={i} />)}
           </div>
         ) : vehicles.length > 0 ? (
           <>
-            <div className="scroll-reveal stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-4)', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
+            <div className="scroll-reveal stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-4)', gridTemplateColumns: 'repeat(auto-fill, minmax(min(300px, 100%), 1fr))' }}>
               {vehicles.map(v => <VehicleCard key={v.id} vehicle={v} />)}
             </div>
             <div style={{ textAlign: 'center', marginTop: 'var(--space-4)' }}>
@@ -154,7 +154,7 @@ export function PreOrder() {
             <Input label="Full Name *" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required />
             <Input label="Email *" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required />
             <Input label="Phone *" type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} required />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-1-5)' }}>
+            <div className="formGrid2">
               <Input label="Preferred Make" value={form.make} onChange={e => setForm(f => ({ ...f, make: e.target.value }))} />
               <Input label="Preferred Model" value={form.model} onChange={e => setForm(f => ({ ...f, model: e.target.value }))} />
             </div>

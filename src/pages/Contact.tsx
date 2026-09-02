@@ -60,7 +60,7 @@ export function Contact() {
       <Section style={{ position: 'relative' }}>
         <Handshake className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-3)', left: 'var(--space-3)', opacity: 0.04 }} size={64} />
         <HandDots className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.35 }} />
-        <div className="scroll-reveal reveal-fade responsive-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', alignItems: 'start' }}>
+        <div className="scroll-reveal reveal-fade responsive-grid-2" style={{ display: 'grid', gap: 'var(--space-4)', alignItems: 'start' }}>
           <div className="scroll-reveal-child">
             <div style={{ display: 'grid', gap: 'var(--space-2)' }}>
               {contactDetails.map(d => (

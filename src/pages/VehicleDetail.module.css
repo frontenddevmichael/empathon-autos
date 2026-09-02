@@ -210,10 +210,50 @@
 @media (max-width: 1024px) {
   .layout { grid-template-columns: 1fr; }
   .sidebar { position: static; }
+  .hero { padding: var(--space-5) var(--space-3) 0; }
 }
 
 @media (max-width: 768px) {
-  .heroContent { padding: var(--space-6) var(--space-3) var(--space-4); }
+  .hero {
+    padding-top: var(--space-4);
+  }
+  .heroContent {
+    padding: var(--space-5) var(--space-3) var(--space-4);
+  }
+  .heroTitle {
+    font-size: clamp(1.5rem, 6vw, 2.25rem);
+  }
+  .heroPrice {
+    font-size: var(--text-2xl);
+  }
   .metaGrid { grid-template-columns: 1fr; }
-  .thumbs { grid-template-columns: repeat(2, 1fr); }
+  .thumbs { grid-template-columns: repeat(2, 1fr); gap: var(--space-1); }
+  .heroArrow {
+    width: 36px;
+    height: 36px;
+  }
+  .similarGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroContent {
+    padding: var(--space-4) var(--space-3) var(--space-3);
+  }
+  .heroTitle {
+    font-size: 1.375rem;
+  }
+  .heroSub {
+    font-size: var(--text-xs);
+  }
+  .heroPrice {
+    font-size: var(--text-xl);
+  }
+  .metaValue {
+    font-size: var(--text-sm);
+  }
+  .descBlock p {
+    font-size: var(--text-xs);
+  }
 }

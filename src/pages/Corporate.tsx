@@ -270,11 +270,11 @@ export function Corporate() {
             <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
               <input tabIndex={-1} value={form.honeypot} onChange={e => setForm(f => ({ ...f, honeypot: e.target.value }))} />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-1-5)' }}>
+            <div className="formGrid2">
               <Input label="Full Name *" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required />
               <Input label="Email *" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-1-5)' }}>
+            <div className="formGrid2">
               <Input label="Phone *" type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} required />
               <Input label="Company *" value={form.company} onChange={e => setForm(f => ({ ...f, company: e.target.value }))} required />
             </div>
