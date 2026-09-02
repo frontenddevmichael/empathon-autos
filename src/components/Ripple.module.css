@@ -1,0 +1,30 @@
+.wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  background: var(--gold-dust);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  animation: splash 600ms steps(6, jump-none) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes splash {
+  0% {
+    opacity: 0.25;
+    transform: translate(-50%, -50%) scale(0);
+  }
+  50% {
+    opacity: 0.12;
+    transform: translate(-50%, -50%) scale(8);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(12);
+  }
+}

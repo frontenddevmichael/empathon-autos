@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://www.emphatonautos.com/sitemap.xml

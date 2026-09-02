@@ -1,0 +1,29 @@
+@import './tokens.css';
+
+body {
+  min-height: 100vh;
+  scrollbar-width: thin;
+  scrollbar-color: var(--clay) transparent;
+}
+
+body::-webkit-scrollbar { width: 6px; }
+body::-webkit-scrollbar-track { background: transparent; }
+body::-webkit-scrollbar-thumb { background: var(--clay); border-radius: 3px; }
+
+#root { min-height: 100vh; }
+
+::selection { background: var(--gold-dust); color: white; }
+
+@keyframes shimmer {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

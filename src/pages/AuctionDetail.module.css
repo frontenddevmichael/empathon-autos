@@ -1,0 +1,106 @@
+.layout {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  position: relative;
+}
+
+.image {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+}
+
+.imagePlaceholder {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: var(--border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--stone);
+}
+
+.title {
+  font-size: var(--text-3xl);
+  margin-top: var(--space-1);
+}
+
+.subtitle {
+  font-size: var(--text-base);
+  margin-bottom: var(--space-2);
+}
+
+.timer {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.timerBlock {
+  text-align: center;
+  padding: var(--space-1) var(--space-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  min-width: 56px;
+}
+
+.timerValue {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.timerLabel {
+  font-size: var(--text-xs);
+}
+
+.ended {
+  color: var(--error);
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+}
+
+.bidBox {
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  margin-bottom: var(--space-2);
+}
+
+.bidLabel {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.bidAmount {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.bidOpening {
+  font-size: var(--text-xs);
+}
+
+.bidRow {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.bidMin {
+  font-size: var(--text-xs);
+  margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; }
+}

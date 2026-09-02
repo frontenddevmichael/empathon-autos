@@ -1,0 +1,28 @@
+.blob {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes float1 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  33% { transform: translate(30px, -30px) rotate(120deg) scale(1.05); }
+  66% { transform: translate(-20px, 20px) rotate(240deg) scale(0.95); }
+}
+
+@keyframes float2 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  33% { transform: translate(-25px, -35px) rotate(-90deg) scale(1.08); }
+  66% { transform: translate(20px, 15px) rotate(-180deg) scale(0.92); }
+}
+
+@keyframes float3 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  25% { transform: translate(40px, -10px) rotate(90deg) scale(1.03); }
+  50% { transform: translate(10px, 30px) rotate(180deg) scale(0.97); }
+  75% { transform: translate(-30px, 10px) rotate(270deg) scale(1.02); }
+}
+
+.float1 { animation: float1 25s ease-in-out infinite; }
+.float2 { animation: float2 30s ease-in-out infinite; }
+.float3 { animation: float3 35s ease-in-out infinite; }

@@ -1,0 +1,21 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.row:nth-child(even) { background: var(--bg); }
+
+.cell {
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  width: 50%;
+  text-transform: capitalize;
+}
+
+.value { color: var(--text-primary); }

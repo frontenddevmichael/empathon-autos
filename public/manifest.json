@@ -1,0 +1,12 @@
+{
+  "name": "Empathon Autos",
+  "short_name": "Empathon Autos",
+  "description": "Premium vehicle imports, pre-orders, and sales. Your trusted automotive partner in Lagos, Nigeria.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a1a2e",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "48x48", "type": "image/svg+xml" }
+  ]
+}

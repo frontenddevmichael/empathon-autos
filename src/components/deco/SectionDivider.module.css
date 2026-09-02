@@ -1,0 +1,9 @@
+.divider {
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.divider svg { width: 100%; height: auto; display: block; }

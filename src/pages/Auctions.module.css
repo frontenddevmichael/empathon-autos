@@ -1,0 +1,79 @@
+.header {
+  position: relative;
+  margin-bottom: var(--space-3);
+}
+
+.headerLabel {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--clay-deep);
+  margin-bottom: var(--space-0-5);
+}
+
+.empty {
+  color: var(--stone);
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+.link {
+  display: block;
+}
+
+.card {
+  overflow: hidden;
+}
+
+.cardImg {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+}
+
+.cardImgPlaceholder {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--stone);
+  font-size: var(--text-sm);
+}
+
+.cardBody {
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.cardTitle {
+  font-weight: 600;
+}
+
+.cardMeta {
+  font-size: var(--text-xs);
+}
+
+.cardBid {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.cardTimer {
+  font-size: var(--text-xs);
+}

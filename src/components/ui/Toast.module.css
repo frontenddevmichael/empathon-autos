@@ -1,0 +1,17 @@
+.toast {
+  padding: var(--space-1-5) var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  box-shadow: var(--shadow-md);
+  animation: slideIn 200ms var(--ease-out);
+  max-width: 360px;
+}
+
+.success { background: var(--success-light); color: var(--success); border: 1px solid var(--success); }
+.error { background: var(--error-light); color: var(--error); border: 1px solid var(--error); }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}

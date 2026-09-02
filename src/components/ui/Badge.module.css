@@ -1,0 +1,35 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-1);
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  line-height: 1.4;
+  border: 1px solid transparent;
+}
+
+.draft { background: var(--clay-muted); color: var(--clay-deep); }
+.published { background: var(--success-light); color: var(--success); }
+.available { background: var(--success-light); color: var(--success); }
+.sold { background: var(--error-light); color: var(--error); }
+.preOrder { background: var(--gold-dust-light); color: #92400e; }
+.live {
+  background: var(--live-light);
+  color: var(--live);
+  border-color: var(--live);
+}
+
+.liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--live);
+  margin-right: var(--space-0-5);
+  animation: pulse 2s var(--ease-out) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}

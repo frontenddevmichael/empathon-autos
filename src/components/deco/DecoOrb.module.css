@@ -1,0 +1,16 @@
+.orb {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+}
+
+@keyframes wobble {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  20% { transform: translate(12px, -18px) rotate(3deg); }
+  40% { transform: translate(-8px, 10px) rotate(-2deg); }
+  60% { transform: translate(16px, 8px) rotate(4deg); }
+  80% { transform: translate(-12px, -6px) rotate(-3deg); }
+}
+
+.orb { animation: wobble 20s ease-in-out infinite; }

@@ -1,0 +1,10 @@
+.grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0.03;
+}
+
+.grid svg { width: 100%; height: 100%; }
