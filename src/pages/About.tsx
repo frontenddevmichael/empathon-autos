@@ -13,6 +13,7 @@ import styles from './About.module.css'
 interface TeamMember {
   name: string
   role: string
+  photo?: string
 }
 
 const VALUES = [
@@ -32,10 +33,10 @@ const SERVICES = [
 export function About() {
   const { content: aboutContent, error: aboutError } = useSiteContent('about')
   const leadership = parseJsonContent<TeamMember>(aboutContent, 'leadership', [
-    { name: 'Chinwe Okafor', role: 'Managing Director' },
-    { name: 'Tunde Balogun', role: 'Head of Operations' },
-    { name: 'Amara Obi', role: 'Finance Director' },
-    { name: 'Femi Adeleke', role: 'Sales & Marketing Lead' },
+    { name: 'Hassan', role: 'Team Member', photo: '/team/Hassan.jpeg' },
+    { name: 'Jimoh', role: 'Team Member', photo: '/team/Jimoh.jpeg' },
+    { name: 'Saheed Akintunde', role: 'Team Member', photo: '/team/Saheed Akintunde.jpeg' },
+    { name: 'Tolani', role: 'Team Member', photo: '/team/Tolani.jpeg' },
   ])
   return (
     <>
@@ -115,7 +116,11 @@ export function About() {
             <div className="responsive-grid-4 stagger-fade-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-3)' }}>
               {leadership.map((person, i) => (
                 <div key={person.name} className={`${styles.teamCard} scroll-reveal-child`} style={{ ['--reveal-delay' as string]: `${i * 80}ms` }}>
-                  <div className={styles.initials}>{person.name.split(' ').map(n => n[0]).join('')}</div>
+                  {person.photo ? (
+                    <img src={person.photo} alt={person.name} className={styles.teamPhoto} />
+                  ) : (
+                    <div className={styles.initials}>{person.name.split(' ').map(n => n[0]).join('')}</div>
+                  )}
                   <p className={styles.teamName}>{person.name}</p>
                   <p className={styles.teamRole}>{person.role}</p>
                 </div>

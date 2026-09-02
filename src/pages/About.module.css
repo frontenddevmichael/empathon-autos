@@ -67,3 +67,12 @@
   font-size: var(--text-xs);
   color: var(--stone);
 }
+
+.teamPhoto {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto var(--space-1-5);
+  border: 2px solid var(--border);
+}

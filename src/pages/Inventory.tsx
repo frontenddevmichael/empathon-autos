@@ -23,7 +23,7 @@ const BODY_TYPES = [
   { value: 'sedan', label: 'Sedan' }, { value: 'suv', label: 'SUV' },
   { value: 'hatchback', label: 'Hatchback' }, { value: 'coupe', label: 'Coupe' },
   { value: 'pickup', label: 'Pickup' }, { value: 'truck', label: 'Truck' },
-  { value: 'wagon', label: 'Wagon' }, { value: 'minivan', label: 'Minivan' },
+  { value: 'wagon', label: 'Wagon' }, { value: 'van', label: 'Van' },
 ]
 const STATUS_OPTIONS = [
   { value: '', label: 'All Statuses' },
@@ -41,7 +41,7 @@ const TRANSMISSIONS = [
 const CONDITIONS = [
   { value: '', label: 'All Conditions' },
   { value: 'new', label: 'New' }, { value: 'used', label: 'Used' },
-  { value: 'certified', label: 'Certified Pre-Owned' },
+  { value: 'certified-pre-owned', label: 'Certified Pre-Owned' },
 ]
 const YEAR_RANGES = [
   { value: '', label: 'All Years' },
@@ -52,23 +52,7 @@ const YEAR_RANGES = [
   { value: '2015-2017', label: '2015-2017' },
   { value: '0-2014', label: '2014 & Older' },
 ]
-const PRICE_RANGES = [
-  { value: '', label: 'All Prices' },
-  { value: '0-10000000', label: 'Under ₦10M' },
-  { value: '10000000-20000000', label: '₦10M - ₦20M' },
-  { value: '20000000-30000000', label: '₦20M - ₦30M' },
-  { value: '30000000-50000000', label: '₦30M - ₦50M' },
-  { value: '50000000-100000000', label: '₦50M - ₦100M' },
-  { value: '100000000-999999999', label: '₦100M+' },
-]
-const MILEAGE_RANGES = [
-  { value: '', label: 'All Mileage' },
-  { value: '0-10000', label: 'Under 10,000 km' },
-  { value: '10000-30000', label: '10,000 - 30,000 km' },
-  { value: '30000-50000', label: '30,000 - 50,000 km' },
-  { value: '50000-100000', label: '50,000 - 100,000 km' },
-  { value: '100000-999999', label: '100,000+ km' },
-]
+
 
 export function Inventory() {
   const mounted = useMounted()
@@ -110,7 +94,7 @@ export function Inventory() {
         if (make) q = q.eq('make', make)
         if (bodyType) q = q.eq('body_type', bodyType)
         if (statusFilter) q = q.eq('status', statusFilter)
-        if (fuelType) q = q.eq('fuel', fuelType)
+        if (fuelType) q = q.eq('fuel_type', fuelType)
         if (transmission) q = q.eq('transmission', transmission)
         if (condition) q = q.eq('condition', condition)
         
@@ -277,34 +261,6 @@ export function Inventory() {
             </div>
 
             <div className={styles.filterGroup}>
-              <span className={styles.filterGroupLabel}>Price</span>
-              <select
-                value={priceRange}
-                onChange={e => setPriceRange(e.target.value)}
-                className={styles.filterSelect}
-                aria-label="Filter by price"
-              >
-                {PRICE_RANGES.map(p => (
-                  <option key={p.value} value={p.value}>{p.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className={styles.filterGroup}>
-              <span className={styles.filterGroupLabel}>Mileage</span>
-              <select
-                value={mileageRange}
-                onChange={e => setMileageRange(e.target.value)}
-                className={styles.filterSelect}
-                aria-label="Filter by mileage"
-              >
-                {MILEAGE_RANGES.map(m => (
-                  <option key={m.value} value={m.value}>{m.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className={styles.filterGroup}>
               <span className={styles.filterGroupLabel}>Fuel</span>
               <select
                 value={fuelType}
@@ -343,7 +299,7 @@ export function Inventory() {
       )}
 
       <CarSilhouette className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-1)', left: 'var(--space-1)', opacity: 0.03 }} size={100} />
-      <div className={`scroll-reveal stagger-fade-in ${styles.grid}`}>
+      <div className={styles.grid}>
         {loading ? (
           Array.from({ length: 6 }).map((_, i) => <VehicleCardSkeleton key={i} />)
         ) : vehicles.length === 0 ? (
