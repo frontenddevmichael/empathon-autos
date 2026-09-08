@@ -115,7 +115,7 @@ export function Home() {
             gridTemplateColumns: '1fr',
             gap: 'var(--space-5)',
             alignItems: 'center',
-            maxWidth: none,
+            maxWidth: 'none',
           }}>
             <div>
               <p style={{
@@ -153,7 +153,7 @@ export function Home() {
 
               <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
                 <Link to="/inventory">
-                  <MagneticButton strength={0.15} size="lg">
+                  <MagneticButton strength={0.15}>
                     <Ripple>
                       <Button style={{
                         background: 'var(--clay)',

@@ -22,7 +22,7 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
       <div className={styles.wrap}>
         <div className={styles.imageWrap}>
           {primary ? (
-            <OptImage src={primary.url} alt={primary.alt_text || `${vehicle.make} ${vehicle.model}`} className={styles.image} width={480} />
+            <OptImage src={primary.url} alt={primary.alt_text || `${vehicle.make} ${vehicle.model}`} className={styles.image} />
           ) : (
             <div className={styles.image} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
               No image
