@@ -11,13 +11,20 @@ import { ScrollReveal } from '@/components/ScrollReveal'
 import { TextReveal } from '@/components/TextReveal'
 import { Ripple } from '@/components/Ripple'
 import { MagneticButton } from '@/components/MagneticButton'
-import { useParallax } from '@/hooks/useParallax'
 import { useInView } from '@/hooks/useInView'
 import { DecoGrain } from '@/components/deco/DecoGrain'
 import {
-  HeroMark, IconSourcing, IconVerified, IconReach,
+  IconSourcing, IconVerified, IconReach,
   IconExplore, IconEnquire, IconDrive, ProcessConnector,
 } from '@/components/deco/BrandMarks'
+
+const heroImages = [
+  '/heroimg.jpg',
+  '/heroimg2.jpg',
+  '/heroimg3.jpg',
+  '/heroimg4.jpg',
+  '/heroimg5.jpg',
+]
 
 const perks = [
   { icon: IconSourcing, title: 'Sourced Globally', desc: 'North America, Europe, the Gulf, and the Far East.' },
@@ -36,7 +43,7 @@ export function Home() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [loading, setLoading] = useState(true)
   const [processRef, stepsInView] = useInView({ threshold: 0.2 })
-  const heroParallax = useParallax(0.25)
+  const [heroIdx, setHeroIdx] = useState(0)
 
   useEffect(() => {
     getHomePageData()
@@ -46,6 +53,13 @@ export function Home() {
       })
       .catch(() => {})
       .finally(() => setLoading(false))
+  }, [])
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroIdx(prev => (prev + 1) % heroImages.length)
+    }, 5000)
+    return () => clearInterval(timer)
   }, [])
 
   return (
@@ -62,17 +76,47 @@ export function Home() {
         overflow: 'hidden',
         display: 'flex',
         alignItems: 'center',
+        padding: 'var(--space-4) 0',
       }}>
+        {/* Rotating background images */}
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+          {heroImages.map((src, i) => (
+            <div key={src} style={{
+              position: 'absolute', inset: 0,
+              opacity: heroIdx === i ? 1 : 0,
+              transition: 'opacity 1.2s ease-in-out',
+              pointerEvents: 'none',
+            }}>
+              <img
+                src={src}
+                alt=""
+                style={{
+                  width: '100%', height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center',
+                  filter: 'brightness(0.35) saturate(0.9)',
+                }}
+              />
+            </div>
+          ))}
+          {/* Gradient overlay for text readability */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(135deg, rgba(18,14,11,0.85) 0%, rgba(18,14,11,0.5) 50%, rgba(18,14,11,0.7) 100%)',
+          }} />
+        </div>
+
         <div style={{
-          maxWidth: 1280, margin: '0 auto', padding: '0 var(--space-4)',
-          width: '100%', position: 'relative', zIndex: 1,
+          maxWidth: 1360, margin: '0 auto', width: '100%', position: 'relative', zIndex: 1,
+          padding: '0 var(--space-4)',
         }}>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '1.3fr 0.7fr',
+            gridTemplateColumns: '1fr',
             gap: 'var(--space-5)',
             alignItems: 'center',
-          }} className="hero-grid">
+            maxWidth: none,
+          }}>
             <div>
               <p style={{
                 fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase',
@@ -109,26 +153,37 @@ export function Home() {
 
               <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
                 <Link to="/inventory">
-                  <MagneticButton strength={0.1}>
+                  <MagneticButton strength={0.15} size="lg">
                     <Ripple>
                       <Button style={{
                         background: 'var(--clay)',
                         color: 'var(--ink)',
                         fontWeight: 600,
-                        height: 44,
+                        height: 48,
                         padding: '0 var(--space-3)',
                         border: 'none',
+                        borderRadius: 'var(--radius-md)',
                       }}>
                         Browse Inventory <ArrowRight size={16} />
                       </Button>
                     </Ripple>
                   </MagneticButton>
                 </Link>
+
+                <Link to="/contact">
+                  <Button variant="ghost" size="md" style={{
+                    background: 'rgba(255,255,255,0.1)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    color: 'var(--paper)',
+                  }}>
+                    Request a Quote
+                  </Button>
+                </Link>
                 <Link to="/pre-order">
-                  <Button variant="ghost" style={{
-                    color: 'rgba(255,255,255,0.6)',
-                    borderColor: 'rgba(255,255,255,0.12)',
-                    height: 44,
+                  <Button variant="secondary" size="md" style={{
+                    background: 'var(--clay-light)',
+                    color: 'var(--ink)',
+                    border: '1px solid var(--clay)',
                   }}>
                     Pre-Order a Vehicle
                   </Button>
@@ -136,8 +191,24 @@ export function Home() {
               </div>
             </div>
 
-            <div ref={heroParallax} style={{ position: 'relative', display: 'flex', justifyContent: 'center', willChange: 'transform' }}>
-              <HeroMark size={320} delay={500} />
+            {/* Hero image carousel indicator dots */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 'var(--space-3)' }}>
+              {heroImages.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setHeroIdx(i)}
+                  aria-label={`Show image ${i + 1}`}
+                  style={{
+                    width: heroIdx === i ? 28 : 10,
+                    height: 10,
+                    borderRadius: 5,
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.4s ease',
+                    background: heroIdx === i ? 'var(--gold-dust)' : 'rgba(255,255,255,0.3)',
+                  }}
+                />
+              ))}
             </div>
           </div>
         </div>

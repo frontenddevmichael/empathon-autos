@@ -20,13 +20,21 @@
   color: var(--text-primary);
   background: var(--surface-elevated);
   transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
 }
 
 .input::placeholder { color: var(--text-secondary); opacity: 0.5; }
+
 .input:focus {
   outline: none;
-  border-color: var(--clay);
-  box-shadow: 0 0 0 3px var(--clay-muted);
+  border-color: var(--gold-dust);
+  box-shadow: 0 0 0 3px var(--gold-dust-light), 0 4px 12px rgba(22, 22, 22, 0.1);
+  background: var(--surface);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--gold-dust);
+  outline-offset: 2px;
 }
 
 .textarea {
@@ -34,6 +42,25 @@
   min-height: 100px;
   padding: var(--space-1) var(--space-2);
   resize: vertical;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  background: var(--surface-elevated);
+  padding: var(--space-1) var(--space-2);
+  transition: all var(--transition-fast);
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--gold-dust);
+  box-shadow: 0 0 0 3px var(--gold-dust-light), 0 4px 12px rgba(22, 22, 22, 0.1);
+  background: var(--surface);
+}
+
+.textarea:focus-visible {
+  outline: 2px solid var(--gold-dust);
+  outline-offset: 2px;
 }
 
 .select {
@@ -42,7 +69,24 @@
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 40px;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  background-color: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--gold-dust);
+}
+
+.select:focus-visible {
+  outline: 2px solid var(--gold-dust);
+  outline-offset: 2px;
 }
 
 .errorInput { border-color: var(--error); }

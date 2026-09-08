@@ -7,17 +7,25 @@
   font-weight: 500;
   line-height: 1.4;
   border: 1px solid transparent;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
 }
 
-.draft { background: var(--clay-muted); color: var(--clay-deep); }
-.published { background: var(--success-light); color: var(--success); }
-.available { background: var(--success-light); color: var(--success); }
-.sold { background: var(--error-light); color: var(--error); }
-.preOrder { background: var(--gold-dust-light); color: #92400e; }
+.badge:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.draft { background: var(--clay-muted); color: var(--clay-deep); border-color: var(--clay-muted); }
+.published { background: var(--success-light); color: var(--success); border-color: var(--success-light); }
+.available { background: var(--success-light); color: var(--success); border-color: var(--success-light); }
+.sold { background: var(--error-light); color: var(--error); border-color: var(--error-light); }
+.preOrder { background: var(--gold-dust-light); color: #92400e; border-color: var(--gold-dust-light); }
 .live {
   background: var(--live-light);
   color: var(--live);
   border-color: var(--live);
+  animation: pulse 2s var(--ease-out) infinite;
 }
 
 .liveDot {

@@ -22,12 +22,16 @@ export function About() {
   return (
     <>
       <SeoHead title="About" description="Nigeria's trusted automotive partner since 2019. Premium vehicle imports, pre-orders, and corporate fleet solutions." />
-      <section className={styles.hero}>
+      <section className={styles.hero} style={{ padding: 'var(--space-7) var(--space-4)' }}>
+        <div className={styles.heroBg}>
+          <img src="/heroimg.jpg" alt="" />
+        </div>
+        <div className={styles.heroOverlay} />
         <Section as="div" className={styles.heroInner}>
           <p className={styles.heroLabel}>About</p>
-          <h2 className={styles.heroTitle}>Nigeria's Trusted <br />Automotive Partner</h2>
+          <h2 className={styles.heroTitle} style={{ color: 'white' }}>Nigeria's Trusted <br />Automotive Partner</h2>
           <DecoLine width={80} />
-          <p className={styles.heroDesc}>
+          <p className={styles.heroDesc} style={{ color: 'rgba(255,255,255,0.7)' }}>
             Empathon Autos has been delivering premium vehicles and exceptional service to Nigerian buyers since 2019.
             We specialise in vehicle imports, pre-orders, and corporate fleet solutions.
           </p>
