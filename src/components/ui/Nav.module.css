@@ -437,7 +437,7 @@
     width: 44px;
     height: 44px;
   }
-  .logo { height: 34px; }
+  .logo { height: 26px; }
   .inner {
     padding: 0 var(--space-3);
   }
@@ -454,11 +454,14 @@
     height: var(--nav-height);
   }
   .scrolled .logo {
-    height: 30px;
+    height: 22px;
   }
 }
 
 @media (max-width: 480px) {
+  .logo { height: 22px; }
+  .scrolled .logo { height: 20px; }
+  .hamburger { width: 40px; height: 40px; }
   .mobileLink {
     padding: 16px var(--space-3);
     font-size: var(--text-xl);
