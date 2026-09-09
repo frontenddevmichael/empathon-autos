@@ -11,8 +11,8 @@
   --paper-warm: #f5f5f7;
   --paper-light: #ffffff;
   --surface: #ffffff;
-  --stone: #86868b;
-  --stone-light: #a1a1a6;
+  --stone: #6e6e73;
+  --stone-light: #8e8e93;
   --border: rgba(29,29,31,0.08);
   --border-light: rgba(29,29,31,0.04);
 
@@ -40,8 +40,8 @@
   --text-secondary: var(--stone);
   --accent: var(--navy);
 
-  /* ── Typography — one confident family, strict scale ── */
-  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  /* ── Typography — DM Sans for display, Inter for body ── */
+  --font-display: 'DM Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
 
@@ -169,17 +169,17 @@ ul, ol { list-style: none; }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 600;
   line-height: var(--leading-tight);
   letter-spacing: var(--tracking-tight);
   color: var(--text-primary);
 }
 h1 { font-size: var(--text-5xl); letter-spacing: var(--tracking-tighter); font-weight: 700; }
-h2 { font-size: var(--text-4xl); letter-spacing: var(--tracking-tight); }
-h3 { font-size: var(--text-2xl); }
-h4 { font-size: var(--text-xl); }
+h2 { font-size: var(--text-4xl); letter-spacing: var(--tracking-tight); font-weight: 600; }
+h3 { font-size: var(--text-2xl); font-weight: 600; }
+h4 { font-size: var(--text-xl); font-weight: 600; }
 
-p { color: var(--text-secondary); line-height: var(--leading-relaxed); }
+p { color: #424245; line-height: var(--leading-relaxed); }
 
 ::selection { background: var(--navy); color: white; }
 
