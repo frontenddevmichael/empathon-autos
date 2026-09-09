@@ -4,7 +4,7 @@ import { HeroSection } from '@/components/HeroSection'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { RippleButton } from '@/components/RippleButton'
 import { Section } from '@/components/PageLayout'
-import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
+import { useSiteContent, parseJsonContent, getTextContent } from '@/hooks/useSiteContent'
 import { LeadForm } from '@/components/LeadForm'
 import { Input, TextArea } from '@/components/ui/Input'
 import { useToast } from '@/context/ToastContext'
@@ -19,7 +19,7 @@ interface Client {
   logo?: string | null
 }
 
-const FLEET_DEALS = [
+const FLEET_DEALS_FALLBACK = [
   {
     sector: 'Hospital & Health',
     icon: HeartPulse,
@@ -86,14 +86,14 @@ const FLEET_DEALS = [
   },
 ]
 
-const WHY_CHOOSE_US = [
+const WHY_CHOOSE_US_FALLBACK = [
   { icon: Users, title: 'Dedicated Account Manager', desc: 'One point of contact who knows your fleet inside out.' },
   { icon: Car, title: 'Pre-Delivery Inspection', desc: 'Every vehicle inspected and certified before handover.' },
   { icon: Phone, title: '24/7 Support Line', desc: 'Emergency breakdown assistance and roadside support.' },
   { icon: Mail, title: 'Fleet Management Portal', desc: 'Track maintenance, fuel usage, and vehicle status in real-time.' },
 ]
 
-const VOLUME_TIERS = [
+const VOLUME_TIERS_FALLBACK = [
   { units: '1-4 units', discount: 'Standard pricing' },
   { units: '5-9 units', discount: '8-12% discount' },
   { units: '10-19 units', discount: '12-18% discount' },
@@ -107,6 +107,11 @@ export function Corporate() {
     { name: 'Johnvents Group', desc: 'Corporate account', logo: null },
     { name: 'Dangote Industries', desc: 'Executive fleet provider', logo: null },
   ])
+  const fleetDeals = parseJsonContent(clientContent, 'fleet_deals', FLEET_DEALS_FALLBACK)
+  const whyChooseUs = parseJsonContent(clientContent, 'why_choose_us', WHY_CHOOSE_US_FALLBACK)
+  const volumeTiers = parseJsonContent(clientContent, 'volume_tiers', VOLUME_TIERS_FALLBACK)
+  const heroTitle = getTextContent(clientContent, 'hero_title') || "Fleet Solutions for Nigeria's Leading Organisations"
+  const heroSubtitle = getTextContent(clientContent, 'hero_subtitle') || 'Better pricing on bulk orders, a dedicated account manager, and after-sales support that actually shows up.'
   const [leadSector, setLeadSector] = useState<string | null>(null)
   const [expandedSector, setExpandedSector] = useState<string | null>(null)
   const [form, setForm] = useState({ name: '', email: '', phone: '', company: '', fleetSize: '', notes: '', honeypot: '' })
@@ -143,8 +148,8 @@ export function Corporate() {
           { url: '/heroimg4.jpg' },
         ]}
         label="Corporate Sales"
-        title="Fleet Solutions for Nigeria's Leading Organisations"
-        subtitle="Better pricing on bulk orders, a dedicated account manager, and after-sales support that actually shows up."
+        title={heroTitle}
+        subtitle={heroSubtitle}
         deco="dots"
       />
 
@@ -159,7 +164,7 @@ export function Corporate() {
             dark
           />
           <div className={`scroll-reveal stagger-fade-in ${styles.tiersGrid}`}>
-            {VOLUME_TIERS.map((tier) => (
+            {volumeTiers.map((tier) => (
               <div key={tier.units} className={`${styles.tier} ${tier.featured ? styles.tierFeatured : ''}`}>
                 <p className={styles.tierUnits}>{tier.units}</p>
                 <p className={styles.tierDiscount}>{tier.discount}</p>
@@ -178,7 +183,7 @@ export function Corporate() {
         />
 
         <div className={`scroll-reveal stagger-fade-in ${styles.sectorsGrid}`}>
-          {FLEET_DEALS.map(deal => {
+          {fleetDeals.map(deal => {
             const isExpanded = expandedSector === deal.sector
             return (
               <div key={deal.sector} className={styles.sectorCard}>
@@ -222,7 +227,7 @@ export function Corporate() {
         <Section className="scroll-reveal reveal-right" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
           <SectionHeader label="Why Choose Us" title="More Than Just Vehicles" align="center" />
           <div className={`scroll-reveal stagger-fade-in ${styles.whyGrid}`}>
-            {WHY_CHOOSE_US.map((item) => (
+            {whyChooseUs.map((item) => (
               <div key={item.title} className={styles.whyCard}>
                 <item.icon size={28} className={styles.whyIcon} />
                 <h3 className={styles.whyTitle}>{item.title}</h3>

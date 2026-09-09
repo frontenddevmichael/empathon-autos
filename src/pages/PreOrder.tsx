@@ -12,10 +12,11 @@ import { CarKey, RoadDraw } from '@/components/DecoSvgs'
 import { VehicleCard } from '@/components/ui/VehicleCard'
 import { VehicleCardSkeleton } from '@/components/ui/Skeleton'
 import { useMounted } from '@/hooks/useMounted'
+import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
 import type { Vehicle, VehicleMedia } from '@/types'
 import styles from './PreOrder.module.css'
 
-const steps = [
+const STEPS_FALLBACK = [
   { title: '1. Tell Us What You Want', desc: 'Make, model, trim, colour, year, budget — the more specific you are, the better we can hunt.' },
   { title: '2. Secure It With a Deposit', desc: "A refundable deposit locks in your place. We'll give you a timeline and keep you posted." },
   { title: '3. We Handle Everything', desc: "Sourcing, shipping, customs clearance — we've done it hundreds of times. You just wait for the call." },
@@ -25,6 +26,8 @@ const steps = [
 export function PreOrder() {
   const { showToast } = useToast()
   const mounted = useMounted()
+  const { content: preOrderContent } = useSiteContent('pre-order')
+  const steps = parseJsonContent(preOrderContent, 'steps', STEPS_FALLBACK)
   const [vehicles, setVehicles] = useState<(Vehicle & { media: VehicleMedia[] })[]>([])
   const [loading, setLoading] = useState(true)
   const [form, setForm] = useState({ name: '', email: '', phone: '', make: '', model: '', notes: '', honeypot: '' })

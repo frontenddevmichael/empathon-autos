@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { MessageCircle, ArrowRight, Search, ClipboardCheck, Truck, Handshake } from 'lucide-react'
 import { RippleButton } from '@/components/RippleButton'
 import { config } from '@/lib/config'
-import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
+import { useSiteContent, parseJsonContent, getTextContent } from '@/hooks/useSiteContent'
 import styles from './About.module.css'
 
 interface TeamMember {
@@ -12,21 +12,21 @@ interface TeamMember {
   photo?: string
 }
 
-const STATS = [
+const STATS_FALLBACK = [
   { value: 7, suffix: '+', label: 'Years Active' },
   { value: 500, suffix: '+', label: 'Vehicles Delivered' },
   { value: 4, suffix: '', label: 'Countries Sourced' },
   { value: 98, suffix: '%', label: 'Client Satisfaction' },
 ]
 
-const PROCESS_STEPS = [
+const PROCESS_STEPS_FALLBACK = [
   { icon: Search, title: 'Source', desc: 'We scout Japan, Dubai, Europe, and the US for the best vehicles at the right price.' },
   { icon: ClipboardCheck, title: 'Inspect', desc: 'Every vehicle goes through rigorous inspection before it\'s approved for import.' },
   { icon: Truck, title: 'Import', desc: 'We handle logistics, customs, and documentation — end to end.' },
   { icon: Handshake, title: 'Deliver', desc: 'You get your car with full paperwork, warranty, and a team behind you.' },
 ]
 
-const WHY_US = [
+const WHY_US_FALLBACK = [
   {
     heading: 'Global Sourcing, Local Trust',
     desc: 'We have direct relationships with exporters in Japan, Dubai, Europe, and the US. No middlemen, no markups — just honest pricing on quality vehicles.',
@@ -82,6 +82,9 @@ function AnimatedCounter({ value, suffix, label }: { value: number; suffix: stri
 
 export function About() {
   const { content: aboutContent } = useSiteContent('about')
+  const stats = parseJsonContent(aboutContent, 'stats', STATS_FALLBACK)
+  const processSteps = parseJsonContent(aboutContent, 'process_steps', PROCESS_STEPS_FALLBACK)
+  const whyUs = parseJsonContent(aboutContent, 'why_us', WHY_US_FALLBACK)
   const leadership = parseJsonContent<TeamMember>(aboutContent, 'leadership', [
     { name: 'Hassan', role: 'Team Member', photo: '/team/Hassan.jpeg' },
     { name: 'Jimoh', role: 'Team Member', photo: '/team/Jimoh.jpeg' },
@@ -135,10 +138,10 @@ export function About() {
       {/* ── Section 2: Stats Bar ── */}
       <section className={styles.statsBar}>
         <div className={styles.statsInner}>
-          {STATS.map((stat, i) => (
+          {stats.map((stat, i) => (
             <div key={stat.label} className={styles.statItem}>
               <AnimatedCounter value={stat.value} suffix={stat.suffix} label={stat.label} />
-              {i < STATS.length - 1 && <div className={styles.statDivider} />}
+              {i < stats.length - 1 && <div className={styles.statDivider} />}
             </div>
           ))}
         </div>
@@ -158,7 +161,7 @@ export function About() {
               />
             </div>
 
-            {PROCESS_STEPS.map((step, i) => {
+            {processSteps.map((step, i) => {
               const Icon = step.icon
               return (
                 <div
@@ -203,7 +206,7 @@ export function About() {
           <h2 className={styles.sectionTitle}>Built on Trust, Driven by Quality</h2>
 
           <div className={styles.whyBlocks}>
-            {WHY_US.map((block, i) => (
+            {whyUs.map((block, i) => (
               <div
                 key={block.heading}
                 className={`${styles.whyBlock} ${i % 2 === 1 ? styles.whyBlockReversed : ''}`}

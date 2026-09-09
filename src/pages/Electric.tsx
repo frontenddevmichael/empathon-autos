@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Battery, Zap, Gauge, Leaf, Plug, ShieldCheck as ShieldCheckIcon, Wind, PiggyBank, TrendingDown, Clock, Wrench } from 'lucide-react'
+import { ArrowRight, Battery, Zap, Gauge, Leaf, Plug, ShieldCheck as ShieldCheckIcon, Wind, PiggyBank, TrendingDown, Clock, Wrench, type LucideIcon } from 'lucide-react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { Input, TextArea } from '@/components/ui/Input'
 import { Section } from '@/components/PageLayout'
@@ -10,9 +10,10 @@ import { RippleButton } from '@/components/RippleButton'
 import { HeroSection } from '@/components/HeroSection'
 import { ParallaxSection } from '@/components/ParallaxSection'
 import { Sparkle } from '@/components/DecoSvgs'
+import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
 import styles from './Electric.module.css'
 
-const EV_BRANDS = [
+const EV_BRANDS_FALLBACK = [
   { name: 'Mercedes-Benz', logo: '/brands/mercedes.svg', models: 8, tagline: 'Luxury Electric Innovation' },
   { name: 'BMW', logo: '/brands/bmw.svg', models: 5, tagline: 'Ultimate Electric Driving Machine' },
   { name: 'Tesla', logo: '/brands/tesla.svg', models: 4, tagline: 'Leading the EV Revolution' },
@@ -21,7 +22,7 @@ const EV_BRANDS = [
   { name: 'Hyundai', logo: '/brands/hyundai.svg', models: 3, tagline: 'Smart Mobility Solutions' },
 ]
 
-const EV_MODELS = [
+const EV_MODELS_FALLBACK = [
   { name: 'Mercedes-Benz EQS', range: '680 km', power: '516 hp', tag: 'Flagship Electric Saloon', price: '₦85M+', img: 'https://images.unsplash.com/photo-1636578929419-fc62088fd08f?w=900&q=80&fit=crop' },
   { name: 'Mercedes-Benz EQE', range: '620 km', power: '288 hp', tag: 'Executive Electric Sedan', price: '₦65M+', img: 'https://images.unsplash.com/photo-1708903517532-03bea2418854?w=900&q=80&fit=crop' },
   { name: 'BMW iX', range: '600 km', power: '516 hp', tag: 'Luxury Electric SUV', price: '₦70M+', img: 'https://images.unsplash.com/photo-1568559598349-dbf322d50a48?w=900&q=80&fit=crop' },
@@ -30,14 +31,14 @@ const EV_MODELS = [
   { name: 'BMW i4', range: '520 km', power: '335 hp', tag: 'Electric Gran Coupe', price: '₦55M+', img: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=900&q=80&fit=crop' },
 ]
 
-const COST_SAVINGS = [
+const COST_SAVINGS_FALLBACK = [
   { icon: TrendingDown, title: 'Fuel Savings', desc: 'Save up to ₦2M annually on fuel costs compared to petrol vehicles.', amount: '₦2M+/year' },
   { icon: Wrench, title: 'Maintenance Savings', desc: '60% fewer moving parts means 60% less maintenance. No oil changes, fewer brake replacements.', amount: '₦500K+/year' },
   { icon: Clock, title: 'Time Savings', desc: 'Charge overnight at home. No more trips to the petrol station. Wake up to a full battery.', amount: '100+ hrs/year' },
   { icon: PiggyBank, title: 'Total Cost of Ownership', desc: 'Over 5 years, EVs cost 30-40% less to own than equivalent petrol luxury vehicles.', amount: '30-40% less' },
 ]
 
-const BENEFITS = [
+const BENEFITS_FALLBACK = [
   { icon: Battery, title: 'Long Real-World Range', desc: 'Modern EVs deliver 400–700 km on a single charge — plenty for Lagos and beyond.' },
   { icon: Zap, title: 'Serious Performance', desc: 'Instant torque, whisper-quiet drivetrain, and 0–100 in under 5 seconds on flagship models.' },
   { icon: Leaf, title: 'Zero Emissions', desc: 'No tailpipe emissions. Reduce your carbon footprint while enjoying luxury driving.' },
@@ -53,6 +54,25 @@ export function Electric() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', model: '', notes: '', honeypot: '' })
   const [saving, setSaving] = useState(false)
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null)
+
+  const { content: evContent } = useSiteContent('ev')
+
+  const ICON_MAP: Record<string, LucideIcon> = {
+    TrendingDown, Wrench, Clock, PiggyBank,
+    Battery, Zap, Leaf, Gauge, Plug,
+    ShieldCheck: ShieldCheckIcon, Wind,
+  }
+
+  const resolveIcon = (icon: unknown): LucideIcon => {
+    if (typeof icon === 'function') return icon as LucideIcon
+    if (typeof icon === 'string') return ICON_MAP[icon] || Battery
+    return Battery
+  }
+
+  const evBrands = parseJsonContent(evContent, 'ev_brands', EV_BRANDS_FALLBACK)
+  const evModels = parseJsonContent(evContent, 'ev_models', EV_MODELS_FALLBACK)
+  const costSavings = parseJsonContent(evContent, 'cost_savings', COST_SAVINGS_FALLBACK)
+  const benefits = parseJsonContent(evContent, 'benefits', BENEFITS_FALLBACK)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -76,8 +96,8 @@ export function Electric() {
   }
 
   const filteredModels = selectedBrand
-    ? EV_MODELS.filter(m => m.name.includes(selectedBrand))
-    : EV_MODELS
+    ? evModels.filter(m => m.name.includes(selectedBrand))
+    : evModels
 
   return (
     <>
@@ -102,7 +122,7 @@ export function Electric() {
           />
 
           <div className={`scroll-reveal stagger-fade-in ${styles.brandsGrid}`}>
-            {EV_BRANDS.map((brand) => (
+            {evBrands.map((brand) => (
               <button
                 key={brand.name}
                 onClick={() => setSelectedBrand(selectedBrand === brand.name ? null : brand.name)}
@@ -131,11 +151,11 @@ export function Electric() {
           />
 
           <div className={`scroll-reveal stagger-fade-in ${styles.savingsGrid}`}>
-            {COST_SAVINGS.map((saving) => (
+            {costSavings.map((saving) => (
               <div key={saving.title} className={styles.savingCard}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
                   <div className={styles.savingIcon}>
-                    <saving.icon size={22} />
+                    {(() => { const Icon = resolveIcon(saving.icon); return <Icon size={22} /> })()}
                   </div>
                   <div>
                     <p className={styles.savingTitle}>{saving.title}</p>
@@ -212,9 +232,9 @@ export function Electric() {
             desc="Electric vehicles are no longer the future — they're the smartest choice on the market today. Here's why."
           />
           <div className={`scroll-reveal stagger-fade-in ${styles.benefitsGrid}`}>
-            {BENEFITS.map((b) => (
+            {benefits.map((b) => (
               <div key={b.title} className={styles.benefitCard}>
-                <b.icon size={28} className={styles.benefitIcon} />
+                {(() => { const Icon = resolveIcon(b.icon); return <Icon size={28} className={styles.benefitIcon} /> })()}
                 <h3 className={styles.benefitTitle}>{b.title}</h3>
                 <p className={styles.benefitDesc}>{b.desc}</p>
               </div>

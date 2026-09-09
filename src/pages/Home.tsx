@@ -228,12 +228,12 @@ export function Home() {
       {/* STATS BAND — quiet editorial moment */}
       <section className={styles.statsBand}>
         <div className={styles.statsGrid}>
-          {[
+          {parseJsonContent(homeContent, 'stats', [
             { label: 'Vehicles Imported', target: 500, suffix: '+' },
             { label: 'Happy Clients', target: 300, suffix: '+' },
             { label: 'Years in Business', target: 6, suffix: '' },
             { label: 'Countries Sourced', target: 12, suffix: '' },
-          ].map((stat) => (
+          ]).map((stat) => (
             <div key={stat.label} className={styles.statItem}>
               <span className={`${styles.statValue} scroll-reveal`}>
                 <AnimatedCounter target={stat.target} suffix={stat.suffix} />
