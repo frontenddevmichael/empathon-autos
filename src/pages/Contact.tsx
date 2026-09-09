@@ -1,20 +1,18 @@
 import { useState } from 'react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
-import { Phone, Mail, MapPin, Clock, MessageCircle } from 'lucide-react'
+import { Phone, Mail, MapPin, Clock, MessageCircle, ArrowRight, Send } from 'lucide-react'
 import { Input, TextArea } from '@/components/ui/Input'
-import { Section } from '@/components/PageLayout'
 import { useToast } from '@/context/ToastContext'
-import { HandDots, Handshake } from '@/components/DecoSvgs'
 import { RippleButton } from '@/components/RippleButton'
-import { HeroSection } from '@/components/HeroSection'
 import { config } from '@/lib/config'
 import { useRateLimit } from '@/hooks/useRateLimit'
+import styles from './Contact.module.css'
 
 const contactDetails = [
-  { icon: MapPin, label: 'Address', value: config.company.address },
-  { icon: Phone, label: 'Phone', value: `${config.company.phone1} / ${config.company.phone2}` },
-  { icon: Mail, label: 'Email', value: config.company.email },
-  { icon: Clock, label: 'Hours', value: config.company.hours },
+  { icon: MapPin, label: 'Visit Us', value: config.company.address },
+  { icon: Phone, label: 'Call Us', value: `${config.company.phone1} / ${config.company.phone2}` },
+  { icon: Mail, label: 'Email Us', value: config.company.email },
+  { icon: Clock, label: 'Working Hours', value: config.company.hours },
 ]
 
 export function Contact() {
@@ -46,57 +44,146 @@ export function Contact() {
 
   return (
     <>
-      <HeroSection
-        images={[
-          { url: '/heroimg5.jpg' },
-          { url: '/heroimg.jpg' },
-        ]}
-        label="Contact"
-        title="Get in Touch"
-        subtitle="Have a question, need a quote, or just want to talk cars? We'd love to hear from you."
-        deco="dots"
-      />
+      {/* ── Hero ── */}
+      <section className={styles.hero}>
+        <img
+          src="/heroimg5.jpg"
+          alt=""
+          className={styles.heroImage}
+          loading="eager"
+          fetchPriority="high"
+        />
+        <div className={styles.heroOverlay} />
+        <div className={styles.heroContent}>
+          <p className={styles.heroLabel}>
+            <span className={styles.heroLabelLine} />
+            Contact
+          </p>
+          <h1 className={styles.heroTitle}>Let's Talk</h1>
+          <p className={styles.heroSubtitle}>
+            Have a question, need a quote, or just want to talk cars? We'd love to hear from you.
+          </p>
+        </div>
+      </section>
 
-      <Section style={{ position: 'relative' }}>
-        <Handshake className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-3)', left: 'var(--space-3)', opacity: 0.04 }} size={64} />
-        <HandDots className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.35 }} />
-        <div className="scroll-reveal reveal-fade responsive-grid-2" style={{ display: 'grid', gap: 'var(--space-4)', alignItems: 'start' }}>
-          <div className="scroll-reveal-child">
-            <div style={{ display: 'grid', gap: 'var(--space-2)' }}>
-              {contactDetails.map(d => (
-                <div key={d.label} style={{ display: 'flex', gap: 'var(--space-1-5)', alignItems: 'flex-start', padding: 'var(--space-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', background: 'var(--surface)' }}>
-                  <d.icon size={18} style={{ color: 'var(--navy)', marginTop: 2, flexShrink: 0 }} />
-                  <div>
-                    <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)', marginBottom: 2 }}>{d.label}</p>
-                    <p style={{ fontSize: 'var(--text-sm)', fontWeight: 500 }}>{d.value}</p>
+      {/* ── Main Content ── */}
+      <section className={styles.mainSection}>
+        <div className={styles.mainInner}>
+          <div className={styles.layout}>
+            {/* Left — Details */}
+            <div className={styles.detailsColumn}>
+              <div className={styles.detailsGrid}>
+                {contactDetails.map((d, i) => (
+                  <div
+                    key={d.label}
+                    className={styles.detailCard}
+                    style={{ animationDelay: `${i * 80}ms` }}
+                  >
+                    <div className={styles.detailIconWrap}>
+                      <d.icon size={20} strokeWidth={1.5} />
+                    </div>
+                    <div>
+                      <p className={styles.detailLabel}>{d.label}</p>
+                      <p className={styles.detailValue}>{d.value}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-            <a
-              href={config.whatsapp.link}
-              target="_blank" rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', marginTop: 'var(--space-2)', padding: 'var(--space-1-5) var(--space-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--ink)', fontSize: 'var(--text-sm)', fontWeight: 500, transition: 'background var(--transition-fast)' }}
-            >
-              <MessageCircle size={18} style={{ color: 'var(--navy)' }} />
-              Chat with us on WhatsApp
-            </a>
-          </div>
-          <div className="scroll-reveal-child" style={{ padding: 'var(--space-4)', border: '1px solid rgba(10,10,10,0.06)', borderRadius: 'var(--radius-xl)', background: 'var(--surface)', ['--reveal-delay' as string]: '100ms' }}>
-            <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: 'var(--space-2)' }}>Send a Message</h3>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1-5)' }}>
-              <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
-                <input tabIndex={-1} value={form.honeypot} onChange={e => setForm(f => ({ ...f, honeypot: e.target.value }))} />
+                ))}
               </div>
-              <Input label="Full Name *" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required />
-              <Input label="Email *" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required />
-              <Input label="Phone" type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} />
-              <TextArea label="Message *" value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} rows={4} required />
-              <RippleButton type="submit" loading={saving}>Send Message</RippleButton>
-            </form>
+
+              <a
+                href={config.whatsapp.getDeepLink("Hi Empathon Autos! I'd like to get in touch.")}
+                target="_blank" rel="noopener noreferrer"
+                className={styles.whatsappButton}
+              >
+                <MessageCircle size={18} />
+                Chat with us on WhatsApp
+                <ArrowRight size={16} className={styles.whatsappArrow} />
+              </a>
+            </div>
+
+            {/* Right — Form */}
+            <div className={styles.formCard}>
+              <h3 className={styles.formTitle}>Send a Message</h3>
+              <p className={styles.formSubtitle}>We'll get back to you within 24 hours.</p>
+
+              <form onSubmit={handleSubmit} className={styles.form}>
+                <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
+                  <input tabIndex={-1} value={form.honeypot} onChange={e => setForm(f => ({ ...f, honeypot: e.target.value }))} />
+                </div>
+
+                <div className={styles.formRow}>
+                  <Input
+                    label="Full Name *"
+                    value={form.name}
+                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                    required
+                  />
+                  <Input
+                    label="Email *"
+                    type="email"
+                    value={form.email}
+                    onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                    required
+                  />
+                </div>
+
+                <Input
+                  label="Phone (optional)"
+                  type="tel"
+                  value={form.phone}
+                  onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                />
+
+                <TextArea
+                  label="Message *"
+                  value={form.message}
+                  onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
+                  rows={5}
+                  required
+                />
+
+                <RippleButton type="submit" loading={saving} className={styles.submitButton}>
+                  <Send size={16} />
+                  Send Message
+                </RippleButton>
+              </form>
+            </div>
           </div>
         </div>
-      </Section>
+      </section>
+
+      {/* ── Quick Contact Bar ── */}
+      <section className={styles.quickBar}>
+        <div className={styles.quickBarInner}>
+          <a href={`tel:${config.company.phone1.replace(/\s/g, '')}`} className={styles.quickAction}>
+            <Phone size={20} strokeWidth={1.5} />
+            <div>
+              <p className={styles.quickLabel}>Call Now</p>
+              <p className={styles.quickValue}>{config.company.phone1}</p>
+            </div>
+          </a>
+
+          <div className={styles.quickDivider} />
+
+          <a href={config.whatsapp.link} target="_blank" rel="noopener noreferrer" className={styles.quickAction}>
+            <MessageCircle size={20} strokeWidth={1.5} />
+            <div>
+              <p className={styles.quickLabel}>WhatsApp</p>
+              <p className={styles.quickValue}>Chat instantly</p>
+            </div>
+          </a>
+
+          <div className={styles.quickDivider} />
+
+          <a href={`https://maps.google.com/?q=${encodeURIComponent(config.company.address)}`} target="_blank" rel="noopener noreferrer" className={styles.quickAction}>
+            <MapPin size={20} strokeWidth={1.5} />
+            <div>
+              <p className={styles.quickLabel}>Visit Us</p>
+              <p className={styles.quickValue}>{config.company.address}</p>
+            </div>
+          </a>
+        </div>
+      </section>
     </>
   )
 }
