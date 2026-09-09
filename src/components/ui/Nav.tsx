@@ -256,15 +256,14 @@ export function Nav() {
             </span>
           </button>
         </div>
-      </nav>
 
-      <div
-        ref={menuRef}
-        id="site-mobile-nav"
-        className={`${styles.mobileMenu} ${mobileOpen ? styles.mobileOpen : ''}`}
-        role="dialog" aria-modal="true" aria-label="Navigation"
-        aria-hidden={!mobileOpen}
-      >
+        <div
+          ref={menuRef}
+          id="site-mobile-nav"
+          className={`${styles.mobileMenu} ${mobileOpen ? styles.mobileOpen : ''}`}
+          role="dialog" aria-modal="true" aria-label="Navigation"
+          aria-hidden={!mobileOpen}
+        >
         <div className={styles.mobileLinks}>
           {navGroups.map((group, gi) => (
             <div key={group.label} className={styles.mobileGroup}>
@@ -338,6 +337,7 @@ export function Nav() {
           <Button as="a" href="/contact" fullWidth>Contact</Button>
         </div>
       </div>
+      </nav>
     </>
   )
 }
