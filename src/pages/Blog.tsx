@@ -2,14 +2,10 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import type { BlogPost } from '@/types'
-import { Section } from '@/components/PageLayout'
-import { HeroSection } from '@/components/HeroSection'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { RippleButton } from '@/components/RippleButton'
-import { HandDots } from '@/components/DecoSvgs'
 import styles from './Blog.module.css'
 
-/** Rough read time from body length — ~200 wpm, floored at 1 min. */
 function readTime(body: string): string {
   const words = body.trim() ? body.trim().split(/\s+/).length : 0
   const mins = Math.max(1, Math.round(words / 200))
@@ -50,19 +46,30 @@ export function Blog() {
 
   return (
     <>
-      <HeroSection
-        images={[
-          { url: '/heroimg3.jpg' },
-          { url: '/heroimg4.jpg' },
-        ]}
-        label="Blog"
-        title="Latest Articles"
-        subtitle="Insights, tips, and stories from the Empathon Autos team."
-        deco="dots"
-      />
+      {/* ── Hero ── */}
+      <section className={styles.hero}>
+        <img
+          src="/heroimg3.jpg"
+          alt=""
+          className={styles.heroImage}
+          loading="eager"
+          fetchPriority="high"
+        />
+        <div className={styles.heroOverlay} />
+        <div className={styles.heroContent}>
+          <p className={styles.heroLabel}>
+            <span className={styles.heroLabelLine} />
+            Blog
+          </p>
+          <h1 className={styles.heroTitle}>Latest Articles</h1>
+          <p className={styles.heroSubtitle}>
+            Insights, tips, and stories from the Empathon Autos team.
+          </p>
+        </div>
+      </section>
 
-      <Section className={styles.section}>
-        <HandDots className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.1 }} />
+      {/* ── Content ── */}
+      <section className={styles.section}>
         <div className={styles.sectionInner}>
           {loading ? (
             <div className={styles.skeletonGrid} aria-label="Loading articles">
@@ -92,7 +99,7 @@ export function Blog() {
             </div>
           ) : (
             <>
-              {/* Lead article — one editorial focal point */}
+              {/* Featured article */}
               {featured && (
                 <Link to={`/blog/${featured.slug}`} className={`scroll-reveal ${styles.featuredLink}`}>
                   {featured.cover_image && (
@@ -102,21 +109,12 @@ export function Blog() {
                   )}
                   <div className={styles.featuredBody}>
                     <div className={styles.featuredMeta}>
-                      <span>Latest</span>
-                      <span className={styles.featuredMetaDot} />
+                      <span className={styles.badge}>Latest</span>
                       {featured.author && <span>{featured.author}</span>}
                       {featured.published_at && (
-                        <>
-                          <span className={styles.featuredMetaDot} />
-                          <span className="tabular-nums">{formatDate(featured.published_at)}</span>
-                        </>
+                        <span className="tabular-nums">{formatDate(featured.published_at)}</span>
                       )}
-                      {featured.body && (
-                        <>
-                          <span className={styles.featuredMetaDot} />
-                          <span>{readTime(featured.body)}</span>
-                        </>
-                      )}
+                      {featured.body && <span>{readTime(featured.body)}</span>}
                     </div>
                     <h2 className={styles.featuredTitle}>{featured.title}</h2>
                     {featured.body && <p className={styles.featuredExcerpt}>{featured.body.replace(/[#*`>\-\[\]]/g, '').slice(0, 220)}…</p>}
@@ -125,7 +123,7 @@ export function Blog() {
                 </Link>
               )}
 
-              {/* Remaining articles — refined image-forward cards */}
+              {/* Article grid */}
               {rest.length > 0 && (
                 <div className={`scroll-reveal reveal-right stagger-fade-in ${styles.grid}`}>
                   {rest.map(p => (
@@ -150,8 +148,8 @@ export function Blog() {
                 </div>
               )}
 
-              {/* Closing CTA — tell us what to write next */}
-              <div className={`scroll-reveal reveal-big ${styles.ctaStrip}`} style={{ marginTop: 'var(--space-5)' }}>
+              {/* CTA */}
+              <div className={`scroll-reveal reveal-big ${styles.ctaStrip}`}>
                 <h2>Have a topic in mind?</h2>
                 <p>Tell us what you'd like us to cover — buying guides, import insights, EV deep-dives. We read every request.</p>
                 <Link to="/contact">
@@ -161,7 +159,7 @@ export function Blog() {
             </>
           )}
         </div>
-      </Section>
+      </section>
     </>
   )
 }

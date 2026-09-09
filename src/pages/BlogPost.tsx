@@ -3,12 +3,10 @@ import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { supabase } from '@/lib/supabase'
 import type { BlogPost } from '@/types'
-import { Section } from '@/components/PageLayout'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { RippleButton } from '@/components/RippleButton'
 import styles from './BlogPost.module.css'
 
-/** Escape HTML so admin-authored markdown can never inject markup. */
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, '&amp;')
@@ -18,7 +16,6 @@ function escapeHtml(s: string): string {
     .replace(/'/g, '&#39;')
 }
 
-/** Inline markdown: **bold**, *italic*, `code`, [text](url) — applied after escaping. */
 function inline(text: string): string {
   const code = /`([^`]+)`/g
   const bold = /\*\*(.+?)\*\*/g
@@ -32,8 +29,6 @@ function inline(text: string): string {
   return out
 }
 
-/** Block markdown → HTML. Supports headings, paragraphs, lists (ordered +
- *  unordered), blockquotes, hr, and inline formatting. */
 function renderBody(body: string): string {
   const lines = body.split('\n')
   let html = ''
@@ -49,26 +44,22 @@ function renderBody(body: string): string {
     const line = raw.trim()
     if (!line) { closeList(); continue }
 
-    // Horizontal rule
     if (/^(-{3,}|\*{3,}|_{3,})$/.test(line)) { closeList(); html += '<hr />'; continue }
 
-    // Headings
     const h = line.match(/^(#{1,3})\s+(.*)$/)
     if (h) {
       closeList()
-      const level = h[1].length + 1 // # → h2, ## → h3, ### → h4
+      const level = h[1].length + 1
       html += `<h${level}>${inline(escapeHtml(h[2]))}</h${level}>`
       continue
     }
 
-    // Blockquote
     if (line.startsWith('> ')) {
       closeList()
       html += `<blockquote>${inline(escapeHtml(line.slice(2)))}</blockquote>`
       continue
     }
 
-    // Unordered list
     const ul = line.match(/^[-*]\s+(.*)$/)
     if (ul) {
       if (!inUl) { closeList(); html += '<ul>'; inUl = true }
@@ -76,7 +67,6 @@ function renderBody(body: string): string {
       continue
     }
 
-    // Ordered list
     const ol = line.match(/^\d+\.\s+(.*)$/)
     if (ol) {
       if (!inOl) { closeList(); html += '<ol>'; inOl = true }
@@ -126,7 +116,6 @@ export function BlogPost() {
         if (fetchErr || !data) { setError(true) }
         else {
           setPost(data)
-          // Related — latest published posts excluding the current one
           const { data: others } = await supabase.from('blog_posts')
             .select('*')
             .not('published_at', 'is', null)
@@ -143,7 +132,6 @@ export function BlogPost() {
     })()
   }, [slug])
 
-  // Reading progress — fills the gold bar as the article scrolls through view
   useEffect(() => {
     let frame: number
     const onScroll = () => {
@@ -173,22 +161,21 @@ export function BlogPost() {
 
   if (loading) {
     return (
-      <Section>
-        <div className={styles.skeleton}>
-          <div style={{ height: 14, width: 120, background: 'var(--border)', borderRadius: 6, marginBottom: 24 }} />
-          <div style={{ height: 40, width: '80%', background: 'var(--border)', borderRadius: 8, marginBottom: 16 }} />
-          <div style={{ aspectRatio: '16/9', background: 'var(--border)', borderRadius: 'var(--radius-xl)', marginBottom: 24 }} />
-          <div style={{ height: 16, background: 'var(--border)', borderRadius: 6, marginBottom: 10 }} />
-          <div style={{ height: 16, background: 'var(--border)', borderRadius: 6, marginBottom: 10 }} />
-          <div style={{ height: 16, width: '70%', background: 'var(--border)', borderRadius: 6 }} />
+      <section className={styles.loadingSection}>
+        <div className={styles.loadingInner}>
+          <div className={styles.loadingBar} />
+          <div className={styles.loadingBar} style={{ width: '80%' }} />
+          <div className={styles.loadingImg} />
+          <div className={styles.loadingBar} />
+          <div className={styles.loadingBar} style={{ width: '70%' }} />
         </div>
-      </Section>
+      </section>
     )
   }
 
   if (error || !post) {
     return (
-      <Section>
+      <section className={styles.errorSection}>
         <div className="scroll-reveal" style={{ maxWidth: 640, margin: '0 auto' }}>
           <EmptyState
             art="book"
@@ -201,7 +188,7 @@ export function BlogPost() {
             }
           />
         </div>
-      </Section>
+      </section>
     )
   }
 
@@ -239,42 +226,38 @@ export function BlogPost() {
         </script>
       </Helmet>
 
+      {/* Reading progress */}
       <div className={styles.progress} style={{ width: `${progress}%` }} aria-hidden="true" />
 
-      <Section>
-        <article id="blog-article" className={styles.article}>
+      {/* Article hero */}
+      <section className={styles.hero}>
+        {post.cover_image && (
+          <>
+            <img src={post.cover_image} alt="" className={styles.heroImage} />
+            <div className={styles.heroOverlay} />
+          </>
+        )}
+        <div className={styles.heroContent}>
           <Link to="/blog" className={styles.backLink}><BackIcon /> Back to Blog</Link>
-
           <div className={styles.articleMeta}>
-            <span>Article</span>
-            <span className={styles.metaDot} />
             {post.author && <span>{post.author}</span>}
             {post.published_at && (
-              <>
-                <span className={styles.metaDot} />
-                <span className="tabular-nums">{formatDate(post.published_at)}</span>
-              </>
+              <span className="tabular-nums">{formatDate(post.published_at)}</span>
             )}
-            {post.body && (
-              <>
-                <span className={styles.metaDot} />
-                <span>{readTime(post.body)}</span>
-              </>
-            )}
+            {post.body && <span>{readTime(post.body)}</span>}
           </div>
+          <h1 className={styles.heroTitle}>{post.title}</h1>
+        </div>
+      </section>
 
-          <h1 className={styles.articleTitle}>{post.title}</h1>
-
-          {post.cover_image && (
-            <div className={styles.cover}>
-              <img src={post.cover_image} alt={post.title} />
-            </div>
-          )}
-
+      {/* Article body */}
+      <section className={styles.articleSection}>
+        <article id="blog-article" className={styles.article}>
           {post.body && (
             <div className={styles.body} dangerouslySetInnerHTML={{ __html: renderBody(post.body) }} />
           )}
 
+          {/* Share */}
           <div className={styles.shareRow}>
             <span className={styles.shareLabel}>Share</span>
             <button type="button" className={styles.shareBtn} onClick={copyLink} aria-label="Copy link to article" title="Copy link">
@@ -288,45 +271,35 @@ export function BlogPost() {
                 </svg>
               )}
             </button>
-            <a
-              className={styles.shareBtn}
-              href={`https://x.com/intent/post?text=${shareText}&url=${shareUrl}`}
-              target="_blank" rel="noopener noreferrer" aria-label="Share on X" title="Share on X"
-            >
+            <a className={styles.shareBtn} href={`https://x.com/intent/post?text=${shareText}&url=${shareUrl}`} target="_blank" rel="noopener noreferrer" aria-label="Share on X" title="Share on X">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M18.9 1.2h3.7l-8.1 9.3L24 22.8h-7.5l-5.9-7.7-6.7 7.7H.2l8.7-9.9L0 1.2h7.7l5.3 7 6-7z" />
               </svg>
             </a>
-            <a
-              className={styles.shareBtn}
-              href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`}
-              target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn" title="Share on LinkedIn"
-            >
+            <a className={styles.shareBtn} href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn" title="Share on LinkedIn">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13zM7.12 20.45H3.55V9h3.57v11.45z" />
               </svg>
             </a>
-            <a
-              className={styles.shareBtn}
-              href={`https://api.whatsapp.com/send?text=${shareText}%20${shareUrl}`}
-              target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp" title="Share on WhatsApp"
-            >
+            <a className={styles.shareBtn} href={`https://api.whatsapp.com/send?text=${shareText}%20${shareUrl}`} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp" title="Share on WhatsApp">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.8 1-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-2-1.2 7.5 7.5 0 0 1-1.4-1.7c-.1-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5v-.5c0-.1-.5-1.3-.7-1.8-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1.1 2.7c.1.2 1.8 2.8 4.5 3.9.6.3 1.1.4 1.5.6.6.2 1.2.2 1.6.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.4-.3z" />
               </svg>
             </a>
           </div>
 
+          {/* Author */}
           <div className={styles.authorCard}>
             <div className={styles.authorAvatar} aria-hidden="true">
               {(post.author || 'E').charAt(0).toUpperCase()}
             </div>
             <div>
               <p className={styles.authorName}>{post.author || 'Empathon Autos'}</p>
-              <p className={styles.authorRole}>Trust. Fit. Drive. — Empathon Autos, Lagos</p>
+              <p className={styles.authorRole}>Empathon Autos — Lagos, Nigeria</p>
             </div>
           </div>
 
+          {/* Related */}
           {related.length > 0 && (
             <div className={`scroll-reveal ${styles.related}`}>
               <h3 className={styles.relatedTitle}>Keep reading</h3>
@@ -351,7 +324,7 @@ export function BlogPost() {
             </div>
           )}
         </article>
-      </Section>
+      </section>
     </>
   )
 }

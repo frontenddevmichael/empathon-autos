@@ -1,6 +1,4 @@
-/* ── Blog detail — editorial reading experience ── */
-
-/* Reading progress — thin gold bar pinned to the top */
+/* ── Reading Progress ── */
 .progress {
   position: fixed;
   top: 0;
@@ -13,10 +11,45 @@
   transition: width 80ms linear;
 }
 
-.article {
+/* ── Hero ── */
+.hero {
+  position: relative;
+  min-height: 50vh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  background: var(--navy);
+}
+
+.heroImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    var(--navy-deep) 0%,
+    rgba(6, 20, 40, 0.75) 40%,
+    rgba(6, 20, 40, 0.3) 70%,
+    rgba(6, 20, 40, 0.15) 100%
+  );
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
   max-width: 760px;
   margin: 0 auto;
-  padding: var(--space-4);
+  padding: var(--space-7) var(--space-4) var(--space-5);
+  width: 100%;
+  animation: fadeInUp 600ms 100ms var(--ease-out) both;
 }
 
 .backLink {
@@ -25,8 +58,12 @@
   gap: 6px;
   font-size: var(--text-sm);
   font-weight: 600;
-  color: var(--navy);
+  color: rgba(255, 255, 255, 0.6);
   margin-bottom: var(--space-3);
+  transition: color 200ms var(--ease-out);
+}
+.backLink:hover {
+  color: white;
 }
 .backLink svg {
   transition: transform 250ms var(--ease-out);
@@ -35,46 +72,39 @@
   transform: translateX(-3px);
 }
 
-/* Header */
 .articleMeta {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--space-1) var(--space-3);
+  gap: var(--space-1) var(--space-2);
   font-size: var(--text-xs);
-  color: var(--stone);
+  color: rgba(255, 255, 255, 0.45);
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  margin-bottom: var(--space-2);
 }
-.metaDot {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: var(--gold);
-  opacity: 0.7;
-}
-.articleTitle {
+
+.heroTitle {
+  font-family: var(--font-display);
   font-size: clamp(2rem, 5vw, 3.25rem);
-  line-height: var(--leading-snug);
-  letter-spacing: var(--tracking-tight);
-  margin: var(--space-2) 0 var(--space-3);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: white;
 }
 
-.cover {
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  margin-bottom: var(--space-4);
-  aspect-ratio: 16 / 9;
-  background: var(--paper-warm);
-}
-.cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+/* ── Article Section ── */
+.articleSection {
+  padding: var(--section-y) var(--space-4);
+  background: var(--paper);
 }
 
-/* Article body — editorial typography */
+.article {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* ── Body Typography ── */
 .body {
   font-size: 1.0625rem;
   line-height: 1.85;
@@ -147,7 +177,7 @@
   max-width: 120px;
 }
 
-/* Share row — quiet circular buttons */
+/* ── Share Row ── */
 .shareRow {
   display: flex;
   align-items: center;
@@ -173,7 +203,7 @@
   border: 1px solid var(--border);
   color: var(--navy);
   background: var(--surface);
-  transition: transform 200ms var(--ease-out), border-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
+  transition: all 200ms var(--ease-out);
 }
 .shareBtn:hover {
   transform: translateY(-2px);
@@ -185,7 +215,7 @@
   outline-offset: 2px;
 }
 
-/* Author card */
+/* ── Author Card ── */
 .authorCard {
   display: flex;
   align-items: center;
@@ -194,6 +224,7 @@
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-lg);
   background: var(--paper-warm);
+  border: 1px solid var(--border);
 }
 .authorAvatar {
   width: 48px;
@@ -219,7 +250,7 @@
   margin: 2px 0 0;
 }
 
-/* Related posts */
+/* ── Related Posts ── */
 .related {
   margin-top: var(--space-6);
 }
@@ -241,7 +272,7 @@
   border: 1px solid var(--border);
   background: var(--surface);
   text-decoration: none;
-  transition: transform 300ms var(--ease-out), border-color 300ms var(--ease-out), box-shadow 300ms var(--ease-out);
+  transition: all 300ms var(--ease-out);
 }
 .relatedCard:hover {
   transform: translateY(-3px);
@@ -280,14 +311,53 @@
   text-transform: uppercase;
 }
 
-/* Skeleton */
-.skeleton {
+/* ── Loading / Error States ── */
+.loadingSection, .errorSection {
+  padding: var(--section-y) var(--space-4);
+  background: var(--paper);
+}
+.loadingInner {
   max-width: 760px;
   margin: 0 auto;
-  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.loadingBar {
+  height: 16px;
+  width: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--border-light) 25%, rgba(11, 46, 89, 0.06) 50%, var(--border-light) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+}
+.loadingImg {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(90deg, var(--border-light) 25%, rgba(11, 46, 89, 0.06) 50%, var(--border-light) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+}
+@keyframes shimmer {
+  to { background-position: -200% 0; }
 }
 
-@media (max-width: 640px) {
+/* ── Animations ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .hero {
+    min-height: 40vh;
+  }
+
+  .heroTitle {
+    font-size: clamp(1.6rem, 7vw, 2.25rem);
+  }
+
   .relatedGrid {
     grid-template-columns: 1fr;
   }
