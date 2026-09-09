@@ -1,0 +1,4 @@
+project_id = "emphaton-autos"
+
+[functions.place-bid]
+  verify_jwt = false

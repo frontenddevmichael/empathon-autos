@@ -1,23 +1,22 @@
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-3);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-base);
-}
-
-.card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-  border-color: var(--clay-light);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-premium);
+  transition: all 300ms var(--ease-out);
 }
 
 .hoverable {
-  transition: all var(--transition-fast);
+  cursor: pointer;
 }
 
 .hoverable:hover {
-  border-color: var(--clay-muted);
-  transform: translateY(-1px);
+  border-color: rgba(0,51,102,0.12);
+  box-shadow: var(--shadow-premium-hover);
+  transform: translateY(-4px) scale(1.01);
+}
+
+.hoverable:active {
+  transform: translateY(-2px) scale(0.99);
+  transition: 0.1s;
 }

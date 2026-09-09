@@ -1,52 +1,58 @@
-import type { ButtonHTMLAttributes, ReactNode, AnchorHTMLAttributes } from 'react'
+import { forwardRef, type ButtonHTMLAttributes, type AnchorHTMLAttributes } from 'react'
 import styles from './Button.module.css'
+import { Magnetic } from '@/components/Magnetic'
 
-type Variant = 'primary' | 'secondary' | 'ghost'
-type Size = 'sm' | 'md'
-
-interface ButtonBaseProps {
-  variant?: Variant
-  size?: Size
+interface ButtonBase {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'ghostLight' | 'white'
+  size?: 'lg' | 'md' | 'sm'
   loading?: boolean
   fullWidth?: boolean
-  children: ReactNode
-  className?: string
+  magnetic?: boolean
 }
 
-type ButtonAsButton = ButtonBaseProps & ButtonHTMLAttributes<HTMLButtonElement> & { as?: 'button' }
-type ButtonAsLink = ButtonBaseProps & AnchorHTMLAttributes<HTMLAnchorElement> & { as: 'a'; href: string }
+type ButtonAsButton = ButtonBase & ButtonHTMLAttributes<HTMLButtonElement> & { as?: 'button' }
+type ButtonAsLink = ButtonBase & AnchorHTMLAttributes<HTMLAnchorElement> & { as: 'a' }
 
 type ButtonProps = ButtonAsButton | ButtonAsLink
 
-export function Button(props: ButtonProps) {
-  const {
-    variant = 'primary',
-    size = 'md',
-    loading,
-    fullWidth,
-    children,
-    className = '',
-    as,
-    ...rest
-  } = props as ButtonProps & { as?: 'button' | 'a' }
+export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
+  ({ variant = 'primary', size = 'md', loading, fullWidth, magnetic, className = '', style, children, ...props }, ref) => {
+    const cls = [
+      styles.btn,
+      styles[variant],
+      size === 'sm' ? styles.sm : size === 'lg' ? styles.lg : '',
+      loading ? styles.loading : '',
+      fullWidth ? styles.full : '',
+      className,
+    ].filter(Boolean).join(' ')
 
-  const cls = [
-    styles.btn,
-    styles[variant],
-    size === 'sm' ? styles.sm : '',
-    fullWidth ? styles.full : '',
-    loading ? styles.loading : '',
-    className,
-  ].filter(Boolean).join(' ')
+    const combinedStyle = { ...style } as React.CSSProperties
 
-  if (as === 'a') {
-    return <a className={cls} {...(rest as AnchorHTMLAttributes<HTMLAnchorElement>)}>{children}</a>
+    const inner = props.as === 'a'
+      ? (() => {
+          const { as: _, ...rest } = props as ButtonAsLink
+          return (
+            <a ref={ref as any} className={cls} style={combinedStyle} {...(rest as AnchorHTMLAttributes<HTMLAnchorElement>)}>
+              {loading && <span className={styles.spinner} />}
+              {children}
+            </a>
+          )
+        })()
+      : (() => {
+          const { as: _a, ...rest } = props as ButtonAsButton
+          return (
+            <button ref={ref as any} className={cls} style={combinedStyle} disabled={loading || (rest as any).disabled} {...(rest as ButtonHTMLAttributes<HTMLButtonElement>)}>
+              {loading && <span className={styles.spinner} />}
+              {children}
+            </button>
+          )
+        })()
+
+    if (magnetic && !loading && !fullWidth) {
+      return <Magnetic>{inner}</Magnetic>
+    }
+    return inner
   }
+)
 
-  return (
-    <button className={cls} disabled={(rest as ButtonHTMLAttributes<HTMLButtonElement>).disabled || loading} {...(rest as ButtonHTMLAttributes<HTMLButtonElement>)}>
-      {loading && <span className={styles.spinner} />}
-      {children}
-    </button>
-  )
-}
+Button.displayName = 'Button'

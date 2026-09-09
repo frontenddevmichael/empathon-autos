@@ -1,16 +1,20 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Edit, Trash2 } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 import type { Vehicle, VehicleMedia } from '@/types'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
-import { TableSkeleton } from '@/components/admin/AdminSkeleton'
+import { TableSkeleton } from '@/components/ui/Skeleton'
 import { useToast } from '@/context/ToastContext'
-import { STATUS_TO_BADGE } from '@/lib/constants'
-import { getAllVehicles, deleteVehicle } from '@/lib/queries'
 
 const PAGE_SIZE = 20
+
+const statusBadge: Record<string, 'available' | 'pre-order' | 'sold' | 'draft' | 'live'> = {
+  'walk-in': 'available', 'pre-order': 'pre-order', 'sold': 'sold',
+  'in-auction': 'live', 'draft': 'draft', 'published': 'available',
+}
 
 export function AdminVehicles() {
   const { showToast } = useToast()
@@ -20,16 +24,19 @@ export function AdminVehicles() {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
 
   useEffect(() => {
-    setLoading(true)
-    getAllVehicles(page, PAGE_SIZE)
-      .then(setVehicles)
-      .catch(() => showToast('Failed to load vehicles', 'error'))
-      .finally(() => setLoading(false))
-  }, [page])
+    ;(async () => {
+      setLoading(true)
+      try {
+        const { data } = await supabase.from('vehicles').select('*, media:vehicle_media(*)').order('created_at', { ascending: false }).range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
+        if (data) setVehicles(data as unknown as (Vehicle & { media?: VehicleMedia[] })[])
+      } catch { showToast('Failed to load vehicles', 'error') }
+      setLoading(false)
+    })()
+  }, [page, showToast])
 
   const handleDelete = async () => {
     if (!deleteTarget) return
-    const { error } = await deleteVehicle(deleteTarget)
+    const { error } = await supabase.from('vehicles').delete().eq('id', deleteTarget)
     if (error) { showToast('Failed to delete vehicle', 'error'); setDeleteTarget(null); return }
     setVehicles(prev => prev.filter(v => v.id !== deleteTarget))
     showToast('Vehicle deleted')
@@ -53,10 +60,10 @@ export function AdminVehicles() {
             <tbody>
               {vehicles.map(v => (
                 <tr key={v.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                  <td style={{ padding: 'var(--space-1) var(--space-2)' }}><Link to={`/admin/vehicles/${v.id}/edit`} style={{ color: 'var(--clay-deep)', fontWeight: 500 }}>{v.make} {v.model}{v.trim ? ` ${v.trim}` : ''}</Link></td>
+                  <td style={{ padding: 'var(--space-1) var(--space-2)' }}><Link to={`/admin/vehicles/${v.id}/edit`} style={{ color: 'var(--navy)', fontWeight: 500 }}>{v.make} {v.model}{v.trim ? ` ${v.trim}` : ''}</Link></td>
                   <td className="tabular-nums" style={{ padding: 'var(--space-1) var(--space-2)' }}>{v.year}</td>
                   <td className="tabular-nums" style={{ padding: 'var(--space-1) var(--space-2)' }}>{v.price > 0 ? `₦${(v.price / 1_000_000).toFixed(1)}M` : 'N/A'}</td>
-                  <td style={{ padding: 'var(--space-1) var(--space-2)' }}><Badge variant={STATUS_TO_BADGE[v.status] || 'draft'} /></td>
+                  <td style={{ padding: 'var(--space-1) var(--space-2)' }}><Badge variant={statusBadge[v.status] || 'draft'} /></td>
                   <td style={{ padding: 'var(--space-1) var(--space-2)', textTransform: 'capitalize' }}>{v.condition}</td>
                   <td style={{ padding: 'var(--space-1) var(--space-2)' }}>
                     <div style={{ display: 'flex', gap: 'var(--space-1)' }}>
@@ -66,7 +73,7 @@ export function AdminVehicles() {
                   </td>
                 </tr>
               ))}
-              {vehicles.length === 0 && <tr><td colSpan={6} style={{ padding: 'var(--space-3)', textAlign: 'center', color: 'var(--stone)' }}>No vehicles yet.</td></tr>}
+              {vehicles.length === 0 && <tr><td colSpan={6} style={{ padding: 'var(--space-3)', textAlign: 'center', color: 'var(--stone)' }}>No vehicles yet. <Link to="/admin/vehicles/new" style={{ color: 'var(--navy)', textDecoration: 'underline' }}>Add one</Link>.</td></tr>}
             </tbody>
           </table>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--space-1)', marginTop: 'var(--space-2)' }}>
@@ -81,7 +88,7 @@ export function AdminVehicles() {
         <p style={{ marginBottom: 'var(--space-2)', color: 'var(--stone)' }}>Are you sure? This action cannot be undone.</p>
         <div style={{ display: 'flex', gap: 'var(--space-1)', justifyContent: 'flex-end' }}>
           <Button variant="ghost" onClick={() => setDeleteTarget(null)}>Cancel</Button>
-          <Button style={{ background: 'var(--error)', color: 'white', border: 'none' }} onClick={handleDelete}>Delete</Button>
+          <Button style={{ background: 'var(--error)', color: 'white', border: '1px solid var(--error)' }} onClick={handleDelete}>Delete</Button>
         </div>
       </Modal>
     </div>

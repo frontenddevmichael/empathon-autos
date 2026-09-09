@@ -1,129 +1,328 @@
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState, useCallback } from 'react'
+import { Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/Button'
-import { Input, Select } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
-import { useToast } from '@/context/ToastContext'
-import { getVehicleOptions, getLots } from '@/lib/queries'
+import { TableSkeleton } from '@/components/ui/Skeleton'
+import { ChevronDown, Gavel } from 'lucide-react'
+import { useAutoCloseLots } from '@/hooks/useAutoCloseLots'
+import { GRADE_META } from '@/lib/auction'
+import type { ConditionGrade } from '@/types'
 
-interface Lot {
+interface LotWithVehicle {
   id: string
-  vehicle_id: string
+  vehicle_id: string | null
+  title: string | null
+  make: string | null
+  model: string | null
+  year: number | null
+  condition_grade: ConditionGrade | null
   opening_bid: number
   reserve_price: number
   current_bid: number
   status: string
-  opens_at: string
   closes_at: string
+  created_at: string
+  vehicles: { make: string; model: string; year: number } | null
+  media: { id: string; url: string; is_primary: boolean }[]
+  faults: { count: number }[]
+}
+
+interface BidWithBidder {
+  id: string
+  lot_id: string
+  bidder_id: string | null
+  bidder_name?: string | null
+  amount: number
+  placed_at: string
+  outcome: string | null
+}
+
+function formatNaira(n: number): string {
+  if (n >= 1_000_000) return `₦${(n / 1_000_000).toFixed(1)}M`
+  if (n >= 1_000) return `₦${(n / 1_000).toFixed(0)}K`
+  return `₦${n.toLocaleString()}`
+}
+
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins = Math.floor(diff / 60_000)
+  if (mins < 1) return 'just now'
+  if (mins < 60) return `${mins}m ago`
+  const hrs = Math.floor(mins / 60)
+  if (hrs < 24) return `${hrs}h ago`
+  const days = Math.floor(hrs / 24)
+  return `${days}d ago`
+}
+
+function lotTitle(l: LotWithVehicle): string {
+  if (l.title) return l.title
+  const own = [l.make, l.model].filter(Boolean).join(' ')
+  if (own) return own
+  if (l.vehicles) return `${l.vehicles.make} ${l.vehicles.model}`
+  return 'Untitled lot'
 }
 
 export function AdminAuctions() {
-  const { showToast } = useToast()
-  const [lots, setLots] = useState<Lot[]>([])
-  const [vehicles, setVehicles] = useState<{ id: string; make: string; model: string }[]>([])
-  const [showForm, setShowForm] = useState(false)
-  const [vehicleId, setVehicleId] = useState('')
-  const [openingBid, setOpeningBid] = useState('')
-  const [reservePrice, setReservePrice] = useState('')
-  const [closesAt, setClosesAt] = useState('')
+  const [lots, setLots] = useState<LotWithVehicle[]>([])
+  const [loading, setLoading] = useState(true)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [expandedLot, setExpandedLot] = useState<string | null>(null)
+  const [bids, setBids] = useState<BidWithBidder[]>([])
+  const [bidsLoading, setBidsLoading] = useState(false)
 
-  useEffect(() => {
-    Promise.all([getLots(), getVehicleOptions()])
-      .then(([lotsData, vehData]) => {
-        setLots(lotsData)
-        setVehicles(vehData)
-      })
-      .catch(() => showToast('Failed to load auctions', 'error'))
+  const fetchLots = useCallback(() => {
+    setLoading(true)
+    ;(async () => {
+      try {
+        const { data, error } = await supabase
+          .from('lots')
+          .select('*, vehicles:vehicle_id(make, model, year), media:lot_media(id, url, is_primary), faults:lot_faults(count)')
+          .order('created_at', { ascending: false })
+        if (error) console.error('[AdminAuctions] Failed to load lots:', error.message)
+        if (data) setLots(data as unknown as LotWithVehicle[])
+      } catch (e) {
+        console.error('[AdminAuctions] Unexpected error:', e)
+      }
+      setLoading(false)
+    })()
   }, [])
 
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!vehicleId || !openingBid || !closesAt) return
+  useEffect(() => { fetchLots() }, [fetchLots])
+
+  // Poll for server-side status transitions, re-fetch the list afterward.
+  useAutoCloseLots(fetchLots)
+
+  const fetchBids = useCallback(async (lotId: string) => {
+    setBidsLoading(true)
+    setBids([])
+    try {
+      const { data, error } = await supabase
+        .from('bids')
+        .select('*')
+        .eq('lot_id', lotId)
+        .order('amount', { ascending: false })
+        .limit(10)
+      if (error) console.error('[AdminAuctions] Failed to load bids:', error.message)
+      if (data) setBids(data as unknown as BidWithBidder[])
+    } catch (e) {
+      console.error('[AdminAuctions] Unexpected error loading bids:', e)
+    }
+    setBidsLoading(false)
+  }, [])
+
+  const toggleExpand = useCallback((lotId: string) => {
+    if (expandedLot === lotId) {
+      setExpandedLot(null)
+      setBids([])
+    } else {
+      setExpandedLot(lotId)
+      fetchBids(lotId)
+    }
+  }, [expandedLot, fetchBids])
+
+  const updateStatus = async (id: string, status: string) => {
+    const { data: lot } = await supabase.from('lots').select('vehicle_id').eq('id', id).single()
+    await supabase.from('lots').update({ status }).eq('id', id)
+    if (lot && lot.vehicle_id) {
+      const vehicleStatus = status === 'sold' ? 'sold' : ['closed', 'unsold'].includes(status) ? 'published' : 'in-auction'
+      await supabase.from('vehicles').update({ status: vehicleStatus }).eq('id', lot.vehicle_id)
+    }
+    fetchLots()
+  }
+
+  const handleDelete = async () => {
+    if (!deleteId) return
     setSaving(true)
-    const { error } = await supabase.from('lots').insert({
-      vehicle_id: vehicleId,
-      opening_bid: +openingBid,
-      reserve_price: +reservePrice || +openingBid,
-      current_bid: +openingBid,
-      status: 'scheduled',
-      opens_at: new Date().toISOString(),
-      closes_at: new Date(closesAt).toISOString(),
-    })
+    const { data: lot } = await supabase.from('lots').select('vehicle_id').eq('id', deleteId).single()
+    await supabase.from('lots').delete().eq('id', deleteId)
+    if (lot && lot.vehicle_id) {
+      await supabase.from('vehicles').update({ status: 'published' }).eq('id', lot.vehicle_id)
+    }
     setSaving(false)
-    if (error) { showToast('Failed to create lot', 'error'); return }
-    showToast('Auction lot created')
-    setShowForm(false)
-    setVehicleId(''); setOpeningBid(''); setReservePrice(''); setClosesAt('')
-    const { data } = await supabase.from('lots').select('*').order('created_at', { ascending: false })
-    if (data) setLots(data)
+    setDeleteId(null)
+    fetchLots()
+  }
+
+  const statusColor = (s: string) => {
+    switch (s) {
+      case 'open': return 'var(--success)'
+      case 'closing': return 'var(--live)'
+      case 'closed': case 'sold': case 'unsold': return 'var(--stone)'
+      default: return 'var(--navy)'
+    }
   }
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-3)' }}>
-        <h2 style={{ margin: 0 }}>Auctions</h2>
-        <Button size="sm" onClick={() => setShowForm(!showForm)}>Create Lot</Button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
+        <h2>Auctions</h2>
+        <Link to="/admin/auctions/new"><Button size="sm">New Lot</Button></Link>
       </div>
 
-      <Modal open={showForm} onClose={() => setShowForm(false)} title="Create Auction Lot">
-        <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-          <div>
-            <label htmlFor="aa-vehicle" style={{ fontSize: 'var(--text-sm)', fontWeight: 600, display: 'block', marginBottom: 4 }}>Vehicle *</label>
-            <Select
-              id="aa-vehicle"
-              value={vehicleId}
-              onChange={e => setVehicleId(e.target.value)}
-              options={[
-                { value: '', label: 'Select a vehicle...' },
-                ...vehicles.map(v => ({ value: v.id, label: `${v.make} ${v.model}` })),
-              ]}
-              required
-            />
-          </div>
-          <div style={{ display: 'grid', gap: 'var(--space-2)', gridTemplateColumns: '1fr 1fr' }}>
-            <div>
-              <label htmlFor="aa-opening" style={{ fontSize: 'var(--text-sm)', fontWeight: 600, display: 'block', marginBottom: 4 }}>Opening Bid (₦) *</label>
-              <Input id="aa-opening" value={openingBid} onChange={e => setOpeningBid(e.target.value)} type="number" placeholder="500000" min={0} required />
-            </div>
-            <div>
-              <label htmlFor="aa-reserve" style={{ fontSize: 'var(--text-sm)', fontWeight: 600, display: 'block', marginBottom: 4 }}>Reserve Price (₦)</label>
-              <Input id="aa-reserve" value={reservePrice} onChange={e => setReservePrice(e.target.value)} type="number" placeholder="600000" min={0} />
-            </div>
-          </div>
-          <div>
-            <label htmlFor="aa-closes" style={{ fontSize: 'var(--text-sm)', fontWeight: 600, display: 'block', marginBottom: 4 }}>Closing Date *</label>
-            <Input id="aa-closes" value={closesAt} onChange={e => setClosesAt(e.target.value)} type="datetime-local" required />
-          </div>
-          <div style={{ display: 'flex', gap: 'var(--space-1)', justifyContent: 'flex-end' }}>
-            <Button type="button" variant="ghost" onClick={() => setShowForm(false)}>Cancel</Button>
-            <Button type="submit" size="sm" loading={saving}>Create Lot</Button>
-          </div>
-        </form>
-      </Modal>
-
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--text-sm)' }}>
-          <thead>
-            <tr style={{ borderBottom: '2px solid var(--border)' }}>
-              {['Lot ID', 'Opening Bid', 'Current Bid', 'Reserve', 'Status', 'Closes'].map(h => <th key={h} style={{ textAlign: 'left', padding: 'var(--space-1) var(--space-2)', fontWeight: 600 }}>{h}</th>)}
-            </tr>
-          </thead>
-          <tbody>
-            {lots.map(l => (
-              <tr key={l.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                <td style={{ padding: 'var(--space-1) var(--space-2)', fontFamily: 'monospace', fontSize: 'var(--text-xs)' }}>{l.id.slice(0, 8)}</td>
-                <td className="tabular-nums" style={{ padding: 'var(--space-1) var(--space-2)' }}>₦{l.opening_bid.toLocaleString()}</td>
-                <td className="tabular-nums" style={{ padding: 'var(--space-1) var(--space-2)' }}>₦{l.current_bid.toLocaleString()}</td>
-                <td className="tabular-nums" style={{ padding: 'var(--space-1) var(--space-2)' }}>₦{l.reserve_price.toLocaleString()}</td>
-                <td style={{ padding: 'var(--space-1) var(--space-2)', textTransform: 'capitalize' }}>{l.status}</td>
-                <td className="tabular-nums" style={{ padding: 'var(--space-1) var(--space-2)' }}>{new Date(l.closes_at).toLocaleDateString()}</td>
+      {loading ? <TableSkeleton rows={8} cols={6} /> : (
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--text-sm)' }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid var(--border)' }}>
+                {['', '', 'Lot', 'Grade', 'Faults', 'Opening Bid', 'Current Bid', 'Status', 'Closes', 'Actions'].map(h => (
+                  <th key={h} style={{ textAlign: 'left', padding: 'var(--space-1) var(--space-2)', fontWeight: 600, whiteSpace: 'nowrap' }}>{h}</th>
+                ))}
               </tr>
-            ))}
-            {lots.length === 0 && <tr><td colSpan={6} style={{ padding: 'var(--space-3)', textAlign: 'center', color: 'var(--stone)' }}>No auction lots yet.</td></tr>}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {lots.length === 0 && (
+                <tr><td colSpan={10} style={{ padding: 'var(--space-3)', textAlign: 'center', color: 'var(--stone)' }}>No lots created yet.</td></tr>
+              )}
+              {lots.map(l => {
+                const isExpanded = expandedLot === l.id
+                const primary = l.media?.find(m => m.is_primary) ?? l.media?.[0]
+                const faultCount = l.faults?.[0]?.count ?? 0
+                const grade = l.condition_grade ? GRADE_META[l.condition_grade] : null
+                return (
+                  <Fragment key={l.id}>
+                    <tr
+                      onClick={() => toggleExpand(l.id)}
+                      style={{
+                        borderBottom: '1px solid var(--border)',
+                        cursor: 'pointer',
+                        background: isExpanded ? 'rgba(0,51,102,0.02)' : undefined,
+                        transition: 'background 150ms ease',
+                      }}
+                      onMouseEnter={e => { if (!isExpanded) e.currentTarget.style.background = 'rgba(0,51,102,0.015)' }}
+                      onMouseLeave={e => { if (!isExpanded) e.currentTarget.style.background = '' }}
+                    >
+                      <td style={{ padding: 'var(--space-1) var(--space-2)', width: 32 }}>
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                          width: 20, height: 20, borderRadius: 'var(--radius-sm)',
+                          background: isExpanded ? 'var(--navy)' : 'rgba(0,51,102,0.06)',
+                          color: isExpanded ? 'white' : 'var(--stone)',
+                          transition: 'all 200ms ease',
+                          transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                        }}>
+                          <ChevronDown size={12} />
+                        </span>
+                      </td>
+                      <td style={{ padding: 'var(--space-1) var(--space-2)', width: 56 }}>
+                        {primary
+                          ? <img src={primary.url} alt="" style={{ width: 48, height: 36, objectFit: 'cover', borderRadius: 6, display: 'block' }} />
+                          : <div style={{ width: 48, height: 36, borderRadius: 6, background: 'var(--paper-warm)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--stone-light)', fontSize: 10 }}>No img</div>}
+                      </td>
+                      <td style={{ padding: 'var(--space-1) var(--space-2)', fontWeight: 500 }}>
+                        {lotTitle(l)}{l.year ? ` (${l.year})` : ''}
+                      </td>
+                      <td style={{ padding: 'var(--space-1) var(--space-2)' }}>
+                        {grade
+                          ? <span style={{ display: 'inline-block', minWidth: 22, textAlign: 'center', padding: '1px 8px', borderRadius: 'var(--radius-sm)', background: grade.bg, color: grade.color, fontWeight: 700, fontSize: 'var(--text-xs)' }}>{l.condition_grade}</span>
+                          : <span style={{ color: 'var(--stone-light)' }}>—</span>}
+                      </td>
+                      <td style={{ padding: 'var(--space-1) var(--space-2)', color: faultCount > 0 ? 'var(--stone)' : 'var(--stone-light)' }}>{faultCount}</td>
+                      <td className="tabular-nums" style={{ padding: 'var(--space-1) var(--space-2)' }}>{formatNaira(l.opening_bid)}</td>
+                      <td className="tabular-nums" style={{ padding: 'var(--space-1) var(--space-2)', fontWeight: 600 }}>{formatNaira(l.current_bid)}</td>
+                      <td style={{ padding: 'var(--space-1) var(--space-2)' }} onClick={e => e.stopPropagation()}>
+                        <select
+                          value={l.status}
+                          onChange={e => updateStatus(l.id, e.target.value)}
+                          style={{ fontSize: 'inherit', padding: '2px 4px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', background: 'var(--surface)', color: statusColor(l.status), fontWeight: 600, textTransform: 'capitalize' }}
+                        >
+                          {['scheduled', 'open', 'closing', 'closed', 'sold', 'unsold'].map(s => (
+                            <option key={s} value={s}>{s}</option>
+                          ))}
+                        </select>
+                      </td>
+                      <td className="tabular-nums" style={{ padding: 'var(--space-1) var(--space-2)', whiteSpace: 'nowrap' }}>{new Date(l.closes_at).toLocaleDateString()}</td>
+                      <td style={{ padding: 'var(--space-1) var(--space-2)', whiteSpace: 'nowrap' }} onClick={e => e.stopPropagation()}>
+                        <Link to={`/admin/auctions/${l.id}/edit`}><Button variant="ghost" size="sm">Edit</Button></Link>
+                        <Button variant="ghost" size="sm" onClick={() => setDeleteId(l.id)} style={{ color: 'var(--error)' }}>Delete</Button>
+                      </td>
+                    </tr>
+                    {isExpanded && (
+                      <tr>
+                        <td colSpan={10} style={{ padding: 0, borderBottom: '1px solid var(--border)' }}>
+                          <div style={{
+                            background: 'rgba(0,51,102,0.015)',
+                            borderTop: '1px solid rgba(0,51,102,0.06)',
+                            padding: 'var(--space-2) var(--space-3) var(--space-2) var(--space-3)',
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 'var(--space-1-5)' }}>
+                              <Gavel size={14} style={{ color: 'var(--navy)' }} />
+                              <span style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--navy)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                                Bid History
+                              </span>
+                            </div>
+                            {bidsLoading ? (
+                              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)', padding: 'var(--space-1) 0' }}>Loading bids...</p>
+                            ) : bids.length === 0 ? (
+                              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)', padding: 'var(--space-1) 0' }}>No bids yet on this lot.</p>
+                            ) : (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                <div style={{
+                                  display: 'grid', gridTemplateColumns: '1fr 120px 100px 80px',
+                                  gap: 'var(--space-2)', padding: '4px var(--space-1)',
+                                  fontSize: 'var(--text-2xs)', fontWeight: 600, color: 'var(--stone)',
+                                  textTransform: 'uppercase', letterSpacing: '0.06em',
+                                }}>
+                                  <span>Bidder</span>
+                                  <span>Amount</span>
+                                  <span>Time</span>
+                                  <span>Outcome</span>
+                                </div>
+                                {bids.map((bid, i) => (
+                                  <div
+                                    key={bid.id}
+                                    style={{
+                                      display: 'grid', gridTemplateColumns: '1fr 120px 100px 80px',
+                                      gap: 'var(--space-2)', padding: '6px var(--space-1)',
+                                      borderRadius: 'var(--radius-sm)',
+                                      background: i === 0 ? 'rgba(21,128,61,0.04)' : undefined,
+                                      transition: 'background 150ms ease',
+                                    }}
+                                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,51,102,0.03)' }}
+                                    onMouseLeave={e => { e.currentTarget.style.background = i === 0 ? 'rgba(21,128,61,0.04)' : '' }}
+                                  >
+                                    <span style={{ fontSize: 'var(--text-xs)', fontWeight: i === 0 ? 600 : 400, color: 'var(--ink)' }}>
+                                      {bid.bidder_name || 'Anonymous bidder'}
+                                    </span>
+                                    <span className="tabular-nums" style={{
+                                      fontSize: 'var(--text-xs)', fontWeight: i === 0 ? 700 : 500,
+                                      color: i === 0 ? 'var(--success)' : 'var(--ink)',
+                                    }}>
+                                      {formatNaira(bid.amount)}
+                                    </span>
+                                    <span style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>
+                                      {timeAgo(bid.placed_at)}
+                                    </span>
+                                    <span style={{
+                                      fontSize: 'var(--text-2xs)', fontWeight: 600, textTransform: 'capitalize',
+                                      color: bid.outcome === 'accepted' ? 'var(--success)' : bid.outcome === 'rejected' ? 'var(--error)' : 'var(--stone)',
+                                    }}>
+                                      {bid.outcome || 'pending'}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <Modal open={deleteId !== null} onClose={() => setDeleteId(null)} title="Delete Lot">
+        <p style={{ marginBottom: 'var(--space-2)' }}>Delete this lot and all associated bids, media, and faults?</p>
+        <div style={{ display: 'flex', gap: 'var(--space-1)', justifyContent: 'flex-end' }}>
+          <Button variant="ghost" onClick={() => setDeleteId(null)}>Cancel</Button>
+          <Button onClick={handleDelete} loading={saving} style={{ background: 'var(--error)', color: 'white' }}>Delete</Button>
+        </div>
+      </Modal>
     </div>
   )
 }

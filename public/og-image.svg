@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#003366"/>
+  <rect x="0" y="0" width="1200" height="630" fill="url(#gradient)"/>
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#003366"/>
+      <stop offset="50%" stop-color="#00407f"/>
+      <stop offset="100%" stop-color="#00264d"/>
+    </linearGradient>
+  </defs>
+  <text x="600" y="250" text-anchor="middle" font-family="system-ui,sans-serif" font-size="72" font-weight="800" fill="white" letter-spacing="-0.04">Empathon Autos</text>
+  <text x="600" y="320" text-anchor="middle" font-family="system-ui,sans-serif" font-size="28" font-weight="500" fill="rgba(255,255,255,0.7)">Premium Vehicle Imports &amp; Sales</text>
+  <text x="600" y="380" text-anchor="middle" font-family="system-ui,sans-serif" font-size="20" fill="rgba(255,255,255,0.5)">Lagos, Nigeria &bull; Since 2019</text>
+  <path d="M100 450 Q600 500 1100 450" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none"/>
+</svg>

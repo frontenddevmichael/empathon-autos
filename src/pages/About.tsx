@@ -1,87 +1,160 @@
+import { Link } from 'react-router-dom'
+import { MessageCircle, ArrowRight } from 'lucide-react'
 import { Section } from '@/components/PageLayout'
-import { ScrollReveal } from '@/components/ScrollReveal'
-import { CountUp } from '@/components/CountUp'
-import { SeoHead } from '@/components/SeoHead'
-import { DecoLine } from '@/components/deco/DecoLine'
+import { SectionHeader } from '@/components/ui/SectionHeader'
+import { RippleButton } from '@/components/RippleButton'
+import { ParallaxSection } from '@/components/ParallaxSection'
+import { HeroSection } from '@/components/HeroSection'
+import { Speedometer, ShieldCheck } from '@/components/DecoSvgs'
+import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
+import { config } from '@/lib/config'
 import styles from './About.module.css'
 
-// TODO: placeholder figures — confirm real numbers with the client before launch.
-const stats = [
-  { label: 'Years in Operation', end: 7, suffix: '+' },
-  { label: 'Sourcing Regions', end: 4, suffix: '' },
+interface TeamMember {
+  name: string
+  role: string
+  photo?: string
+}
+
+const VALUES = [
+  { title: 'Straight With You', desc: 'Clear pricing, honest advice, and no surprises. What we promise is what you get.' },
+  { title: 'Your Side, Always', desc: "We're not here to push a sale. We're here to find the right fit." },
+  { title: 'Keep Getting Better', desc: 'Every car, every customer, every interaction — we learn and improve.' },
+  { title: 'Do It Properly', desc: "From sourcing to handover, we sweat the details so you don't have to." },
 ]
 
-const team = [
-  { name: 'Tolani Abdullateef Balogun', role: 'Managing Director' },
-  { name: 'Jimoh Bolakale Ajao', role: 'Executive Partner' },
-  { name: 'Hassan Kayode Balogun', role: 'Financial Consultant' },
-  { name: 'Akintunde Saheed Adesokan', role: 'Head of Sales' },
+const SERVICES = [
+  { title: 'Car Sales', desc: 'Quality vehicles sourced from Japan, Dubai, Europe, and the US.' },
+  { title: 'Pre-Orders', desc: "Want something specific? We'll hunt it down for you." },
+  { title: 'Honest Advice', desc: "Not sure what to buy? We'll help you figure it out, even if it means a smaller commission." },
+  { title: 'After-Sales', desc: 'Warranty, maintenance tips, and someone to call when you need help.' },
 ]
 
 export function About() {
+  const { content: aboutContent, error: aboutError } = useSiteContent('about')
+  const leadership = parseJsonContent<TeamMember>(aboutContent, 'leadership', [
+    { name: 'Hassan', role: 'Team Member', photo: '/team/Hassan.jpeg' },
+    { name: 'Jimoh', role: 'Team Member', photo: '/team/Jimoh.jpeg' },
+    { name: 'Saheed Akintunde', role: 'Team Member', photo: '/team/Saheed Akintunde.jpeg' },
+    { name: 'Tolani', role: 'Team Member', photo: '/team/Tolani.jpeg' },
+  ])
   return (
     <>
-      <SeoHead title="About" description="Nigeria's trusted automotive partner since 2019. Premium vehicle imports, pre-orders, and corporate fleet solutions." />
-      <section className={styles.hero} style={{ padding: 'var(--space-7) var(--space-4)' }}>
-        <div className={styles.heroBg}>
-          <img src="/heroimg.jpg" alt="" />
-        </div>
-        <div className={styles.heroOverlay} />
-        <Section as="div" className={styles.heroInner}>
-          <p className={styles.heroLabel}>About</p>
-          <h2 className={styles.heroTitle} style={{ color: 'white' }}>Nigeria's Trusted <br />Automotive Partner</h2>
-          <DecoLine width={80} />
-          <p className={styles.heroDesc} style={{ color: 'rgba(255,255,255,0.7)' }}>
-            Empathon Autos has been delivering premium vehicles and exceptional service to Nigerian buyers since 2019.
-            We specialise in vehicle imports, pre-orders, and corporate fleet solutions.
-          </p>
-        </Section>
-      </section>
+      <HeroSection
+        images={[
+          { url: '/heroimg.jpg' },
+          { url: '/heroimg2.jpg' },
+        ]}
+        label="About"
+        title="Trust . Fit . Drive. Since 2019."
+        subtitle="We sell cars in Lagos. Not much more complicated than that. Since 2019 we've been importing, pre-ordering, and putting people behind the wheel of vehicles they actually want."
+        deco="car"
+      />
 
-      <Section>
-        <div className={styles.statsGrid}>
-          {stats.map((s, i) => (
-            <ScrollReveal key={s.label} delay={i * 100}>
-              <div className={styles.statCard}>
-                <p className={styles.statValue}><CountUp end={s.end} suffix={s.suffix} duration={1600} /></p>
-                <p className={styles.statLabel}>{s.label}</p>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-
-        <ScrollReveal delay={200}>
-          <div className={styles.story}>
-            <h3>Our Story</h3>
-            <p>
-              Founded in Lagos, Empathon Autos began with a simple mission: make premium vehicle ownership
-              accessible and transparent for Nigerian buyers. What started as a boutique import service
-              has grown into a full-service automotive company serving hundreds of individual and
-              corporate clients across the country.
-            </p>
-            <p>
-              We partner with trusted international dealers and manufacturers to bring you vehicles
-              that meet global standards, backed by local support you can rely on.
-            </p>
-          </div>
-        </ScrollReveal>
-
-        <ScrollReveal delay={400}>
-          <div>
-            <h3 className={styles.teamTitle}>Leadership</h3>
-            <div className={styles.teamGrid}>
-              {team.map((m, i) => (
-                <ScrollReveal key={m.name} delay={500 + i * 100}>
-                  <div className={styles.teamCard}>
-                    <p className={styles.teamName}>{m.name}</p>
-                    <p className={styles.teamRole}>{m.role}</p>
-                  </div>
-                </ScrollReveal>
-              ))}
+      {/* Intro — who we are, where we're headed */}
+      <ParallaxSection>
+        <Section className="scroll-reveal" style={{ position: 'relative' }}>
+          {aboutError && !aboutContent.length && (
+            <div style={{ textAlign: 'center', padding: 'var(--space-4)', marginBottom: 'var(--space-3)', background: 'rgba(220,38,38,0.05)', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(220,38,38,0.1)' }}>
+              <p style={{ color: 'var(--error, #dc2626)', fontSize: 'var(--text-sm)' }}>Could not load page content. Showing defaults.</p>
+            </div>
+          )}
+          <div className="responsive-grid-2 stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-4)' }}>
+            <div className="scroll-reveal-child">
+              <p className={styles.introLabel}>What We're About</p>
+              <p className={styles.introText}>
+                We bring in solid vehicles from markets around the world — Japan, Dubai, Europe, the US — and help people in Lagos find the right one without the usual dealer runaround. No hidden fees, no shortcuts, just straight talk.
+              </p>
+            </div>
+            <div className="scroll-reveal-child" style={{ ['--reveal-delay' as string]: '100ms' }}>
+              <p className={styles.introLabel}>Where We're Headed</p>
+              <p className={styles.introText}>
+                We want to be the car people in Nigeria actually trust. Not because we say so — because every person who drives off our lot becomes someone who tells their friends about us. That's the only metric that matters.
+              </p>
             </div>
           </div>
-        </ScrollReveal>
-      </Section>
+        </Section>
+      </ParallaxSection>
+
+      {/* Core Values */}
+      <ParallaxSection>
+        <Section className="scroll-reveal reveal-left" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
+          <Speedometer className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-3)', right: 'var(--space-3)', opacity: 0.08 }} size={72} />
+          <SectionHeader label="Our Principles" title="Core Values" />
+          <div className="responsive-grid-4 stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-3)' }}>
+            {VALUES.map((v, i) => (
+              <div key={v.title} className={`${styles.card} scroll-reveal-child`} style={{ ['--reveal-delay' as string]: `${i * 80}ms` }}>
+                <h3 className={styles.cardTitle}>{v.title}</h3>
+                <p className={styles.cardText}>{v.desc}</p>
+              </div>
+            ))}
+          </div>
+        </Section>
+      </ParallaxSection>
+
+      {/* Our Services */}
+      <ParallaxSection>
+        <Section className="scroll-reveal reveal-right" style={{ position: 'relative' }}>
+          <ShieldCheck className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', opacity: 0.08 }} size={56} />
+          <SectionHeader label="What We Do" title="Our Services" />
+          <div className="responsive-grid-4 stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-3)' }}>
+            {SERVICES.map((s, i) => (
+              <div key={s.title} className={`${styles.card} scroll-reveal-child`} style={{ ['--reveal-delay' as string]: `${i * 80}ms` }}>
+                <h3 className={styles.cardTitle}>{s.title}</h3>
+                <p className={styles.cardText}>{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </Section>
+      </ParallaxSection>
+
+      {/* The Team */}
+      {leadership.length > 0 && (
+        <ParallaxSection>
+          <Section className="scroll-reveal reveal-scale" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
+            <SectionHeader label="Leadership" title="The Team" align="center" />
+            <div className="responsive-grid-4 stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-3)' }}>
+              {leadership.map((person, i) => (
+                <div key={person.name} className={`${styles.teamCard} scroll-reveal-child`} style={{ ['--reveal-delay' as string]: `${i * 80}ms` }}>
+                  {person.photo ? (
+                    <img src={person.photo} alt={person.name} className={styles.teamPhoto} />
+                  ) : (
+                    <div className={styles.initials}>{person.name.split(' ').map(n => n[0]).join('')}</div>
+                  )}
+                  <p className={styles.teamName}>{person.name}</p>
+                  <p className={styles.teamRole}>{person.role}</p>
+                </div>
+              ))}
+            </div>
+          </Section>
+        </ParallaxSection>
+      )}
+
+      {/* Get in Touch / Lead CTA */}
+      <ParallaxSection>
+        <Section className="scroll-reveal reveal-big" style={{ position: 'relative', textAlign: 'center' }}>
+          <SectionHeader
+            label="Let's Talk"
+            title="Ready to Get Started?"
+            desc="Whether you're buying your first car or building a fleet, we're here to help. No pressure — just honest guidance."
+            align="center"
+          />
+          <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link to="/contact">
+              <RippleButton size="md">Send an Enquiry <ArrowRight size={15} /></RippleButton>
+            </Link>
+            <a
+              href={config.whatsapp.getDeepLink("Hi Empathon Autos! I'd like to know more about your services.")}
+              target="_blank" rel="noopener noreferrer"
+            >
+              <RippleButton variant="secondary" size="md">
+                <MessageCircle size={15} style={{ marginRight: 4 }} />
+                WhatsApp Us
+              </RippleButton>
+            </a>
+          </div>
+        </Section>
+      </ParallaxSection>
     </>
   )
 }

@@ -1,29 +1,536 @@
 @import './tokens.css';
 
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   scrollbar-width: thin;
-  scrollbar-color: var(--clay) transparent;
+  scrollbar-color: var(--stone-light) transparent;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-body::-webkit-scrollbar { width: 6px; }
+@media (max-width: 768px) {
+  body {
+    font-size: 15px;
+    line-height: 1.65;
+  }
+}
+body::-webkit-scrollbar { width: 5px; }
 body::-webkit-scrollbar-track { background: transparent; }
-body::-webkit-scrollbar-thumb { background: var(--clay); border-radius: 3px; }
-
+body::-webkit-scrollbar-thumb { background: var(--stone-light); border-radius: 10px; }
 #root { min-height: 100vh; }
 
-::selection { background: var(--gold-dust); color: white; }
-
-@keyframes shimmer {
-  0% { opacity: 1; }
-  50% { opacity: 0.4; }
-  100% { opacity: 1; }
+/* ── Keyframes ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes heroLightSweep {
+  0% { background-position: 200% 0; }
+  50% { background-position: -100% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes shimmer-slide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(100% * 3)); }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes gold-divider {
+  0% { transform: scaleX(0); transform-origin: left; }
+  100% { transform: scaleX(1); transform-origin: left; }
+}
+
+@keyframes scroll-parallax-bg {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(20%) scale(1.1); }
+}
+
+@keyframes ripple {
+  to { transform: scale(4); opacity: 0; }
+}
+
+@keyframes split-text-reveal {
+  0% { clip-path: inset(0 100% 0 0); }
+  100% { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleInUp {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes pressDown {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── Utility Animations ── */
+.animate-fade-in { animation: fadeIn 400ms var(--ease-out) forwards; }
+.animate-fade-in-up { animation: fadeInUp 500ms var(--ease-out) forwards; }
+.animate-slide-up { animation: slideUp 500ms var(--ease-out) forwards; }
+.animate-scale-in { animation: scaleIn 300ms var(--ease-out) forwards; }
+
+/* ── Stagger delays ── */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 200ms; }
+.stagger-5 { animation-delay: 250ms; }
+.stagger-6 { animation-delay: 300ms; }
+
+/* ── Scroll Reveal ── */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 750ms var(--ease-out), transform 750ms var(--ease-out);
+  will-change: opacity, transform;
+}
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Directional & degree variants — pair with .scroll-reveal for varied motion ── */
+.scroll-reveal.reveal-left { transform: translateX(-44px); }
+.scroll-reveal.reveal-left.revealed { transform: translateX(0); }
+.scroll-reveal.reveal-right { transform: translateX(44px); }
+.scroll-reveal.reveal-right.revealed { transform: translateX(0); }
+.scroll-reveal.reveal-scale { transform: translateY(24px) scale(0.9); }
+.scroll-reveal.reveal-scale.revealed { transform: translateY(0) scale(1); }
+.scroll-reveal.reveal-blur {
+  transform: translateY(14px);
+  filter: blur(10px);
+  transition: opacity 800ms var(--ease-out), transform 800ms var(--ease-out), filter 800ms var(--ease-out);
+}
+.scroll-reveal.reveal-blur.revealed { transform: translateY(0); filter: blur(0); }
+.scroll-reveal.reveal-fade { transform: none; }
+.scroll-reveal.reveal-fade.revealed { transform: none; }
+.scroll-reveal.reveal-big { transform: translateY(60px) scale(0.965); }
+.scroll-reveal.reveal-big.revealed { transform: translateY(0) scale(1); }
+
+/* Children cascade AFTER the parent is revealed — never on mount.
+   Delay comes from --reveal-delay (set inline per child for true stagger). */
+.scroll-reveal-child {
+  opacity: 0;
+  transform: translateY(18px) scale(0.985);
+  transition:
+    opacity 650ms var(--ease-out),
+    transform 650ms var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.scroll-reveal.revealed .scroll-reveal-child,
+.scroll-reveal.revealed.stagger-fade-in > *,
+.scroll-reveal.revealed .stagger-fade-in > * {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* ── Page Transitions ── */
+.page-transition {
+  animation: pageEnter 400ms var(--ease-out) forwards;
+  /* Defensive: pre-reveal translateX offsets and any stray flow overflow are
+     clipped here so they can never inflate the page's scroll width (clip is
+     not a scroll container, so position: sticky inside stays intact). */
+  overflow-x: clip;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Premium Loading Sequences ── */
+@keyframes loadingPulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes loadingRing {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+@keyframes shimmer-bg {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── Empty State ── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  text-align: center;
+  color: var(--stone);
+}
+
+/* ── Focus ring for accessibility ── */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Lead Form Responsive ── */
+@media (max-width: 480px) {
+  .testDriveFields { grid-template-columns: 1fr !important; }
+}
+
+/* ── User Dashboard Layout ── */
+.userDashLayout {
+  grid-template-columns: 280px 1fr;
+}
+@media (max-width: 768px) {
+  .userDashLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Form 2-col grid — stacks on mobile ── */
+.formGrid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-1-5);
+}
+@media (max-width: 480px) {
+  .formGrid2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Reduced Motion ── */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  .scroll-reveal,
+  .scroll-reveal.reveal-left,
+  .scroll-reveal.reveal-right,
+  .scroll-reveal.reveal-scale,
+  .scroll-reveal.reveal-blur,
+  .scroll-reveal.reveal-fade,
+  .scroll-reveal.reveal-big,
+  .scroll-reveal-child,
+  .stagger-fade-in > * {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+  .page-transition {
+    animation: none;
+  }
+}
+
+/* ── Scroll Effects ── */
+.scroll-parallax {
+  will-change: transform;
+}
+
+.split-text-reveal {
+  display: inline-block;
+  animation: split-text-reveal 800ms var(--ease-out) forwards;
+}
+
+/* ── Section Dividers — thin hairline, quiet ── */
+.section-divider {
+  width: 40px;
+  height: 1px;
+  background: var(--border);
+  margin: var(--space-3) 0;
+}
+
+.section-divider-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ── Ripple Button ── */
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+.btn-ripple::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  padding-top: 100%;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transform: scale(0);
+  opacity: 1;
+  top: var(--ripple-y, 50%);
+  left: var(--ripple-x, 50%);
+  transform-origin: center;
+  pointer-events: none;
+}
+.btn-ripple:active::after {
+  animation: ripple 600ms ease-out;
+}
+
+/* ── Floating Animation ── */
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* ── Glow Pulse ── */
+.animate-glow {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* ── Staggered Fade In Up (for grids) — cascades only after the parent (.scroll-reveal) reveals ── */
+.stagger-fade-in > * {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 600ms var(--ease-out),
+    transform 600ms var(--ease-out);
+  will-change: opacity, transform;
+}
+.stagger-fade-in > *:nth-child(1) { transition-delay: var(--reveal-delay, 70ms); }
+.stagger-fade-in > *:nth-child(2) { transition-delay: var(--reveal-delay, 140ms); }
+.stagger-fade-in > *:nth-child(3) { transition-delay: var(--reveal-delay, 210ms); }
+.stagger-fade-in > *:nth-child(4) { transition-delay: var(--reveal-delay, 280ms); }
+.stagger-fade-in > *:nth-child(5) { transition-delay: var(--reveal-delay, 350ms); }
+.stagger-fade-in > *:nth-child(6) { transition-delay: var(--reveal-delay, 420ms); }
+.stagger-fade-in > *:nth-child(7) { transition-delay: var(--reveal-delay, 490ms); }
+.stagger-fade-in > *:nth-child(8) { transition-delay: var(--reveal-delay, 560ms); }
+.stagger-fade-in > *:nth-child(9) { transition-delay: var(--reveal-delay, 630ms); }
+.stagger-fade-in > *:nth-child(10) { transition-delay: var(--reveal-delay, 700ms); }
+.stagger-fade-in > *:nth-child(11) { transition-delay: var(--reveal-delay, 770ms); }
+.stagger-fade-in > *:nth-child(12) { transition-delay: var(--reveal-delay, 840ms); }
+
+/* ── Premium Utilities ── */
+.glass {
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+}
+
+.glass-dark {
+  background: rgba(10,10,10,0.75);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+}
+
+.premium-shadow {
+  box-shadow: var(--shadow-premium);
+}
+
+.premium-shadow-lg {
+  box-shadow: var(--shadow-premium-hover);
+}
+
+.premium-border {
+  border: 1px solid var(--border);
+}
+
+.premium-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-premium);
+  transition: all 300ms var(--ease-out);
+}
+
+.premium-card:hover {
+  border-color: rgba(0,51,102,0.12);
+  box-shadow: var(--shadow-premium-hover);
+  transform: translateY(-4px) scale(1.01);
+}
+
+/* ── Button Press Feedback ── */
+.press-feedback:active {
+  transform: scale(0.97);
+  transition: 0.1s;
+}
+
+/* ── Section Noise Texture ── */
+.noise-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Deco SVG Animations ── */
+
+/* Hover: gentle rotation for circular elements (HandCircle, SteeringWheel) */
+.deco-hover-rotate {
+  transition: transform 800ms var(--ease-out);
+}
+.deco-hover-rotate:hover {
+  transform: rotate(15deg);
+}
+
+/* Hover: subtle scale + opacity for icon shapes (ShieldCheck, Handshake, CarSilhouette) */
+.deco-hover-scale {
+  transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out);
+}
+.deco-hover-scale:hover {
+  opacity: 0.5;
+  transform: scale(1.08);
+}
+
+/* Hover: path draw animation (Squiggle, WavyDivider) */
+.deco-hover-draw {
+  transition: opacity 400ms var(--ease-out);
+}
+
+/* Scroll-triggered stroke draw-on — pathLength-normalized, draws when an ancestor .scroll-reveal reveals */
+.deco-draw-reveal {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.6s var(--ease-in-out);
+}
+.scroll-reveal.revealed .deco-draw-reveal {
+  stroke-dashoffset: 0;
+}
+.deco-draw-target {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  transition: stroke-dashoffset 1.2s var(--ease-in-out);
+}
+.deco-hover-draw:hover .deco-draw-target {
+  stroke-dashoffset: 0;
+}
+
+/* Long draw target for full-width dividers */
+.deco-draw-target-long {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  transition: stroke-dashoffset 1.8s var(--ease-in-out);
+}
+.deco-hover-draw:hover .deco-draw-target-long {
+  stroke-dashoffset: 0;
+}
+
+/* Staggered dot reveal inside scroll-reveal parents */
+.deco-dot {
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out);
+}
+.scroll-reveal.revealed .deco-dot {
+  opacity: var(--deco-dot-opacity, 0.12);
+  transform: scale(1);
+}
+.deco-dot:nth-child(1) { transition-delay: 0ms; }
+.deco-dot:nth-child(2) { transition-delay: 60ms; }
+.deco-dot:nth-child(3) { transition-delay: 120ms; }
+.deco-dot:nth-child(4) { transition-delay: 180ms; }
+.deco-dot:nth-child(5) { transition-delay: 240ms; }
+.deco-dot:nth-child(6) { transition-delay: 300ms; }
+.deco-dot:nth-child(7) { transition-delay: 360ms; }
+
+/* Reduced motion for all deco animations */
+@media (prefers-reduced-motion: reduce) {
+  .deco-hover-rotate,
+  .deco-hover-scale,
+  .deco-hover-draw,
+  .deco-draw-target,
+  .deco-draw-target-long,
+  .deco-dot,
+  .deco-draw-reveal {
+    animation: none !important;
+    transition: none !important;
+  }
+  .deco-hover-rotate:hover { transform: none; }
+  .deco-hover-scale:hover { opacity: inherit; transform: none; }
+  .deco-draw-target { stroke-dashoffset: 0; }
+  .deco-draw-target-long { stroke-dashoffset: 0; }
+  .deco-draw-reveal { stroke-dashoffset: 0; }
+  .deco-dot { opacity: var(--deco-dot-opacity, 0.12); transform: scale(1); }
+}
+
+/* ── Responsive Grid Utilities ── */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .responsive-grid-3 { grid-template-columns: repeat(2, 1fr) !important; }
+  .responsive-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+@media (max-width: 768px) {
+  .responsive-grid-2 { grid-template-columns: 1fr !important; }
+  .responsive-grid-3 { grid-template-columns: 1fr !important; }
+  .responsive-grid-4 { grid-template-columns: 1fr !important; }
+  .responsive-stack { flex-direction: column !important; }
+
+  /* Hide positioned hand-drawn decorative SVGs on mobile to prevent overlap */
+  .deco-positioned {
+    display: none !important;
+  }
+
+  /* Ensure minimum touch target sizes */
+  a, button, [role='button'] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* ── Touch-friendly mobile overrides ── */
+@media (pointer: coarse) {
+  button, a, [role='button'] {
+    min-height: 48px;
   }
 }

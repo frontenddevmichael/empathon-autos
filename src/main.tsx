@@ -1,18 +1,14 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import { App } from './App'
-import { ToastProvider } from './context/ToastContext'
-import { JsonLd } from './components/JsonLd'
+import { initSentry } from './lib/sentry'
+
+// Initialize error monitoring — no-op if VITE_SENTRY_DSN is not set
+initSentry()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <JsonLd />
-      <ToastProvider>
-        <App />
-      </ToastProvider>
-    </BrowserRouter>
+    <App />
   </StrictMode>,
 )

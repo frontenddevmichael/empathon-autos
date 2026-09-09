@@ -1,30 +1,30 @@
 import type { ReactNode } from 'react'
-import { Outlet } from 'react-router-dom'
-import { Nav } from './ui/Nav'
-import { Footer } from './ui/Footer'
-import { WhatsAppFloat } from './ui/WhatsAppFloat'
-import { DecoGrain } from './deco/DecoGrain'
-import styles from './PageLayout.module.css'
 
-export function PageLayout() {
+export function Section({ children, dark, className = '', style }: { children: ReactNode; dark?: boolean; className?: string; style?: React.CSSProperties }) {
   return (
-    <div className={styles.layout}>
-      <DecoGrain opacity={0.02} />
-      <Nav />
-      <main id="main-content" className={styles.main}>
-        <Outlet />
-      </main>
-      <Footer />
-      <WhatsAppFloat />
-    </div>
+    <section
+      className={className}
+      style={{
+        padding: 'var(--section-y) var(--space-4)',
+        background: dark ? 'var(--navy)' : undefined,
+        color: dark ? 'white' : undefined,
+        ...style,
+      }}
+    >
+      <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        {children}
+      </div>
+    </section>
   )
 }
 
-export function Section({ children, className = '', as: Tag = 'section', ...props }: {
-  children: ReactNode
-  className?: string
-  as?: 'section' | 'div'
-  [key: string]: any
-}) {
-  return <Tag className={`${styles.section} ${className}`} {...props}>{children}</Tag>
+export function PageLayout({ children }: { children: ReactNode }) {
+  return (
+    <>
+      <a id="main-content" tabIndex={-1} style={{ position: 'absolute', top: 0 }} />
+      <div style={{ paddingTop: 'var(--nav-height)' }}>
+        {children}
+      </div>
+    </>
+  )
 }

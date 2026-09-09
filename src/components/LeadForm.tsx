@@ -1,95 +1,168 @@
-import { useState } from 'react'
-import { Modal } from '@/components/ui/Modal'
-import { Input, TextArea } from '@/components/ui/Input'
-import { Button } from '@/components/ui/Button'
-import { HoneypotField } from '@/components/HoneypotField'
-import { submitLead } from '@/lib/queries'
+import { useState, useEffect } from 'react'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import type { LeadType } from '@/types'
+import { Button } from '@/components/ui/Button'
+import { Input, TextArea, Select } from '@/components/ui/Input'
+import { Modal } from '@/components/ui/Modal'
 import { useToast } from '@/context/ToastContext'
+import { useRateLimit } from '@/hooks/useRateLimit'
+import { Calendar, Clock } from 'lucide-react'
 
 interface LeadFormProps {
   open: boolean
   onClose: () => void
-  type: LeadType
+  type?: LeadType
   vehicleId?: string
+  initialMessage?: string
 }
 
-export function LeadForm({ open, onClose, type, vehicleId }: LeadFormProps) {
+const typeOptions = [
+  { value: 'enquiry', label: 'General Enquiry' },
+  { value: 'test-drive', label: 'Test Drive Booking' },
+  { value: 'pre-order', label: 'Pre-Order Request' },
+  { value: 'corporate-quote', label: 'Corporate Quote' },
+  { value: 'contact', label: 'Contact Message' },
+]
+
+const timeSlots = [
+  { value: '09:00', label: '9:00 AM' },
+  { value: '10:00', label: '10:00 AM' },
+  { value: '11:00', label: '11:00 AM' },
+  { value: '12:00', label: '12:00 PM' },
+  { value: '13:00', label: '1:00 PM' },
+  { value: '14:00', label: '2:00 PM' },
+  { value: '15:00', label: '3:00 PM' },
+  { value: '16:00', label: '4:00 PM' },
+  { value: '17:00', label: '5:00 PM' },
+]
+
+export function LeadForm({ open, onClose, type = 'enquiry', vehicleId, initialMessage }: LeadFormProps) {
   const { showToast } = useToast()
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
-  const [company, setCompany] = useState('')
-  const [message, setMessage] = useState('')
-  const [hp, setHp] = useState('')
-  const [sending, setSending] = useState(false)
+  const { canSubmit } = useRateLimit()
+  const [selectedType, setSelectedType] = useState<LeadType>(type)
+  const [form, setForm] = useState({ 
+    name: '', email: '', phone: '', company: '', message: '',
+    preferredDate: '', preferredTime: ''
+  })
+  const [saving, setSaving] = useState(false)
+  const [honeypot, setHoneypot] = useState('')
+
+  useEffect(() => {
+    if (open) {
+      setSelectedType(type)
+      setForm(f => ({ ...f, message: initialMessage || '' }))
+    }
+  }, [open, type, initialMessage])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (hp) return
-    if (!name || !email || !phone) return
-
-    setSending(true)
-    const { error } = await submitLead({
-      type,
-      vehicleId,
-      name,
-      email,
-      phone,
-      company,
-      message,
-    })
-    setSending(false)
-
-    if (error) {
-      showToast('Failed to send your enquiry. Please try again.', 'error')
+    if (honeypot) return
+    if (!form.name || !form.email || !form.phone) { showToast('Please fill in required fields', 'error'); return }
+    if (selectedType === 'test-drive' && (!form.preferredDate || !form.preferredTime)) {
+      showToast('Please select a date and time for your test drive', 'error'); return
+    }
+    if (!canSubmit()) { showToast('Please wait before submitting again', 'error'); return }
+    if (!isSupabaseConfigured()) {
+      showToast('Form is not available right now. Please try again later.', 'error')
       return
     }
 
-    showToast('Enquiry sent successfully. We will get back to you shortly.')
-    setName('')
-    setEmail('')
-    setPhone('')
-    setCompany('')
-    setMessage('')
+    let message = form.message || ''
+    if (selectedType === 'test-drive') {
+      message = `Test Drive Booking — Date: ${form.preferredDate}, Time: ${form.preferredTime}. ${message}`.trim()
+    }
+
+    setSaving(true)
+    const { error } = await supabase.from('leads').insert({
+      type: selectedType, vehicle_id: vehicleId || null,
+      name: form.name, email: form.email, phone: form.phone,
+      company: form.company || null, message: message || null,
+      source_page: window.location.pathname,
+    })
+    setSaving(false)
+    if (error) { showToast('Failed to submit enquiry', 'error'); return }
+    showToast('Enquiry submitted — we\'ll be in touch shortly')
     onClose()
+    setForm({ name: '', email: '', phone: '', company: '', message: '', preferredDate: '', preferredTime: '' })
   }
 
-  const titles: Record<LeadType, string> = {
-    enquiry: 'Enquire About This Vehicle',
-    'test-drive': 'Book a Test Drive',
-    'pre-order': 'Pre-Order a Vehicle',
-    'corporate-quote': 'Request Corporate Quote',
-    contact: 'Get in Touch',
-  }
+  const isTestDrive = selectedType === 'test-drive'
 
   return (
-    <Modal open={open} onClose={onClose} title={titles[type]}>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', position: 'relative' }}>
-        <HoneypotField value={hp} onChange={setHp} />
-        <div>
-          <label htmlFor="lf-name" style={{ fontSize: 'var(--text-sm)', fontWeight: 600, display: 'block', marginBottom: 4 }}>Full name *</label>
-          <Input id="lf-name" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" required />
+    <Modal open={open} onClose={onClose} title="Send Enquiry">
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1-5)' }}>
+        <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
+          <input tabIndex={-1} value={honeypot} onChange={e => setHoneypot(e.target.value)} />
         </div>
-        <div>
-          <label htmlFor="lf-email" style={{ fontSize: 'var(--text-sm)', fontWeight: 600, display: 'block', marginBottom: 4 }}>Email address *</label>
-          <Input id="lf-email" value={email} onChange={e => setEmail(e.target.value)} type="email" placeholder="you@example.com" required />
-        </div>
-        <div>
-          <label htmlFor="lf-phone" style={{ fontSize: 'var(--text-sm)', fontWeight: 600, display: 'block', marginBottom: 4 }}>Phone number *</label>
-          <Input id="lf-phone" value={phone} onChange={e => setPhone(e.target.value)} type="tel" placeholder="0800 000 0000" required />
-        </div>
-        <div>
-          <label htmlFor="lf-company" style={{ fontSize: 'var(--text-sm)', fontWeight: 600, display: 'block', marginBottom: 4 }}>Company</label>
-          <Input id="lf-company" value={company} onChange={e => setCompany(e.target.value)} placeholder="Company name (optional)" />
-        </div>
-        <div>
-          <label htmlFor="lf-message" style={{ fontSize: 'var(--text-sm)', fontWeight: 600, display: 'block', marginBottom: 4 }}>Message</label>
-          <TextArea id="lf-message" value={message} onChange={e => setMessage(e.target.value)} placeholder={type === 'test-drive' ? 'Preferred date and time for test drive...' : 'Your message (optional)'} rows={3} />
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-1)', paddingTop: 'var(--space-1)' }}>
+        
+        <Select label="Type" value={selectedType} options={typeOptions} onChange={e => setSelectedType(e.target.value as LeadType)} />
+        
+        <Input label="Full Name *" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required />
+        <Input label="Email *" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required />
+        <Input label="Phone *" type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} required />
+        <Input label="Company" value={form.company} onChange={e => setForm(f => ({ ...f, company: e.target.value }))} />
+
+        {/* Test Drive Time Slot Selection */}
+        {isTestDrive && (
+          <div style={{ padding: 'var(--space-2)', background: 'var(--paper-warm)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+            <p style={{ fontSize: 'var(--text-sm)', fontWeight: 600, marginBottom: 'var(--space-1-5)', display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+              <Calendar size={16} /> Select Preferred Date & Time
+            </p>
+            <div className="testDriveFields" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-1-5)' }}>
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)', marginBottom: 4, display: 'block' }}>Date *</label>
+                <input
+                  type="date"
+                  value={form.preferredDate}
+                  onChange={e => setForm(f => ({ ...f, preferredDate: e.target.value }))}
+                  min={new Date().toISOString().split('T')[0]}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-md)',
+                    fontSize: 'var(--text-sm)',
+                    background: 'var(--surface)',
+                  }}
+                  required
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)', marginBottom: 4, display: 'block' }}>Time *</label>
+                <select
+                  value={form.preferredTime}
+                  onChange={e => setForm(f => ({ ...f, preferredTime: e.target.value }))}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-md)',
+                    fontSize: 'var(--text-sm)',
+                    background: 'var(--surface)',
+                  }}
+                  required
+                >
+                  <option value="">Select time</option>
+                  {timeSlots.map(slot => (
+                    <option key={slot.value} value={slot.value}>{slot.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)', marginTop: 'var(--space-1)' }}>
+              <Clock size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+              Test drives available Mon–Sat, 9:00 AM – 5:00 PM
+            </p>
+          </div>
+        )}
+
+        <TextArea label="Message" value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} rows={3} />
+        
+        <div style={{ display: 'flex', gap: 'var(--space-1)', justifyContent: 'flex-end', marginTop: 'var(--space-1)' }}>
           <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
-          <Button type="submit" loading={sending}>Send Enquiry</Button>
+          <Button type="submit" loading={saving}>
+            {isTestDrive ? 'Book Test Drive' : 'Send Enquiry'}
+          </Button>
         </div>
       </form>
     </Modal>

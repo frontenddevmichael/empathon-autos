@@ -1,64 +1,161 @@
-import { lazy, Suspense } from 'react'
-import { Routes, Route } from 'react-router-dom'
-import { ErrorBoundary } from './components/ErrorBoundary'
-import { PageLayout } from './components/PageLayout'
-import { AdminGuard } from './components/admin/AdminGuard'
-import { AdminLayout } from './pages/admin/AdminLayout'
-import { AdminLogin } from './pages/admin/AdminLogin'
-import { Home } from './pages/Home'
-import { Inventory } from './pages/Inventory'
-import { VehicleDetail } from './pages/VehicleDetail'
-import { PreOrder } from './pages/PreOrder'
-import { Corporate } from './pages/Corporate'
-import { About } from './pages/About'
-import { Contact } from './pages/Contact'
-import { Auctions } from './pages/Auctions'
-import { AuctionDetail } from './pages/AuctionDetail'
-import { Privacy } from './pages/Privacy'
-import { Terms } from './pages/Terms'
-import { NotFound } from './pages/NotFound'
+import { lazy, Suspense, useState } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { HelmetProvider, Helmet } from 'react-helmet-async'
+import { ToastProvider } from '@/context/ToastContext'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { FloatingCTA } from '@/components/FloatingCTA'
+import { LeadForm } from '@/components/LeadForm'
+import { PageLayout } from '@/components/PageLayout'
+import { PageTransition } from '@/components/PageTransition'
+import { Nav } from '@/components/ui/Nav'
+import { Footer } from '@/components/ui/Footer'
+import { AdminGuard } from '@/components/admin/AdminGuard'
+import { AdminLayout } from '@/pages/admin/AdminLayout'
+import { ScrollProgress } from '@/components/ScrollProgress'
+import { useScrollReveal } from '@/hooks/useScrollReveal'
+import { useScrollToTop } from '@/hooks/useScrollToTop'
+import { usePageTitle } from '@/hooks/usePageTitle'
+import { useLenis } from '@/hooks/useLenis'
+import { LoadingScreen, AdminSkeleton } from '@/components/LoadingScreen'
 
-const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard').then(m => ({ default: m.AdminDashboard })))
-const AdminVehicles = lazy(() => import('./pages/admin/AdminVehicles').then(m => ({ default: m.AdminVehicles })))
-const AdminVehicleForm = lazy(() => import('./pages/admin/AdminVehicleForm').then(m => ({ default: m.AdminVehicleForm })))
-const AdminLeads = lazy(() => import('./pages/admin/AdminLeads').then(m => ({ default: m.AdminLeads })))
-const AdminAuctions = lazy(() => import('./pages/admin/AdminAuctions').then(m => ({ default: m.AdminAuctions })))
+const SITE_URL = 'https://www.emphatonautos.com'
+const DEFAULT_DESC = 'Premium vehicle imports, pre-orders, and sales based in Lagos, Nigeria. Trusted automotive partner since 2019.'
+const DEFAULT_IMG = '/og-image.svg'
 
-function AdminFallback() {
-  return <div style={{ padding: 'var(--space-3)' }}><p>Loading...</p></div>
+function GlobalMeta() {
+  return (
+    <Helmet>
+      <html lang="en" />
+      <meta charSet="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta name="description" content={DEFAULT_DESC} />
+      <meta property="og:site_name" content="Empathon Autos" />
+      <meta property="og:description" content={DEFAULT_DESC} />
+      <meta property="og:image" content={DEFAULT_IMG} />
+      <meta property="og:type" content="website" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:description" content={DEFAULT_DESC} />
+      <meta name="twitter:image" content={DEFAULT_IMG} />
+      <link rel="canonical" href={SITE_URL} />
+    </Helmet>
+  )
+}
+
+function namedLazy<T>(importer: () => Promise<{ [key: string]: T }>, name: string) {
+  return lazy(() => importer().then(m => ({ default: m[name] as any })))
+}
+
+const AdminLogin = namedLazy(() => import('@/pages/admin/AdminLogin'), 'AdminLogin')
+const AdminDashboard = namedLazy(() => import('@/pages/admin/AdminDashboard'), 'AdminDashboard')
+const AdminVehicles = namedLazy(() => import('@/pages/admin/AdminVehicles'), 'AdminVehicles')
+const AdminVehicleForm = namedLazy(() => import('@/pages/admin/AdminVehicleForm'), 'AdminVehicleForm')
+const AdminLeads = namedLazy(() => import('@/pages/admin/AdminLeads'), 'AdminLeads')
+const AdminAuctions = namedLazy(() => import('@/pages/admin/AdminAuctions'), 'AdminAuctions')
+const AdminContent = namedLazy(() => import('@/pages/admin/AdminContent'), 'AdminContent')
+const AdminAuctionForm = namedLazy(() => import('@/components/admin/AdminAuctionForm'), 'AdminAuctionForm')
+const Home = namedLazy(() => import('@/pages/Home'), 'Home')
+const Inventory = namedLazy(() => import('@/pages/Inventory'), 'Inventory')
+const VehicleDetail = namedLazy(() => import('@/pages/VehicleDetail'), 'VehicleDetail')
+const Electric = namedLazy(() => import('@/pages/Electric'), 'Electric')
+const PreOrder = namedLazy(() => import('@/pages/PreOrder'), 'PreOrder')
+const TrackOrder = namedLazy(() => import('@/pages/TrackOrder'), 'TrackOrder')
+const Auctions = namedLazy(() => import('@/pages/Auctions'), 'Auctions')
+const AuctionDetail = namedLazy(() => import('@/pages/AuctionDetail'), 'AuctionDetail')
+const Corporate = namedLazy(() => import('@/pages/Corporate'), 'Corporate')
+const About = namedLazy(() => import('@/pages/About'), 'About')
+const Contact = namedLazy(() => import('@/pages/Contact'), 'Contact')
+const Blog = namedLazy(() => import('@/pages/Blog'), 'Blog')
+const BlogPost = namedLazy(() => import('@/pages/BlogPost'), 'BlogPost')
+const Privacy = namedLazy(() => import('@/pages/Legal'), 'Privacy')
+const Terms = namedLazy(() => import('@/pages/Legal'), 'Terms')
+const AdminBlog = namedLazy(() => import('@/pages/admin/AdminBlog'), 'AdminBlog')
+const AdminTestimonials = namedLazy(() => import('@/pages/admin/AdminTestimonials'), 'AdminTestimonials')
+const NotFound = namedLazy(() => import('@/pages/NotFound'), 'NotFound')
+
+// New pages
+const UserDashboard = namedLazy(() => import('@/pages/UserDashboard'), 'UserDashboard')
+const KYCRegistration = namedLazy(() => import('@/pages/KYCRegistration'), 'KYCRegistration')
+
+function PublicLayout({ children }: { children: React.ReactNode }) {
+  const [leadOpen, setLeadOpen] = useState(false)
+  return (
+    <PageLayout>
+      <Nav />
+      <PageTransition>{children}</PageTransition>
+      <Footer />
+      <FloatingCTA onEnquire={() => setLeadOpen(true)} />
+      <LeadForm open={leadOpen} onClose={() => setLeadOpen(false)} type="enquiry" />
+    </PageLayout>
+  )
+}
+
+function Lazy({ cmp: C }: { cmp: React.LazyExoticComponent<any> }) {
+  return <Suspense fallback={<LoadingScreen />}><C /></Suspense>
+}
+
+/** Hooks that need Router context live here, inside <BrowserRouter>. */
+function AppShell({ children }: { children: React.ReactNode }) {
+  useScrollReveal()
+  useScrollToTop()
+  usePageTitle()
+  useLenis()
+  return (
+    <>
+      <ScrollProgress />
+      {children}
+    </>
+  )
 }
 
 export function App() {
   return (
-    <ErrorBoundary>
-      <Routes>
-        <Route element={<PageLayout />}>
-          <Route index element={<Home />} />
-          <Route path="inventory" element={<Inventory />} />
-          <Route path="inventory/:id" element={<VehicleDetail />} />
-          <Route path="pre-order" element={<PreOrder />} />
-          <Route path="corporate" element={<Corporate />} />
-          <Route path="about" element={<About />} />
-          <Route path="contact" element={<Contact />} />
-          <Route path="auctions" element={<Auctions />} />
-          <Route path="auctions/:lotId" element={<AuctionDetail />} />
-          <Route path="privacy" element={<Privacy />} />
-          <Route path="terms" element={<Terms />} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
+    <HelmetProvider>
+    <BrowserRouter>
+      <AppShell>
+      <ToastProvider>
+        <ErrorBoundary>
+          <Routes>
+          <Route path="/" element={<PublicLayout><Lazy cmp={Home} /></PublicLayout>} />
+          <Route path="/inventory" element={<PublicLayout><Lazy cmp={Inventory} /></PublicLayout>} />
+          <Route path="/inventory/:id" element={<PublicLayout><Lazy cmp={VehicleDetail} /></PublicLayout>} />
+          <Route path="/ev" element={<PublicLayout><Lazy cmp={Electric} /></PublicLayout>} />
+          <Route path="/pre-order" element={<PublicLayout><Lazy cmp={PreOrder} /></PublicLayout>} />
+          <Route path="/track-order" element={<PublicLayout><Lazy cmp={TrackOrder} /></PublicLayout>} />
+          <Route path="/auctions" element={<PublicLayout><Lazy cmp={Auctions} /></PublicLayout>} />
+          <Route path="/auctions/:lotId" element={<PublicLayout><Lazy cmp={AuctionDetail} /></PublicLayout>} />
+          <Route path="/corporate" element={<PublicLayout><Lazy cmp={Corporate} /></PublicLayout>} />
+          <Route path="/about" element={<PublicLayout><Lazy cmp={About} /></PublicLayout>} />
+          <Route path="/contact" element={<PublicLayout><Lazy cmp={Contact} /></PublicLayout>} />
+          <Route path="/blog" element={<PublicLayout><Lazy cmp={Blog} /></PublicLayout>} />
+          <Route path="/blog/:slug" element={<PublicLayout><Lazy cmp={BlogPost} /></PublicLayout>} />
+          <Route path="/privacy" element={<PublicLayout><Lazy cmp={Privacy} /></PublicLayout>} />
+          <Route path="/terms" element={<PublicLayout><Lazy cmp={Terms} /></PublicLayout>} />
+          
+          {/* New Routes */}
+          <Route path="/dashboard" element={<PublicLayout><Lazy cmp={UserDashboard} /></PublicLayout>} />
+          <Route path="/register" element={<PublicLayout><Lazy cmp={KYCRegistration} /></PublicLayout>} />
 
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route element={<AdminGuard />}>
-          <Route element={<AdminLayout />}>
-            <Route path="/admin" element={<Suspense fallback={<AdminFallback />}><AdminDashboard /></Suspense>} />
-            <Route path="/admin/vehicles" element={<Suspense fallback={<AdminFallback />}><AdminVehicles /></Suspense>} />
-            <Route path="/admin/vehicles/new" element={<Suspense fallback={<AdminFallback />}><AdminVehicleForm /></Suspense>} />
-            <Route path="/admin/vehicles/:id/edit" element={<Suspense fallback={<AdminFallback />}><AdminVehicleForm /></Suspense>} />
-            <Route path="/admin/leads" element={<Suspense fallback={<AdminFallback />}><AdminLeads /></Suspense>} />
-            <Route path="/admin/auctions" element={<Suspense fallback={<AdminFallback />}><AdminAuctions /></Suspense>} />
+          <Route path="/admin/login" element={<Suspense fallback={<LoadingScreen height="60vh" />}><AdminLogin /></Suspense>} />
+          <Route path="/admin" element={<AdminGuard><AdminLayout /></AdminGuard>}>
+            <Route index element={<Suspense fallback={<AdminSkeleton />}><AdminDashboard /></Suspense>} />
+            <Route path="vehicles" element={<Suspense fallback={<AdminSkeleton />}><AdminVehicles /></Suspense>} />
+            <Route path="vehicles/new" element={<Suspense fallback={<AdminSkeleton />}><AdminVehicleForm /></Suspense>} />
+            <Route path="vehicles/:id/edit" element={<Suspense fallback={<AdminSkeleton />}><AdminVehicleForm /></Suspense>} />
+            <Route path="leads" element={<Suspense fallback={<AdminSkeleton />}><AdminLeads /></Suspense>} />
+            <Route path="auctions" element={<Suspense fallback={<AdminSkeleton />}><AdminAuctions /></Suspense>} />
+            <Route path="auctions/new" element={<Suspense fallback={<AdminSkeleton />}><AdminAuctionForm /></Suspense>} />
+            <Route path="auctions/:id/edit" element={<Suspense fallback={<AdminSkeleton />}><AdminAuctionForm /></Suspense>} />
+            <Route path="content" element={<Suspense fallback={<AdminSkeleton />}><AdminContent /></Suspense>} />
+            <Route path="blog" element={<Suspense fallback={<AdminSkeleton />}><AdminBlog /></Suspense>} />
+            <Route path="testimonials" element={<Suspense fallback={<AdminSkeleton />}><AdminTestimonials /></Suspense>} />
           </Route>
-        </Route>
-      </Routes>
-    </ErrorBoundary>
+          <Route path="*" element={<PublicLayout><Lazy cmp={NotFound} /></PublicLayout>} />
+        </Routes>
+        </ErrorBoundary>
+      </ToastProvider>
+      </AppShell>
+    </BrowserRouter>
+    <GlobalMeta />
+    </HelmetProvider>
   )
 }

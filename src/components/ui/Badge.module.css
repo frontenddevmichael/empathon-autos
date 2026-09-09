@@ -1,43 +1,50 @@
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 2px var(--space-1);
-  border-radius: 999px;
-  font-size: var(--text-xs);
-  font-weight: 500;
-  line-height: 1.4;
-  border: 1px solid transparent;
-  transition: all var(--transition-fast);
-  box-shadow: var(--shadow-sm);
+  height: 26px;
+  padding: 0 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
-.badge:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+.available {
+  background: rgba(21,128,61,0.08);
+  color: var(--success);
+  border: 1px solid rgba(21,128,61,0.15);
 }
 
-.draft { background: var(--clay-muted); color: var(--clay-deep); border-color: var(--clay-muted); }
-.published { background: var(--success-light); color: var(--success); border-color: var(--success-light); }
-.available { background: var(--success-light); color: var(--success); border-color: var(--success-light); }
-.sold { background: var(--error-light); color: var(--error); border-color: var(--error-light); }
-.preOrder { background: var(--gold-dust-light); color: #92400e; border-color: var(--gold-dust-light); }
+.preOrder {
+  background: rgba(0,51,102,0.06);
+  color: var(--navy);
+  border: 1px solid rgba(0,51,102,0.12);
+}
+
+.sold {
+  background: var(--stone);
+  color: white;
+}
+
+.draft {
+  background: rgba(10,10,10,0.05);
+  color: var(--stone);
+}
+
 .live {
-  background: var(--live-light);
+  background: rgba(197,48,48,0.08);
   color: var(--live);
-  border-color: var(--live);
-  animation: pulse 2s var(--ease-out) infinite;
+  border: 1px solid rgba(197,48,48,0.15);
+  animation: pulse-live 2s ease-in-out infinite;
 }
 
-.liveDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--live);
-  margin-right: var(--space-0-5);
-  animation: pulse 2s var(--ease-out) infinite;
+@keyframes pulse-live {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(197,48,48,0.15); }
+  50% { box-shadow: 0 0 0 4px rgba(197,48,48,0); }
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+@media (prefers-reduced-motion: reduce) {
+  .live { animation: none; }
 }

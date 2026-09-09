@@ -1,35 +1,32 @@
 import styles from './Badge.module.css'
 
-type BadgeVariant = 'draft' | 'published' | 'available' | 'sold' | 'pre-order' | 'live'
-
-const variantMap: Record<BadgeVariant, string> = {
-  'draft': styles.draft,
-  'published': styles.published,
+const variantMap = {
   'available': styles.available,
-  'sold': styles.sold,
   'pre-order': styles.preOrder,
+  'sold': styles.sold,
+  'draft': styles.draft,
   'live': styles.live,
 }
 
-const labelMap: Record<BadgeVariant, string> = {
-  'draft': 'Draft',
-  'published': 'Published',
-  'available': 'Available',
-  'sold': 'Sold',
+const labelMap: Record<string, string> = {
+  'available': 'In Stock',
   'pre-order': 'Pre-Order',
+  'sold': 'Sold',
+  'draft': 'Draft',
   'live': 'Live',
+  'walk-in': 'In Stock',
+  'in-auction': 'Live Auction',
 }
 
 interface BadgeProps {
-  variant: BadgeVariant
-  className?: string
+  variant: keyof typeof variantMap
+  label?: string
 }
 
-export function Badge({ variant, className = '' }: BadgeProps) {
+export function Badge({ variant, label }: BadgeProps) {
   return (
-    <span className={`${styles.badge} ${variantMap[variant]} ${className}`}>
-      {variant === 'live' && <span className={styles.liveDot} />}
-      {labelMap[variant]}
+    <span className={`${styles.badge} ${variantMap[variant]}`}>
+      {label ?? labelMap[variant] ?? variant}
     </span>
   )
 }

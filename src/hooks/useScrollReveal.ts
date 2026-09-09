@@ -1,46 +1,78 @@
-import { useCallback, useRef } from 'react'
-
-interface ScrollRevealOptions {
-  threshold?: number
-  delay?: number
-  index?: number
-}
+import { useEffect, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
 
 /**
- * Returns a callback ref that sets the element to hidden initially and
- * reveals it (with a staggered, janky delay) when it scrolls into view.
- * Uses a callback ref instead of useInView to avoid the double-effect flash
- * that can occur when an element is already in the viewport on mount.
+ * Global scroll reveal — observes all `.scroll-reveal` elements in the DOM
+ * and adds `.revealed` when they enter the viewport. Child elements
+ * (`.scroll-reveal-child`, `.stagger-fade-in > *`) cascade in automatically
+ * via CSS once their parent is revealed.
+ *
+ * Uses a MutationObserver to catch lazy-loaded elements that mount after the
+ * initial DOM scan — critical for Suspense/lazy routes.
+ *
+ * Call once in the root component (App.tsx).
  */
-export function useScrollReveal(options?: ScrollRevealOptions) {
-  const obsRef = useRef<IntersectionObserver | null>(null)
-  const hasPlayed = useRef(false)
+export function useScrollReveal() {
+  const { pathname } = useLocation()
+  const observerRef = useRef<IntersectionObserver | null>(null)
+  const mutationRef = useRef<MutationObserver | null>(null)
 
-  const ref = useCallback((el: HTMLElement | null) => {
-    if (!el) return
+  useEffect(() => {
+    // Disconnect any previous observers
+    if (observerRef.current) {
+      observerRef.current.disconnect()
+      observerRef.current = null
+    }
+    if (mutationRef.current) {
+      mutationRef.current.disconnect()
+      mutationRef.current = null
+    }
 
-    const jank = options?.index != null ? (options.index % 7) * 40 + Math.random() * 60 : 0
-    const totalDelay = (options?.delay ?? 0) + jank
+    const createObserver = () => {
+      if (observerRef.current) observerRef.current.disconnect()
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('revealed')
+              observer.unobserve(entry.target)
+            }
+          })
+        },
+        { threshold: 0.1, rootMargin: '0px 0px -30px 0px' }
+      )
+      observerRef.current = observer
+      return observer
+    }
 
-    el.style.opacity = '0'
-    el.style.transform = 'translateY(32px)'
-    el.style.transition = `opacity 600ms cubic-bezier(0.34, 1.56, 0.64, 1) ${totalDelay}ms, transform 600ms cubic-bezier(0.34, 1.56, 0.64, 1) ${totalDelay}ms`
+    const scanAndObserve = () => {
+      const observer = createObserver()
+      const targets = document.querySelectorAll('.scroll-reveal:not(.revealed)')
+      targets.forEach(el => observer.observe(el))
+    }
 
-    if (obsRef.current) obsRef.current.disconnect()
-    obsRef.current = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          if (hasPlayed.current) return
-          hasPlayed.current = true
-          el.style.opacity = '1'
-          el.style.transform = 'translateY(0)'
-          obsRef.current?.disconnect()
-        }
-      },
-      { threshold: options?.threshold ?? 0.1 },
-    )
-    obsRef.current.observe(el)
-  }, [options?.threshold, options?.delay, options?.index])
+    // Initial scan after a tiny delay to let the current render commit
+    const initialTimer = setTimeout(scanAndObserve, 50)
 
-  return ref
+    // MutationObserver catches lazy-loaded/revealed-after-navigation content
+    const mutationObserver = new MutationObserver(() => {
+      const targets = document.querySelectorAll('.scroll-reveal:not(.revealed)')
+      if (targets.length === 0) return
+      // Ensure observer is still alive
+      const obs = observerRef.current ?? createObserver()
+      targets.forEach(el => obs.observe(el))
+    })
+
+    mutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    })
+    mutationRef.current = mutationObserver
+
+    return () => {
+      clearTimeout(initialTimer)
+      if (observerRef.current) observerRef.current.disconnect()
+      if (mutationRef.current) mutationRef.current.disconnect()
+    }
+  }, [pathname])
 }

@@ -1,54 +1,60 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { Vehicle, VehicleMedia } from '@/types'
+import type { Vehicle } from '@/types'
+import { formatPrice } from '@/lib/format'
 import { Badge } from './Badge'
-import { OptImage } from '@/components/OptImage'
-import { CardTilt } from '@/components/CardTilt'
-import { STATUS_TO_BADGE } from '@/lib/constants'
 import styles from './VehicleCard.module.css'
 
+const statusBadge: Record<string, 'available' | 'pre-order' | 'sold' | 'draft' | 'live'> = {
+  'walk-in': 'available', 'pre-order': 'pre-order', 'sold': 'sold',
+  'in-auction': 'live', 'draft': 'draft', 'published': 'available',
+}
+
 interface VehicleCardProps {
-  vehicle: Vehicle & { media?: VehicleMedia[] }
+  vehicle: Vehicle
 }
 
 export function VehicleCard({ vehicle }: VehicleCardProps) {
-  const primary = vehicle.media?.find(m => m.is_primary) ?? vehicle.media?.[0]
-  const price = vehicle.price > 0
-    ? `₦${(vehicle.price / 1_000_000).toFixed(1)}M`
-    : 'Price on request'
+  const [imgLoaded, setImgLoaded] = useState(false)
+  const [imgError, setImgError] = useState(false)
+  const img = vehicle.media?.find(m => m.is_primary) ?? vehicle.media?.[0]
 
   return (
-    <Link to={`/inventory/${vehicle.id}`} className={styles.card}>
-      <CardTilt>
-      <div className={styles.wrap}>
+    <Link to={`/inventory/${vehicle.id}`} className={styles.link}>
+      <article className={styles.card}>
+        {/* Image — the hero of the card */}
         <div className={styles.imageWrap}>
-          {primary ? (
-            <OptImage src={primary.url} alt={primary.alt_text || `${vehicle.make} ${vehicle.model}`} className={styles.image} />
+          {img && !imgError ? (
+            <img
+              src={img.url}
+              alt={`${vehicle.make} ${vehicle.model}${vehicle.trim ? ` ${vehicle.trim}` : ''} ${vehicle.year}`}
+              className={`${styles.image} ${imgLoaded ? styles.imageLoaded : styles.imageLoading}`}
+              loading="lazy"
+              onLoad={() => setImgLoaded(true)}
+              onError={() => setImgError(true)}
+            />
           ) : (
-            <div className={styles.image} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
-              No image
-            </div>
+            <div className={styles.placeholder}>No image yet</div>
           )}
-          <div className={styles.badge}>
-            <Badge variant={STATUS_TO_BADGE[vehicle.status] || 'draft'} />
+          {/* Soft wash + detail cue revealed on hover */}
+          <div className={styles.overlay}>
+            <span className={styles.viewCue}>View details</span>
           </div>
         </div>
-        <div className={styles.body}>
-          <div className={styles.topRow}>
-            <span className={styles.title}>{vehicle.make} {vehicle.model}</span>
-            <span className={styles.year}>{vehicle.year}</span>
+
+        {/* Metadata — minimal, quiet */}
+        <div className={styles.meta}>
+          <div className={styles.badgeRow}>
+            <Badge variant={statusBadge[vehicle.status] || 'draft'} />
           </div>
-          {vehicle.trim && <span className={styles.trim}>{vehicle.trim}</span>}
-          <span className={styles.price}>{price}</span>
-          <div className={styles.meta}>
-            <span>{vehicle.mileage.toLocaleString()} km</span>
-            <span className={styles.dot} />
-            <span className="capitalize">{vehicle.transmission}</span>
-            <span className={styles.dot} />
-            <span className="capitalize">{vehicle.fuel_type}</span>
+          <h3 className={styles.title}>{vehicle.make} {vehicle.model}</h3>
+          {vehicle.trim && <p className={styles.trim}>{vehicle.trim}</p>}
+          <div className={styles.footer}>
+            <span className={styles.price}>{formatPrice(vehicle.price)}</span>
+            {vehicle.year && <span className={styles.year}>{vehicle.year}</span>}
           </div>
         </div>
-      </div>
-      </CardTilt>
+      </article>
     </Link>
   )
 }

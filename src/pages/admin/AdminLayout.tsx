@@ -1,80 +1,91 @@
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useState } from 'react'
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Car, Users, Gavel, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Car, Users, Megaphone, LogOut, Gavel, FileText, Menu, X, Star } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import styles from './AdminLayout.module.css'
 
-const nav = [
-  { to: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/admin/vehicles', label: 'Vehicles', icon: Car },
-  { to: '/admin/leads', label: 'Leads', icon: Users },
-  { to: '/admin/auctions', label: 'Auctions', icon: Gavel },
+const navItems = [
+  { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', end: true },
+  { to: '/admin/vehicles', icon: Car, label: 'Vehicles' },
+  { to: '/admin/leads', icon: Users, label: 'Leads' },
+  { to: '/admin/auctions', icon: Gavel, label: 'Auctions' },
+  { to: '/admin/content', icon: Megaphone, label: 'Content' },
+  { to: '/admin/blog', icon: FileText, label: 'Blog' },
+  { to: '/admin/testimonials', icon: Star, label: 'Testimonials' },
 ]
 
 export function AdminLayout() {
-  const { pathname } = useLocation()
   const navigate = useNavigate()
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const { pathname } = useLocation()
+  const [mobileOpen, setMobileOpen] = useState(false)
 
-  const handleSignOut = async () => {
+  const handleLogout = async () => {
     await supabase.auth.signOut()
     navigate('/admin/login')
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
-      <aside style={{
-        width: 260, background: 'var(--ink)', color: 'rgba(255,255,255,0.8)', display: 'flex', flexDirection: 'column',
-        position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 100,
-        transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
-        transition: 'transform 200ms var(--ease-out)',
-      }}>
-        <div style={{ padding: 'var(--space-2) var(--space-3)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <Link to="/admin" style={{ fontSize: 'var(--text-lg)', fontWeight: 700, letterSpacing: '-0.02em', color: 'white' }}>Empathon Autos</Link>
-          <p style={{ fontSize: 'var(--text-xs)', color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Admin Panel</p>
-        </div>
-        <nav style={{ flex: 1, padding: 'var(--space-1)' }}>
-          {nav.map(n => {
-            const active = n.to === '/admin' ? pathname === '/admin' : pathname.startsWith(n.to)
-            return (
-              <Link key={n.to} to={n.to} onClick={() => setSidebarOpen(true)} style={{
-                display: 'flex', alignItems: 'center', gap: 'var(--space-1)', padding: 'var(--space-1) var(--space-2)',
-                borderRadius: 8, marginBottom: 2, fontSize: 'var(--text-sm)',
-                background: active ? 'var(--clay-muted)' : 'transparent',
-                color: active ? 'var(--clay)' : 'rgba(255,255,255,0.6)',
-                transition: 'all 200ms',
-              }}>
-                <n.icon size={16} />
-                {n.label}
-              </Link>
-            )
-          })}
-        </nav>
-        <div style={{ padding: 'var(--space-1)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <button onClick={handleSignOut} style={{
-            display: 'flex', alignItems: 'center', gap: 'var(--space-1)', padding: 'var(--space-1) var(--space-2)',
-            borderRadius: 8, width: '100%', border: 'none', background: 'transparent',
-            color: 'rgba(255,255,255,0.4)', fontSize: 'var(--text-sm)', cursor: 'pointer',
-            transition: 'color 200ms',
-          }}>
-            <LogOut size={16} /> Sign Out
+    <div className={styles.layout}>
+      {/* Mobile sidebar overlay */}
+      {mobileOpen && (
+        <div className={styles.mobileOverlay} onClick={() => setMobileOpen(false)} />
+      )}
+      
+      <aside className={`${styles.sidebar} ${mobileOpen ? styles.sidebarOpen : ''}`}>
+        <div className={styles.brand}>
+          <img src="/Empathon logo.png" alt="Empathon Autos" height="36" style={{ width: 'auto', maxWidth: 160, height: 36, objectFit: 'contain' }} />
+          Admin
+          <button className={styles.closeBtn} onClick={() => setMobileOpen(false)} aria-label="Close menu">
+            <X size={16} />
           </button>
         </div>
+        <nav className={styles.nav}>
+          {navItems.map(item => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`}
+              onClick={() => setMobileOpen(false)}
+            >
+              <item.icon size={16} />
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+        <div className={styles.spacer} />
+        <button className={styles.logout} onClick={handleLogout}>
+          <LogOut size={14} style={{ marginRight: 6 }} />
+          Sign Out
+        </button>
       </aside>
 
-      <div style={{ marginLeft: sidebarOpen ? 260 : 0, flex: 1, minWidth: 0, transition: 'margin-left 200ms var(--ease-out)' }}>
-        <header style={{
-          height: 56, borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center',
-          padding: '0 var(--space-3)', background: 'var(--surface)', position: 'sticky', top: 0, zIndex: 50,
-        }}>
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 8, marginRight: 'var(--space-1)', color: 'var(--ink)' }} aria-label="Toggle sidebar">
-            {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
+      <main className={styles.main}>
+        <div className={styles.mobileBar}>
+          <button className={styles.hamburger} onClick={() => setMobileOpen(true)} aria-label="Open menu">
+            <Menu size={18} />
           </button>
-          <span style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)' }}>{nav.find(n => n.to === '/admin' ? pathname === '/admin' : pathname.startsWith(n.to))?.label || 'Admin'}</span>
-        </header>
-        <main style={{ padding: 'var(--space-3)' }}>
-          <Outlet />
-        </main>
-      </div>
+          <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600 }}>Empathon Autos Admin</span>
+        </div>
+        <Outlet />
+      </main>
+
+      {/* Mobile bottom nav */}
+      <nav className={styles.bottomNav}>
+        {navItems.map(item => {
+          const isActive = item.end ? pathname === item.to : pathname.startsWith(item.to)
+          return (
+            <NavLink key={item.to} to={item.to} end={item.end} className={`${styles.bottomLink} ${isActive ? styles.bottomActive : ''}`}>
+              <item.icon size={18} />
+              <span>{item.label}</span>
+            </NavLink>
+          )
+        })}
+        <button className={`${styles.bottomLink} ${styles.bottomLogout}`} onClick={handleLogout} aria-label="Sign out">
+          <LogOut size={18} />
+          <span>Sign Out</span>
+        </button>
+      </nav>
     </div>
   )
 }
