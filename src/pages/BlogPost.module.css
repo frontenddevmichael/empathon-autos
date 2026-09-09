@@ -358,7 +358,60 @@
     font-size: clamp(1.6rem, 7vw, 2.25rem);
   }
 
+  .heroContent {
+    padding: var(--space-5) var(--space-3) var(--space-4);
+  }
+
+  .articleSection {
+    padding: var(--space-5) var(--space-3);
+  }
+
+  .body {
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+
+  .body h2 {
+    font-size: 1.5rem;
+  }
+
+  .body h3 {
+    font-size: 1.2rem;
+  }
+
+  .shareRow {
+    flex-wrap: wrap;
+  }
+
+  .authorCard {
+    flex-direction: column;
+    text-align: center;
+    padding: var(--space-3);
+  }
+
   .relatedGrid {
     grid-template-columns: 1fr;
+  }
+
+  .related {
+    margin-top: var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    min-height: 35vh;
+  }
+
+  .heroTitle {
+    font-size: 1.5rem;
+  }
+
+  .body {
+    font-size: 0.9375rem;
+  }
+
+  .body h2 {
+    font-size: 1.35rem;
   }
 }
