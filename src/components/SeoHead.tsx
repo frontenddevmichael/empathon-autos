@@ -10,8 +10,8 @@ interface SeoHeadProps {
 export function SeoHead({ title, description, ogImage }: SeoHeadProps) {
   useEffect(() => {
     const fullTitle = title
-      ? `${title} — ${config.siteName}`
-      : config.siteName
+      ? `${title} — ${config.company.name}`
+      : config.seo.defaultTitle
 
     document.title = fullTitle
 
@@ -26,13 +26,13 @@ export function SeoHead({ title, description, ogImage }: SeoHeadProps) {
       el.setAttribute('content', content)
     }
 
-    setMeta('description', description || config.siteDescription)
+    setMeta('description', description || config.seo.defaultDescription)
     setMeta('og:title', fullTitle)
-    setMeta('og:description', description || config.siteDescription)
+    setMeta('og:description', description || config.seo.defaultDescription)
     if (ogImage) setMeta('og:image', ogImage)
     setMeta('og:url', window.location.href)
     setMeta('twitter:title', fullTitle)
-    setMeta('twitter:description', description || config.siteDescription)
+    setMeta('twitter:description', description || config.seo.defaultDescription)
     if (ogImage) setMeta('twitter:image', ogImage)
   }, [title, description, ogImage])
 

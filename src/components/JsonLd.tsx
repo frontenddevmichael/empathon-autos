@@ -4,9 +4,9 @@ export function JsonLd() {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'AutoDealer',
-    name: config.siteName,
-    description: config.siteDescription,
-    url: config.siteUrl,
+    name: config.company.name,
+    description: config.seo.defaultDescription,
+    url: config.seo.siteUrl,
     telephone: `+${config.whatsapp}`,
     address: {
       '@type': 'PostalAddress',

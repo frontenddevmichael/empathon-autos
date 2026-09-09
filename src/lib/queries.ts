@@ -137,7 +137,7 @@ export async function getLots(): Promise<Lot[]> {
 
 export async function getVehicleByLotId(lotId: string): Promise<VehicleWithMedia | null> {
   const lot = await getLotById(lotId)
-  if (!lot) return null
+  if (!lot?.vehicle_id) return null
   return getVehicleById(lot.vehicle_id)
 }
 
