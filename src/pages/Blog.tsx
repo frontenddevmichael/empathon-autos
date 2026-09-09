@@ -52,8 +52,8 @@ export function Blog() {
     <>
       <HeroSection
         images={[
-          { url: 'https://images.unsplash.com/photo-1779025313068-b4a11d86bf0d?w=1400&q=90&fit=crop' },
-          { url: 'https://images.unsplash.com/photo-1780296269675-169390638617?w=1400&q=90&fit=crop' },
+          { url: '/heroimg3.jpg' },
+          { url: '/heroimg4.jpg' },
         ]}
         label="Blog"
         title="Latest Articles"

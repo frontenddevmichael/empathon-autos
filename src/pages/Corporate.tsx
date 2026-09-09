@@ -138,9 +138,9 @@ export function Corporate() {
     <>
       <HeroSection
         images={[
-          { url: 'https://images.unsplash.com/photo-1780296269675-169390638617?w=1400&q=90&fit=crop' },
-          { url: 'https://images.unsplash.com/photo-1779025313068-b4a11d86bf0d?w=1400&q=90&fit=crop' },
-          { url: 'https://images.unsplash.com/photo-1774578432996-54e195b3c5b0?w=1400&q=90&fit=crop' },
+          { url: '/heroimg2.jpg' },
+          { url: '/heroimg3.jpg' },
+          { url: '/heroimg4.jpg' },
         ]}
         label="Corporate Sales"
         title="Fleet Solutions for Nigeria's Leading Organisations"

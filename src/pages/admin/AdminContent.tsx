@@ -470,7 +470,7 @@ export function AdminContent() {
               <div style={{ fontSize: 'var(--text-2xs)', fontWeight: 600, color: 'var(--stone)', marginBottom: 4 }}>Quick templates</div>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                 {[
-                  { label: 'Hero Image URL', value: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1400&q=90&fit=crop', pageKey: 'home', title: 'hero_image' },
+                  { label: 'Hero Image URL', value: '/heroimg.jpg', pageKey: 'home', title: 'hero_image' },
                   { label: 'Client Logos', value: '[{"name": "Company Name"}]', pageKey: 'home', title: 'clients' },
                   { label: 'Team Members', value: '[{"name": "Full Name", "role": "Title"}]' },
                   { label: 'Feature List', value: '[{"title": "Feature", "desc": "Description"}]' },

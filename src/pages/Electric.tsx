@@ -83,8 +83,8 @@ export function Electric() {
     <>
       <HeroSection
         images={[
-          { url: 'https://images.unsplash.com/photo-1568559598349-dbf322d50a48?w=1400&q=90&fit=crop' },
-          { url: 'https://images.unsplash.com/photo-1639060015191-57b7c025941d?w=1400&q=90&fit=crop' },
+          { url: '/heroimg5.jpg' },
+          { url: '/heroimg.jpg' },
         ]}
         label="Electric Vehicles"
         title="GO Electric. GO Green."

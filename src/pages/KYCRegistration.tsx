@@ -72,7 +72,7 @@ export function KYCRegistration() {
     return (
       <>
         <HeroSection
-          images={[{ url: 'https://images.unsplash.com/photo-1780296269675-169390638617?w=1400&q=90&fit=crop' }]}
+          images={[{ url: '/heroimg2.jpg' }]}
           label="Registration"
           title="Welcome Aboard!"
           subtitle="Your registration has been submitted successfully."
@@ -116,7 +116,7 @@ export function KYCRegistration() {
   return (
     <>
       <HeroSection
-        images={[{ url: 'https://images.unsplash.com/photo-1780296269675-169390638617?w=1400&q=90&fit=crop' }]}
+        images={[{ url: '/heroimg3.jpg' }]}
         label="Registration"
         title="Register to Bid"
         subtitle="Complete your KYC registration to participate in auctions and receive personalised offers."

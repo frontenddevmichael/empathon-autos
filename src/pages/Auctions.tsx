@@ -91,8 +91,8 @@ export function Auctions() {
       <CarSilhouette className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.06 }} size={96} />
       <HeroSection
         images={[
-          { url: 'https://images.unsplash.com/photo-1774578432996-54e195b3c5b0?w=1400&q=90&fit=crop' },
-          { url: 'https://images.unsplash.com/photo-1780296269675-169390638617?w=1400&q=90&fit=crop' },
+          { url: '/heroimg.jpg' },
+          { url: '/heroimg2.jpg' },
         ]}
         label="Auction"
         title="Live Auctions"

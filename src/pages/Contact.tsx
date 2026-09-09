@@ -48,8 +48,8 @@ export function Contact() {
     <>
       <HeroSection
         images={[
-          { url: 'https://images.unsplash.com/photo-1780296269675-169390638617?w=1400&q=90&fit=crop' },
-          { url: 'https://images.unsplash.com/photo-1779025313068-b4a11d86bf0d?w=1400&q=90&fit=crop' },
+          { url: '/heroimg5.jpg' },
+          { url: '/heroimg.jpg' },
         ]}
         label="Contact"
         title="Get in Touch"

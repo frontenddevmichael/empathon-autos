@@ -76,8 +76,8 @@ export function TrackOrder() {
     <>
       <HeroSection
         images={[
-          { url: 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=1400&q=90&fit=crop' },
-          { url: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1400&q=90&fit=crop' },
+          { url: '/heroimg.jpg' },
+          { url: '/heroimg2.jpg' },
         ]}
         label="Track Order"
         title="Where's My Vehicle?"

@@ -108,7 +108,7 @@ export function UserDashboard() {
     <>
       <HeroSection
         images={[
-          { url: 'https://images.unsplash.com/photo-1780296269675-169390638617?w=1400&q=90&fit=crop' },
+          { url: '/heroimg3.jpg' },
         ]}
         label="Dashboard"
         title="Your Account"
