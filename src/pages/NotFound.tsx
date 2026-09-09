@@ -6,7 +6,7 @@ export function NotFound() {
   return (
     <div className={styles.container}>
       <div className={styles.illustration}>
-        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: 120, height: 120, margin: '0 auto var(--space-3)' }}>
+        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style={{ width: 120, height: 120, margin: '0 auto var(--space-3)' }}>
           <circle cx="60" cy="60" r="56" stroke="rgba(0,51,102,0.08)" strokeWidth="2" />
           <path d="M40 50 L60 40 L80 50 M40 60 L60 50 L80 60 M40 70 L60 60 L80 70" stroke="rgba(0,51,102,0.12)" strokeWidth="2" strokeLinecap="round" />
           <circle cx="48" cy="44" r="3" fill="rgba(0,51,102,0.15)" />

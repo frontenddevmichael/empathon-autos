@@ -21,13 +21,6 @@ export function LoadingScreen({ height = '60vh' }: { height?: string }) {
             border: '2px solid rgba(0,51,102,0.08)',
             animation: 'loadingRing 1.5s ease-in-out infinite',
           }} />
-          <style>{`
-            @keyframes loadingRing {
-              0% { transform: scale(0.8); opacity: 0; }
-              50% { opacity: 0.5; }
-              100% { transform: scale(1.4); opacity: 0; }
-            }
-          `}</style>
         </div>
       </div>
     </div>

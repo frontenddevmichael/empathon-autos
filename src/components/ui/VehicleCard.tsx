@@ -51,7 +51,22 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
           {vehicle.trim && <p className={styles.trim}>{vehicle.trim}</p>}
           <div className={styles.footer}>
             <span className={styles.price}>{formatPrice(vehicle.price)}</span>
-            {vehicle.year && <span className={styles.year}>{vehicle.year}</span>}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              {vehicle.status === 'walk-in' && (
+                <span style={{
+                  fontSize: '0.6875rem',
+                  fontWeight: 600,
+                  color: 'var(--green)',
+                  background: 'var(--success-light)',
+                  padding: '2px 8px',
+                  borderRadius: 'var(--radius-full)',
+                  letterSpacing: '0.02em',
+                }}>
+                  Ready to Drive
+                </span>
+              )}
+              {vehicle.year && <span className={styles.year}>{vehicle.year}</span>}
+            </div>
           </div>
         </div>
       </article>

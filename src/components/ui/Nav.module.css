@@ -201,6 +201,33 @@
 
 .cta { margin-left: var(--space-2); display: flex; align-items: center; gap: var(--space-1); }
 
+.navIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.15);
+  transition: all 200ms var(--ease-out);
+}
+.navIcon:hover {
+  color: var(--navy);
+  background: white;
+  border-color: white;
+  transform: translateY(-1px);
+}
+.nav.light .navIcon {
+  color: rgba(11,46,89,0.6);
+  border-color: rgba(11,46,89,0.12);
+}
+.nav.light .navIcon:hover {
+  color: var(--navy);
+  background: var(--navy-light);
+  border-color: var(--navy);
+}
+
 /* ── Animated Hamburger ── */
 .hamburger {
   display: none;
@@ -316,6 +343,25 @@
 }
 
 .mobileCta { margin-top: var(--space-2); }
+
+.mobileContactLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--navy);
+  border: 1px solid var(--border);
+  transition: all 200ms var(--ease-out);
+  flex: 1;
+  justify-content: center;
+}
+.mobileContactLink:hover {
+  background: var(--navy-light);
+  border-color: var(--navy);
+}
 
 /* Light-theme mobile menu — white sheet, navy links (matches .nav.light) */
 .mobileMenuLight {

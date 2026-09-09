@@ -99,7 +99,7 @@
   color: var(--navy);
 }
 .white:hover {
-  background: #f2f2f4;
+  background: var(--paper-warm);
   box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }

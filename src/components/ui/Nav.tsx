@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { Phone, MessageCircle } from 'lucide-react'
 import { Button } from './Button'
+import { config } from '@/lib/config'
 import styles from './Nav.module.css'
 
 const links = [
@@ -124,6 +126,12 @@ export function Nav() {
               </Link>
             ))}
             <div className={styles.cta}>
+              <a href={`tel:${config.company.phone1.replace(/\s/g, '')}`} className={styles.navIcon} aria-label="Call us">
+                <Phone size={16} />
+              </a>
+              <a href={config.whatsapp.link} target="_blank" rel="noopener noreferrer" className={styles.navIcon} aria-label="Chat on WhatsApp">
+                <MessageCircle size={16} />
+              </a>
               <Button as="a" href="/register" size="sm" variant="ghost">Register</Button>
               <Button as="a" href="/contact" size="sm" variant="primary" magnetic className={styles.navContact}>Contact</Button>
             </div>
@@ -191,6 +199,14 @@ export function Nav() {
           </Link>
         </div>
         <div className={styles.mobileCta}>
+          <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
+            <a href={`tel:${config.company.phone1.replace(/\s/g, '')}`} className={styles.mobileContactLink}>
+              <Phone size={18} /> Call Us
+            </a>
+            <a href={config.whatsapp.link} target="_blank" rel="noopener noreferrer" className={styles.mobileContactLink}>
+              <MessageCircle size={18} /> WhatsApp
+            </a>
+          </div>
           <Button as="a" href="/contact" fullWidth>Contact</Button>
         </div>
       </div>

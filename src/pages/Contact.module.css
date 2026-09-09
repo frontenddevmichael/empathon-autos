@@ -67,4 +67,5 @@
 
 @media (max-width: 768px) {
   .layout { grid-template-columns: 1fr; }
+  .formRow { grid-template-columns: 1fr; }
 }

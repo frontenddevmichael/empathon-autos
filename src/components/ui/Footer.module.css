@@ -1,6 +1,6 @@
 .footer {
   position: relative;
-  background: linear-gradient(180deg, #0a1b33 0%, #06121f 100%);
+  background: linear-gradient(180deg, var(--navy-deep) 0%, #040d1a 100%);
   color: rgba(255,255,255,0.7);
   padding: 0 0 var(--space-4);
   font-size: var(--text-sm);

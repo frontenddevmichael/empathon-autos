@@ -10,6 +10,7 @@ import { VehicleCard } from '@/components/ui/VehicleCard'
 import { VehicleCardSkeleton } from '@/components/ui/Skeleton'
 import { RippleButton } from '@/components/RippleButton'
 import { SplitHeading } from '@/components/SplitHeading'
+import { config } from '@/lib/config'
 import { AnimatedCounter } from '@/components/AnimatedCounter'
 import { ParallaxSection } from '@/components/ParallaxSection'
 import { ForkRoad, UnderlineFlourish } from '@/components/DecoSvgs'
@@ -31,12 +32,12 @@ const FALLBACK_TESTIMONIALS = [
 ]
 
 const FALLBACK_LEARNING = [
-  { id: 'l1', title: 'How to Choose the Right Car for Lagos Roads', category: 'Buying Guide', image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0afa?w=600&q=80&fit=crop', slug: 'choosing-right-car-lagos', readTime: '5 min read' },
-  { id: 'l2', title: 'Pre-Owned vs Brand New: What Makes Sense in Nigeria?', category: 'Market Insights', image: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=600&q=80&fit=crop', slug: 'pre-owned-vs-brand-new', readTime: '7 min read' },
-  { id: 'l3', title: 'Understanding Import Duties and Clearing Costs', category: 'Import Guide', image: 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=600&q=80&fit=crop', slug: 'import-duties-clearing', readTime: '6 min read' },
-  { id: 'l4', title: 'Electric Vehicles in Nigeria: Are They Worth It?', category: 'EV Guide', image: 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=600&q=80&fit=crop', slug: 'evs-in-nigeria', readTime: '8 min read' },
-  { id: 'l5', title: 'Maintaining Your Car in Tropical Climate', category: 'Maintenance Tips', image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600&q=80&fit=crop', slug: 'maintaining-car-tropical', readTime: '4 min read' },
-  { id: 'l6', title: 'Financing Options for Your Next Vehicle', category: 'Finance', image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=600&q=80&fit=crop', slug: 'financing-options', readTime: '5 min read' },
+  { id: 'l1', title: 'How to Choose the Right Car for Lagos Roads', category: 'Buying Guide', image: '/heroimg.jpg', slug: 'choosing-right-car-lagos', readTime: '5 min read' },
+  { id: 'l2', title: 'Pre-Owned vs Brand New: What Makes Sense in Nigeria?', category: 'Market Insights', image: '/heroimg2.jpg', slug: 'pre-owned-vs-brand-new', readTime: '7 min read' },
+  { id: 'l3', title: 'Understanding Import Duties and Clearing Costs', category: 'Import Guide', image: '/heroimg3.jpg', slug: 'import-duties-clearing', readTime: '6 min read' },
+  { id: 'l4', title: 'Electric Vehicles in Nigeria: Are They Worth It?', category: 'EV Guide', image: '/heroimg4.jpg', slug: 'evs-in-nigeria', readTime: '8 min read' },
+  { id: 'l5', title: 'Maintaining Your Car in Tropical Climate', category: 'Maintenance Tips', image: '/heroimg5.jpg', slug: 'maintaining-car-tropical', readTime: '4 min read' },
+  { id: 'l6', title: 'Financing Options for Your Next Vehicle', category: 'Finance', image: '/heroimg.jpg', slug: 'financing-options', readTime: '5 min read' },
 ]
 
 interface Client { name: string; logo?: string | null }
@@ -204,19 +205,21 @@ export function Home() {
         <div className={styles.heroContent}>
           <div className={styles.heroPanel}>
             <p className={styles.heroTag} style={{ animation: 'fadeInDown 600ms var(--ease-out) forwards' }}>Lagos &middot; Since 2019</p>
-            <SplitHeading as="h1" className={styles.heroTitle}>Trust. Fit. Drive.</SplitHeading>
+            <SplitHeading as="h1" className={styles.heroTitle}>Your Next Drive<br />Starts Here.</SplitHeading>
             <p className={styles.heroSub} style={{ animation: 'fadeInUp 600ms 300ms var(--ease-out) both' }}>
-              Real cars. Real people. No games. Quality vehicles sourced worldwide,
-              and honest guidance to find the one that fits your life and budget.
+              Premium vehicles sourced from four continents. Inspected, explained, and delivered —
+              with honest guidance at every step.
             </p>
             <div className={styles.heroCtas} style={{ animation: 'fadeInUp 600ms 500ms var(--ease-out) both' }}>
               <Link to="/inventory"><RippleButton size="lg" magnetic>Browse Inventory <ArrowRight size={16} /></RippleButton></Link>
-              <Link to="/contact"><RippleButton size="lg" variant="ghostLight">Request a Quote</RippleButton></Link>
+              <Link to="/contact"><RippleButton size="lg" variant="ghostLight">Book a Test Drive</RippleButton></Link>
             </div>
             <div className={styles.heroSecondary} style={{ animation: 'fadeInUp 600ms 700ms var(--ease-out) both' }}>
               <Link to="/corporate">Corporate &amp; Fleet Sales</Link>
               <span aria-hidden="true" style={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(255,255,255,0.35)' }} />
               <Link to="/pre-order">Pre-Order a Vehicle</Link>
+              <span aria-hidden="true" style={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(255,255,255,0.35)' }} />
+              <a href={config.whatsapp.link} target="_blank" rel="noopener noreferrer">Chat on WhatsApp</a>
             </div>
           </div>
         </div>
@@ -327,8 +330,8 @@ export function Home() {
             </div>
             <div className={styles.evImageWrap}>
               <img
-                src="https://images.unsplash.com/photo-1636578929419-fc62088fd08f?w=900&q=80&fit=crop"
-                alt="Mercedes-Benz electric vehicle"
+                src="/heroimg5.jpg"
+                alt="Premium electric vehicle"
                 loading="lazy"
                 className={styles.evImage}
               />
