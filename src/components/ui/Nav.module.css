@@ -428,6 +428,7 @@
 
 @media (max-width: 768px) {
   .links { display: none; }
+  .cta { display: none; }
   .hamburger {
     display: flex;
     width: 44px;
