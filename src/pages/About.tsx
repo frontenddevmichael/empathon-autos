@@ -123,10 +123,6 @@ export function About() {
         />
         <div className={styles.heroOverlay} />
         <div className={styles.heroContent}>
-          <p className={styles.heroLabel}>
-            <span className={styles.heroLabelLine} />
-            About Empathon
-          </p>
           <h1 className={styles.heroTitle}>
             Premium Vehicles,<br />Sourced Globally.
           </h1>
