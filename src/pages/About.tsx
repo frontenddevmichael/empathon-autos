@@ -158,7 +158,7 @@ export function About() {
             <div className={styles.timelineLine}>
               <div
                 className={styles.timelineFill}
-                style={{ height: `${timelineProgress * 100}%` }}
+                style={{ width: `${timelineProgress * 100}%` }}
               />
             </div>
 
@@ -168,6 +168,7 @@ export function About() {
                 <div
                   key={step.title}
                   className={styles.timelineStep}
+                  data-step={i + 1}
                   style={{ animationDelay: `${i * 150}ms` }}
                 >
                   <div className={styles.timelineDot}>

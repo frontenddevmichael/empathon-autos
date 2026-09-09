@@ -52,6 +52,10 @@
   overflow: visible;
   flex-shrink: 0;
 }
+.logo img {
+  filter: invert(1);
+  transition: filter 400ms var(--ease-out);
+}
 .logo:hover {
   opacity: 0.85;
   transform: scale(1.02);
