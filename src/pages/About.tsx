@@ -1,13 +1,9 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { MessageCircle, ArrowRight } from 'lucide-react'
-import { Section } from '@/components/PageLayout'
-import { SectionHeader } from '@/components/ui/SectionHeader'
+import { MessageCircle, ArrowRight, Search, ClipboardCheck, Truck, Handshake } from 'lucide-react'
 import { RippleButton } from '@/components/RippleButton'
-import { ParallaxSection } from '@/components/ParallaxSection'
-import { HeroSection } from '@/components/HeroSection'
-import { Speedometer, ShieldCheck } from '@/components/DecoSvgs'
-import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
 import { config } from '@/lib/config'
+import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
 import styles from './About.module.css'
 
 interface TeamMember {
@@ -16,135 +12,263 @@ interface TeamMember {
   photo?: string
 }
 
-const VALUES = [
-  { title: 'Straight With You', desc: 'Clear pricing, honest advice, and no surprises. What we promise is what you get.' },
-  { title: 'Your Side, Always', desc: "We're not here to push a sale. We're here to find the right fit." },
-  { title: 'Keep Getting Better', desc: 'Every car, every customer, every interaction — we learn and improve.' },
-  { title: 'Do It Properly', desc: "From sourcing to handover, we sweat the details so you don't have to." },
+const STATS = [
+  { value: 7, suffix: '+', label: 'Years Active' },
+  { value: 500, suffix: '+', label: 'Vehicles Delivered' },
+  { value: 4, suffix: '', label: 'Countries Sourced' },
+  { value: 98, suffix: '%', label: 'Client Satisfaction' },
 ]
 
-const SERVICES = [
-  { title: 'Car Sales', desc: 'Quality vehicles sourced from Japan, Dubai, Europe, and the US.' },
-  { title: 'Pre-Orders', desc: "Want something specific? We'll hunt it down for you." },
-  { title: 'Honest Advice', desc: "Not sure what to buy? We'll help you figure it out, even if it means a smaller commission." },
-  { title: 'After-Sales', desc: 'Warranty, maintenance tips, and someone to call when you need help.' },
+const PROCESS_STEPS = [
+  { icon: Search, title: 'Source', desc: 'We scout Japan, Dubai, Europe, and the US for the best vehicles at the right price.' },
+  { icon: ClipboardCheck, title: 'Inspect', desc: 'Every vehicle goes through rigorous inspection before it\'s approved for import.' },
+  { icon: Truck, title: 'Import', desc: 'We handle logistics, customs, and documentation — end to end.' },
+  { icon: Handshake, title: 'Deliver', desc: 'You get your car with full paperwork, warranty, and a team behind you.' },
 ]
+
+const WHY_US = [
+  {
+    heading: 'Global Sourcing, Local Trust',
+    desc: 'We have direct relationships with exporters in Japan, Dubai, Europe, and the US. No middlemen, no markups — just honest pricing on quality vehicles.',
+    image: '/heroimg2.jpg',
+  },
+  {
+    heading: 'Every Vehicle, Verified',
+    desc: 'Before any car reaches our lot, it passes through multi-point inspections. We don\'t cut corners — because our reputation depends on every vehicle we deliver.',
+    image: '/heroimg4.jpg',
+  },
+]
+
+function AnimatedCounter({ value, suffix, label }: { value: number; suffix: string; label: string }) {
+  const [count, setCount] = useState(0)
+  const ref = useRef<HTMLDivElement>(null)
+  const hasAnimated = useRef(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true
+          const duration = 1800
+          const start = performance.now()
+          const animate = (now: number) => {
+            const elapsed = now - start
+            const progress = Math.min(elapsed / duration, 1)
+            const eased = 1 - Math.pow(1 - progress, 3)
+            setCount(Math.round(eased * value))
+            if (progress < 1) requestAnimationFrame(animate)
+          }
+          requestAnimationFrame(animate)
+        }
+      },
+      { threshold: 0.5 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [value])
+
+  return (
+    <div ref={ref} className={styles.statItem}>
+      <span className={styles.statValue}>
+        {count}{suffix}
+      </span>
+      <span className={styles.statLabel}>{label}</span>
+    </div>
+  )
+}
 
 export function About() {
-  const { content: aboutContent, error: aboutError } = useSiteContent('about')
+  const { content: aboutContent } = useSiteContent('about')
   const leadership = parseJsonContent<TeamMember>(aboutContent, 'leadership', [
     { name: 'Hassan', role: 'Team Member', photo: '/team/Hassan.jpeg' },
     { name: 'Jimoh', role: 'Team Member', photo: '/team/Jimoh.jpeg' },
     { name: 'Saheed Akintunde', role: 'Team Member', photo: '/team/Saheed Akintunde.jpeg' },
     { name: 'Tolani', role: 'Team Member', photo: '/team/Tolani.jpeg' },
   ])
+
+  const timelineRef = useRef<HTMLDivElement>(null)
+  const [timelineProgress, setTimelineProgress] = useState(0)
+
+  useEffect(() => {
+    const el = timelineRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          const rect = el.getBoundingClientRect()
+          const viewH = window.innerHeight
+          const progress = Math.min(1, Math.max(0, (viewH - rect.top) / (rect.height + viewH * 0.5)))
+          setTimelineProgress(progress)
+        }
+      },
+      { threshold: Array.from({ length: 20 }, (_, i) => i / 20) }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <>
-      <HeroSection
-        images={[
-          { url: '/heroimg.jpg' },
-          { url: '/heroimg2.jpg' },
-        ]}
-        label="About"
-        title="Trust . Fit . Drive. Since 2019."
-        subtitle="We sell cars in Lagos. Not much more complicated than that. Since 2019 we've been importing, pre-ordering, and putting people behind the wheel of vehicles they actually want."
-        deco="car"
-      />
+      {/* ── Section 1: Cinematic Hero ── */}
+      <section className={styles.hero}>
+        <img
+          src="/heroimg.jpg"
+          alt=""
+          className={styles.heroImage}
+          loading="eager"
+          fetchPriority="high"
+        />
+        <div className={styles.heroOverlay} />
+        <div className={styles.heroContent}>
+          <p className={styles.heroLabel}>
+            <span className={styles.heroLabelLine} />
+            About Empathon
+          </p>
+          <h1 className={styles.heroTitle}>
+            Premium Vehicles,<br />Sourced Globally.
+          </h1>
+          <p className={styles.heroSubtitle}>
+            From Tokyo to Lagos — we bring the world's finest vehicles to your driveway. No shortcuts, no surprises.
+          </p>
+        </div>
+      </section>
 
-      {/* Intro — who we are, where we're headed */}
-      <ParallaxSection>
-        <Section className="scroll-reveal" style={{ position: 'relative' }}>
-          {aboutError && !aboutContent.length && (
-            <div style={{ textAlign: 'center', padding: 'var(--space-4)', marginBottom: 'var(--space-3)', background: 'rgba(220,38,38,0.05)', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(220,38,38,0.1)' }}>
-              <p style={{ color: 'var(--error, #dc2626)', fontSize: 'var(--text-sm)' }}>Could not load page content. Showing defaults.</p>
+      {/* ── Section 2: Stats Bar ── */}
+      <section className={styles.statsBar}>
+        <div className={styles.statsInner}>
+          {STATS.map((stat, i) => (
+            <div key={stat.label} className={styles.statItem}>
+              <AnimatedCounter value={stat.value} suffix={stat.suffix} label={stat.label} />
+              {i < STATS.length - 1 && <div className={styles.statDivider} />}
             </div>
-          )}
-          <div className="responsive-grid-2 stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-4)' }}>
-            <div className="scroll-reveal-child">
-              <p className={styles.introLabel}>What We're About</p>
-              <p className={styles.introText}>
-                We bring in solid vehicles from markets around the world — Japan, Dubai, Europe, the US — and help people in Lagos find the right one without the usual dealer runaround. No hidden fees, no shortcuts, just straight talk.
-              </p>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Section 3: Process Timeline ── */}
+      <section className={styles.processSection}>
+        <div className={styles.processInner}>
+          <p className={styles.sectionLabel}>How It Works</p>
+          <h2 className={styles.sectionTitle}>Our Process</h2>
+
+          <div className={styles.timeline} ref={timelineRef}>
+            <div className={styles.timelineLine}>
+              <div
+                className={styles.timelineFill}
+                style={{ height: `${timelineProgress * 100}%` }}
+              />
             </div>
-            <div className="scroll-reveal-child" style={{ ['--reveal-delay' as string]: '100ms' }}>
-              <p className={styles.introLabel}>Where We're Headed</p>
-              <p className={styles.introText}>
-                We want to be the car people in Nigeria actually trust. Not because we say so — because every person who drives off our lot becomes someone who tells their friends about us. That's the only metric that matters.
-              </p>
-            </div>
+
+            {PROCESS_STEPS.map((step, i) => {
+              const Icon = step.icon
+              return (
+                <div
+                  key={step.title}
+                  className={styles.timelineStep}
+                  style={{ animationDelay: `${i * 150}ms` }}
+                >
+                  <div className={styles.timelineDot}>
+                    <Icon size={20} strokeWidth={1.5} />
+                  </div>
+                  <div className={styles.timelineContent}>
+                    <h3 className={styles.timelineTitle}>{step.title}</h3>
+                    <p className={styles.timelineDesc}>{step.desc}</p>
+                  </div>
+                </div>
+              )
+            })}
           </div>
-        </Section>
-      </ParallaxSection>
+        </div>
+      </section>
 
-      {/* Core Values */}
-      <ParallaxSection>
-        <Section className="scroll-reveal reveal-left" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
-          <Speedometer className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-3)', right: 'var(--space-3)', opacity: 0.08 }} size={72} />
-          <SectionHeader label="Our Principles" title="Core Values" />
-          <div className="responsive-grid-4 stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-3)' }}>
-            {VALUES.map((v, i) => (
-              <div key={v.title} className={`${styles.card} scroll-reveal-child`} style={{ ['--reveal-delay' as string]: `${i * 80}ms` }}>
-                <h3 className={styles.cardTitle}>{v.title}</h3>
-                <p className={styles.cardText}>{v.desc}</p>
+      {/* ── Section 4: Parallax Image ── */}
+      <section className={styles.parallaxSection}>
+        <img
+          src="/heroimg3.jpg"
+          alt=""
+          className={styles.parallaxImage}
+          loading="lazy"
+        />
+        <div className={styles.parallaxOverlay} />
+        <blockquote className={styles.parallaxQuote}>
+          <p>"We don't just sell cars — we build relationships that last longer than any warranty."</p>
+          <cite>— Empathon Autos</cite>
+        </blockquote>
+      </section>
+
+      {/* ── Section 5: Why Choose Us — Alternating Blocks ── */}
+      <section className={styles.whySection}>
+        <div className={styles.whyInner}>
+          <p className={styles.sectionLabel}>Why Empathon</p>
+          <h2 className={styles.sectionTitle}>Built on Trust, Driven by Quality</h2>
+
+          <div className={styles.whyBlocks}>
+            {WHY_US.map((block, i) => (
+              <div
+                key={block.heading}
+                className={`${styles.whyBlock} ${i % 2 === 1 ? styles.whyBlockReversed : ''}`}
+              >
+                <div className={styles.whyText}>
+                  <h3 className={styles.whyHeading}>{block.heading}</h3>
+                  <p className={styles.whyDesc}>{block.desc}</p>
+                </div>
+                <div className={styles.whyImageWrap}>
+                  <img src={block.image} alt="" className={styles.whyImage} loading="lazy" />
+                </div>
               </div>
             ))}
           </div>
-        </Section>
-      </ParallaxSection>
+        </div>
+      </section>
 
-      {/* Our Services */}
-      <ParallaxSection>
-        <Section className="scroll-reveal reveal-right" style={{ position: 'relative' }}>
-          <ShieldCheck className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', opacity: 0.08 }} size={56} />
-          <SectionHeader label="What We Do" title="Our Services" />
-          <div className="responsive-grid-4 stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-3)' }}>
-            {SERVICES.map((s, i) => (
-              <div key={s.title} className={`${styles.card} scroll-reveal-child`} style={{ ['--reveal-delay' as string]: `${i * 80}ms` }}>
-                <h3 className={styles.cardTitle}>{s.title}</h3>
-                <p className={styles.cardText}>{s.desc}</p>
-              </div>
-            ))}
-          </div>
-        </Section>
-      </ParallaxSection>
-
-      {/* The Team */}
+      {/* ── Section 6: Team ── */}
       {leadership.length > 0 && (
-        <ParallaxSection>
-          <Section className="scroll-reveal reveal-scale" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
-            <SectionHeader label="Leadership" title="The Team" align="center" />
-            <div className="responsive-grid-4 stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-3)' }}>
+        <section className={styles.teamSection}>
+          <div className={styles.teamInner}>
+            <p className={styles.sectionLabel}>Our People</p>
+            <h2 className={styles.sectionTitle}>The Team</h2>
+
+            <div className={styles.teamGrid}>
               {leadership.map((person, i) => (
-                <div key={person.name} className={`${styles.teamCard} scroll-reveal-child`} style={{ ['--reveal-delay' as string]: `${i * 80}ms` }}>
+                <div
+                  key={person.name}
+                  className={styles.teamMember}
+                  style={{ animationDelay: `${i * 100}ms` }}
+                >
                   {person.photo ? (
                     <img src={person.photo} alt={person.name} className={styles.teamPhoto} />
                   ) : (
-                    <div className={styles.initials}>{person.name.split(' ').map(n => n[0]).join('')}</div>
+                    <div className={styles.teamInitials}>
+                      {person.name.split(' ').map(n => n[0]).join('')}
+                    </div>
                   )}
-                  <p className={styles.teamName}>{person.name}</p>
-                  <p className={styles.teamRole}>{person.role}</p>
+                  <div className={styles.teamInfo}>
+                    <p className={styles.teamName}>{person.name}</p>
+                    <p className={styles.teamRole}>{person.role}</p>
+                  </div>
                 </div>
               ))}
             </div>
-          </Section>
-        </ParallaxSection>
+          </div>
+        </section>
       )}
 
-      {/* Get in Touch / Lead CTA */}
-      <ParallaxSection>
-        <Section className="scroll-reveal reveal-big" style={{ position: 'relative', textAlign: 'center' }}>
-          <SectionHeader
-            label="Let's Talk"
-            title="Ready to Get Started?"
-            desc="Whether you're buying your first car or building a fleet, we're here to help. No pressure — just honest guidance."
-            align="center"
-          />
-          <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/contact">
-              <RippleButton size="md">Send an Enquiry <ArrowRight size={15} /></RippleButton>
+      {/* ── Section 7: CTA ── */}
+      <section className={styles.ctaSection}>
+        <div className={styles.ctaInner}>
+          <h2 className={styles.ctaTitle}>Ready to Find Your Next Car?</h2>
+          <p className={styles.ctaSubtitle}>
+            Whether you're buying your first car or building a fleet, we're here to help. No pressure — just honest guidance.
+          </p>
+          <div className={styles.ctaButtons}>
+            <Link to="/inventory">
+              <RippleButton size="md">Browse Inventory <ArrowRight size={15} /></RippleButton>
             </Link>
             <a
-              href={config.whatsapp.getDeepLink("Hi Empathon Autos! I'd like to know more about your services.")}
+              href={config.whatsapp.getDeepLink("Hi Empathon Autos! I'd like to know more.")}
               target="_blank" rel="noopener noreferrer"
             >
               <RippleButton variant="secondary" size="md">
@@ -153,8 +277,8 @@ export function About() {
               </RippleButton>
             </a>
           </div>
-        </Section>
-      </ParallaxSection>
+        </div>
+      </section>
     </>
   )
 }

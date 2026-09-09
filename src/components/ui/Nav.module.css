@@ -1,3 +1,4 @@
+/* ── Nav — Luxury Automotive ── */
 .nav {
   position: fixed;
   top: 0;
@@ -5,147 +6,25 @@
   right: 0;
   z-index: 200;
   height: var(--nav-height);
-  background: rgba(8, 26, 51, 0.5);
-  color: white;
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border-bottom: 1px solid transparent;
-  transition: background-color 400ms var(--ease-out), box-shadow 400ms var(--ease-out), border-color 400ms var(--ease-out), height 400ms var(--ease-out);
-}
-.nav .wordmark { color: white; }
-.nav .accent { color: var(--gold, #c4a265); }
-.nav .link {
-  color: rgba(255, 255, 255, 0.75);
-}
-.nav .link:hover {
-  color: white;
-  background: rgba(255, 255, 255, 0.08);
-}
-.nav .active {
-  color: white;
-  font-weight: 600;
-}
-
-/* Keyboard focus — always visible, theme-aware */
-.nav :is(.link, .hamburger, .navContact):focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 2px;
-  border-radius: var(--radius-full);
-}
-.nav.light :is(.link, .hamburger, .navContact):focus-visible {
-  outline-color: var(--navy);
-}
-.nav .hamburger {
-  color: white;
-  background: rgba(255, 255, 255, 0.08);
-}
-.nav .hamburger:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-/* When scrolled — solid frosted glass, hairline border, subtle shrink */
-.scrolled {
-  background: rgba(8, 26, 51, 0.92);
-  backdrop-filter: blur(40px) saturate(200%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%);
-  box-shadow: 0 4px 24px rgba(8, 26, 51, 0.18);
-  height: 56px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-.scrolled .inner {
-  padding-top: 0;
-  padding-bottom: 0;
-}
-.scrolled .logo {
-  height: 34px;
-}
-
-/* Scrolled — compact links: slightly smaller, tighter gaps */
-.scrolled .links {
-  gap: 0;
-}
-.scrolled .link {
-  padding: 5px 9px;
-  font-size: 0.8125rem;
-}
-.scrolled .cta {
-  margin-left: var(--space-1);
-  gap: var(--space-0-5);
-}
-.scrolled .cta .navContact,
-.scrolled .cta a[class*='_ghost'] {
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-
-/* Contact button — navy fill, white text (the white nav's only CTA style) */
-.nav .navContact {
-  background: var(--navy);
-  color: white;
-  border-color: var(--navy);
-}
-.nav .navContact:hover {
-  background: var(--navy-deep);
-  box-shadow: var(--shadow-navy);
-  transform: translateY(-2px);
-}
-.nav .navContact:active {
-  transform: translateY(0) scale(0.97);
-}
-
-/* ── White theme — the nav is always white now ── */
-.nav.light {
   background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(20px) saturate(160%);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
   color: var(--navy);
-  border-bottom: 1px solid rgba(11, 46, 89, 0.08);
-}
-.nav.light .wordmark { color: var(--navy); }
-.nav.light .accent { color: var(--gold); }
-.nav.light .logo img { filter: invert(1); }
-.nav .logo img { transition: filter 300ms var(--ease-out); }
-.nav.light .link {
-  color: rgba(11, 46, 89, 0.72);
-}
-.nav.light .link:hover {
-  color: var(--navy);
-  background: rgba(11, 46, 89, 0.06);
-}
-.nav.light .active {
-  color: var(--navy);
-  background: rgba(11, 46, 89, 0.08);
-}
-.nav.light .hamburger {
-  color: var(--navy);
-  background: rgba(11, 46, 89, 0.06);
-}
-.nav.light .hamburger:hover {
-  background: rgba(11, 46, 89, 0.12);
+  border-bottom: 1px solid rgba(11, 46, 89, 0.06);
+  transition:
+    background 400ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 400ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    height 400ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* White theme — scrolled: near-solid white, soft shadow */
-.nav.light.scrolled {
-  background: rgba(255, 255, 255, 0.94);
+.scrolled {
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(40px) saturate(200%);
   -webkit-backdrop-filter: blur(40px) saturate(200%);
-  box-shadow: 0 4px 24px rgba(11, 46, 89, 0.08);
-  border-bottom: 1px solid rgba(11, 46, 89, 0.08);
-}
-
-/* White theme — Contact button stays navy fill (redundant but explicit) */
-.nav.light .navContact {
-  background: var(--navy);
-  color: white;
-  border-color: var(--navy);
-}
-.nav.light .navContact:hover {
-  background: var(--navy-deep);
-  box-shadow: var(--shadow-navy);
-  transform: translateY(-2px);
-}
-.nav.light .navContact:active {
-  transform: translateY(0) scale(0.97);
+  box-shadow: 0 1px 3px rgba(11, 46, 89, 0.06), 0 4px 24px rgba(11, 46, 89, 0.04);
+  height: 56px;
+  border-bottom: 1px solid rgba(11, 46, 89, 0.06);
 }
 
 .inner {
@@ -158,6 +37,7 @@
   justify-content: space-between;
 }
 
+/* ── Logo ── */
 .logo {
   display: flex;
   align-items: center;
@@ -166,66 +46,192 @@
   font-weight: 700;
   font-size: var(--text-lg);
   letter-spacing: var(--tracking-tight);
-  transition: all 200ms var(--ease-out);
+  transition: all 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
   height: 40px;
   width: auto;
   overflow: visible;
+  flex-shrink: 0;
 }
 .logo:hover {
   opacity: 0.85;
   transform: scale(1.02);
 }
-.wordmark { color: var(--ink); letter-spacing: var(--tracking-tighter); }
-.accent { color: var(--navy); }
+.scrolled .logo {
+  height: 32px;
+}
 
-.links { display: flex; align-items: center; gap: 2px; }
+/* ── Links Container ── */
+.links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  position: relative;
+}
+
+/* ── Sliding Underline Indicator ── */
+.underlineIndicator {
+  position: absolute;
+  bottom: 4px;
+  height: 2px;
+  background: var(--navy);
+  border-radius: 1px;
+  transition: all 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Standalone Links ── */
 .link {
   position: relative;
-  padding: 7px 12px;
+  padding: 7px 14px;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: -0.01em;
-  color: rgba(255, 255, 255, 0.75);
-  border-radius: var(--radius-full);
-  transition: color 150ms var(--ease-out), background-color 150ms var(--ease-out);
+  color: rgba(11, 46, 89, 0.68);
+  border-radius: var(--radius-md);
+  transition: color 200ms cubic-bezier(0.34, 1.56, 0.64, 1), background 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .link:hover {
-  color: white;
-  background: rgba(255, 255, 255, 0.08);
+  color: var(--navy);
+  background: rgba(11, 46, 89, 0.04);
 }
 .active {
-  color: white;
+  color: var(--navy);
   font-weight: 600;
-  background: rgba(255, 255, 255, 0.1);
 }
 
-.cta { margin-left: var(--space-2); display: flex; align-items: center; gap: var(--space-1); }
+/* ── Dropdown Group ── */
+.groupWrapper {
+  position: relative;
+}
 
-.navIcon {
+.groupTrigger {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: var(--radius-full);
-  color: rgba(255,255,255,0.7);
-  border: 1px solid rgba(255,255,255,0.15);
-  transition: all 200ms var(--ease-out);
+  gap: 4px;
+  padding: 7px 14px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: rgba(11, 46, 89, 0.68);
+  border-radius: var(--radius-md);
+  transition: color 200ms cubic-bezier(0.34, 1.56, 0.64, 1), background 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  font: inherit;
+  border: none;
+  background: none;
 }
-.navIcon:hover {
+.groupTrigger:hover {
   color: var(--navy);
-  background: white;
-  border-color: white;
+  background: rgba(11, 46, 89, 0.04);
+}
+.groupActive {
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.chevron {
+  transition: transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex-shrink: 0;
+}
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+/* ── Dropdown Panel ── */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.96);
+  min-width: 180px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(11, 46, 89, 0.06);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(11, 46, 89, 0.08), 0 2px 8px rgba(11, 46, 89, 0.04);
+  padding: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 100;
+}
+.dropdownOpen {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+  pointer-events: auto;
+}
+
+.dropdownItem {
+  display: block;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: rgba(11, 46, 89, 0.72);
+  border-radius: var(--radius-md);
+  transition: all 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+}
+.dropdownItem:hover {
+  background: rgba(11, 46, 89, 0.06);
+  color: var(--navy);
+}
+.dropdownItemActive {
+  color: var(--navy);
+  font-weight: 600;
+  background: rgba(11, 46, 89, 0.04);
+}
+
+/* ── CTA Area ── */
+.cta {
+  margin-left: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.pillButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: rgba(11, 46, 89, 0.6);
+  border: 1px solid rgba(11, 46, 89, 0.1);
+  transition: all 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.pillButton:hover {
+  color: var(--navy);
+  background: rgba(11, 46, 89, 0.04);
+  border-color: rgba(11, 46, 89, 0.18);
   transform: translateY(-1px);
 }
-.nav.light .navIcon {
-  color: rgba(11,46,89,0.6);
-  border-color: rgba(11,46,89,0.12);
+.pillLabel {
+  display: none;
 }
-.nav.light .navIcon:hover {
-  color: var(--navy);
-  background: var(--navy-light);
+
+.navContact {
+  background: var(--navy);
+  color: white !important;
   border-color: var(--navy);
+}
+.navContact:hover {
+  background: var(--navy-deep);
+  box-shadow: var(--shadow-navy);
+  transform: translateY(-2px);
+}
+.navContact:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* ── Keyboard Focus ── */
+.nav :is(.link, .groupTrigger, .hamburger, .navContact, .pillButton, .dropdownItem):focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
 }
 
 /* ── Animated Hamburger ── */
@@ -236,11 +242,11 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-full);
-  color: white;
-  background: rgba(255, 255, 255, 0.08);
-  transition: all 150ms var(--ease-out);
+  color: var(--navy);
+  background: rgba(11, 46, 89, 0.04);
+  transition: all 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.hamburger:hover { background: rgba(255, 255, 255, 0.15); }
+.hamburger:hover { background: rgba(11, 46, 89, 0.08); }
 
 .hamburgerInner {
   width: 16px;
@@ -258,7 +264,7 @@
   height: 2px;
   background: currentColor;
   border-radius: 2px;
-  transition: all 250ms var(--ease-out);
+  transition: all 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
   position: absolute;
 }
 
@@ -280,21 +286,23 @@
 .hamburgerOpen::before { top: 0; transform: rotate(45deg); }
 .hamburgerOpen::after { top: 0; transform: rotate(-45deg); }
 
-/* ── Mobile Menu — light sheet, quiet links ── */
+/* ── Mobile Menu ── */
 .mobileMenu {
   position: fixed;
   top: var(--nav-height);
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   display: flex;
   flex-direction: column;
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-4) var(--space-4);
   z-index: 99;
   transform: translateX(100%);
   opacity: 0;
-  transition: all 300ms var(--ease-out);
+  transition: all 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
   pointer-events: none;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -312,27 +320,67 @@
   flex: 1;
 }
 
+.mobileGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobileGroupLabel {
+  display: block;
+  padding: 8px var(--space-3) 4px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--stone);
+  opacity: 0;
+  transform: translateX(20px);
+  animation: mobileLinkIn 300ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.mobileDivider {
+  display: block;
+  height: 1px;
+  background: var(--border);
+  margin: var(--space-2) var(--space-3);
+  opacity: 0;
+  transform: scaleX(0);
+  animation: mobileDividerIn 400ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes mobileDividerIn {
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
 .mobileLink {
   display: flex;
   align-items: center;
-  padding: 16px var(--space-3);
+  padding: 14px var(--space-3);
   font-size: var(--text-lg);
   font-weight: 500;
   border-radius: var(--radius-lg);
-  color: var(--ink);
-  transition: all 200ms var(--ease-out);
+  color: rgba(11, 46, 89, 0.8);
+  transition: all 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
   opacity: 0;
   transform: translateX(20px);
-  animation: mobileLinkIn 300ms var(--ease-out) forwards;
+  animation: mobileLinkIn 300ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 .mobileLink:hover {
-  background: var(--navy-light);
+  background: rgba(11, 46, 89, 0.06);
   transform: translateX(4px);
+  color: var(--navy);
+}
+.mobileLinkActive {
+  color: var(--navy);
+  font-weight: 600;
 }
 .mobileLink:focus-visible {
   outline: 2px solid var(--navy);
   outline-offset: -2px;
-  background: var(--navy-light);
+  background: rgba(11, 46, 89, 0.06);
 }
 
 @keyframes mobileLinkIn {
@@ -354,26 +402,24 @@
   font-weight: 600;
   color: var(--navy);
   border: 1px solid var(--border);
-  transition: all 200ms var(--ease-out);
+  transition: all 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
   flex: 1;
   justify-content: center;
 }
 .mobileContactLink:hover {
-  background: var(--navy-light);
+  background: rgba(11, 46, 89, 0.06);
   border-color: var(--navy);
 }
 
-/* Light-theme mobile menu — white sheet, navy links (matches .nav.light) */
-.mobileMenuLight {
-  background: var(--surface);
-  border-top: 1px solid rgba(11, 46, 89, 0.08);
-}
-.mobileMenuLight .mobileLink {
-  color: rgba(11, 46, 89, 0.8);
-}
-.mobileMenuLight .mobileLink:hover {
-  background: rgba(11, 46, 89, 0.06);
-  color: var(--navy);
+/* ── Responsive ── */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .link, .groupTrigger {
+    padding: 6px 10px;
+    font-size: 0.8125rem;
+  }
+  .cta {
+    gap: var(--space-0-5);
+  }
 }
 
 @media (max-width: 768px) {
