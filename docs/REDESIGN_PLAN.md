@@ -209,3 +209,47 @@ Scope as executed: `src/tokens.css`, `src/index.css`, `Nav`, `Footer`, `Button`,
 - `npx tsc -b` exit 0, `pnpm build` exit 0, `pnpm test --run` 52/52. There is no ESLint in this project (no config, no dependency, and Phase 3 rules out adding one), so `tsc` is the only static check available.
 - Screenshots at 1440×900 and 390×844 in `docs/screenshots/phase3/`, plus `/corporate` to confirm the `PageHero` migration renders its 64vh variant.
 - Mobile CTA widths measured equal (full width) at 390px; hero image `naturalWidth` 1376 loading at both sizes; no horizontal overflow.
+
+---
+
+# Phase 4 — The rest of the home page
+
+## Section order and rhythm
+
+Hero (photograph) → numbers (paper) → how to buy (navy, pinned) → featured (warm) → electric (deep) → testimonials (paper) → corporate (navy) → closing (paper) → footer (deep). No two neighbours share a tone.
+
+## Design intent, section by section
+
+**Numbers.** A quiet editorial strip rather than a dark banner: eyebrow, then four figures on paper with hairline dividers, 36–52px tabular numerals and 14px stone labels. On a phone the grid folds to 2×2 and keeps a single vertical rule between the pairs. Data comes from the CMS `stats` block and nowhere else.
+
+**How to buy.** The page's one pinned scroll moment. On desktop the left column (eyebrow, headline, numbered index) is `position: sticky` below the nav; the right column holds four steps, each roughly half a viewport tall, separated by hairlines. An IntersectionObserver with a 10% band across the viewport centre sets the active step, which brightens in the index and in the panel (0.45 → 1 opacity, 400ms). On mobile the index is dropped and the four steps read as a plain list. Copy is assembled only from claims the client already makes: walk-in or pre-order, sourcing through Japan/Dubai/Europe/North America, inspection before shipping and clearing on arrival, collection in Ikeja or delivery.
+
+**Featured vehicles.** Light warm ground, header left, a quiet underlined "View all vehicles" on the right, then a three-column grid of `VehicleCard` (two at tablet, one on mobile) with a 32px gap and the shared child stagger. Loading shows matching skeletons; a failure shows a retry; an empty result shows one sentence and two links instead of a void.
+
+**Electric.** A deep navy statement band: eyebrow, headline, two lines, one white pill to `/ev`. The old layout paired this copy with a photograph of a petrol Velar captioned "Premium electric vehicle"; the photograph is gone rather than mislabelled.
+
+**Testimonials.** Paper, centred headline is gone in favour of the same left-aligned header as the rest of the page, then three quotes as hairline-topped columns — quote, name, company. No stars, no avatars, because there are no photographs to show.
+
+**Corporate.** Navy band, headline and one sentence on the left, two actions on the right, baseline-aligned. This is the only place besides the closing section that asks for a second kind of business.
+
+**Closing.** Paper, left-aligned, one headline, one sentence, two actions — navy primary, hairline secondary. It is the last thing before the footer, and it is the only section allowed a full-size button pair.
+
+## Cut, and why
+
+- **Learning carousel ("Drive Smarter").** A three-up article slider with arrow buttons driven by React state: it does not help anyone choose a car or enquire, and the arrows duplicate the Blog page. Removed with `FALLBACK_LEARNING`, the blog fetch, `learningIndex`, and the weekday/slug mapping.
+- **"Tailored for You" (individual vs corporate cards).** Four numbered cards with icons that duplicated the featured grid (individual) and the corporate section (fleet). Folded into the corporate band.
+- **Client logos strip.** All logo fields are null, so it rendered as a row of borrowed brand names, and it sat directly above testimonials — the same argument twice. Cut; the CMS `clients` block is untouched for later use.
+- **`FALLBACK_TESTIMONIALS` and `FALLBACK_CLIENTS`.** Deleted. Testimonials now render only from published rows (there are 3), and the numbers only from the CMS block (there are 4).
+
+## Data notes found while building
+
+- `vehicles.is_featured` is false on every row, so the old query returned nothing and the featured section was empty on the live home page. It now falls back to the six newest non-sold vehicles when nothing is flagged; the section is no longer blank.
+- Several vehicles are duplicated in the table (two Hyundai Sonata 2015s, two Toyota Corolla 2014s) and most have `price = 0`, which renders as "Price on request". Content problems, not code.
+- `content_blocks.cta_desc` contains "youre" and "were". Left for the client to correct in the CMS rather than edited here.
+
+## Verification
+
+- `npx tsc -b` exit 0, `pnpm build` exit 0, `pnpm test --run` 52/52. No ESLint in the project.
+- `docs/screenshots/phase4/`: `home-1440.png`, `home-390.png` (first fold, transparent nav), `home-1440-full.png` (1440×7935, whole page), `home-390-full.png` (390×8944), and `process-pinned-1440.png` — a mid-scroll capture proving the pinned index and the dimmed incoming step, since a full-page capture flattens sticky elements.
+- Checked in the DOM at both widths: sections alternate correctly, the numbers band collapses to 2×2 at 390px, no horizontal overflow, no console errors.
+- Deferred to Phase 5 by the pack: the `VehicleCard` itself still shows the saturated green "IN STOCK" pill, an empty grey image box and a year stranded on the price row. Only composition happened here.
