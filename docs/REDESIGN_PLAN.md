@@ -374,7 +374,9 @@ The brand filter is a row of bordered badges with the real marque marks from `/b
 
 ## Footer
 
-Restored the navy four-column footer and kept its structure. Three changes: the brand block leads with the logo file rather than a name, the social row carries WhatsApp plus Instagram, Facebook, TikTok and X marks, and the platforms with no URL in `config.social` render as muted, non-clickable icons instead of disappearing. Add the profile URLs in `src/lib/config.ts` and the icon becomes a live link.
+The footer keeps the design it already had: a navy gradient brand card on the left, a warm panel with the link columns, contact block and sign-up on the right, and the big faded wordmark underneath. Three things changed inside it. The brand card leads with the logo file instead of the name "Empathon Autos". The social row carries WhatsApp plus Instagram, Facebook, TikTok and X, with the platforms that have no URL in `config.social` shown as muted, non-clickable marks so the row still reads as a set. And the sign-up form now actually submits: it writes a `newsletter` lead and swaps the form for "You're on the list", or shows an inline error instead of pretending it worked.
+
+Two fixes came out of looking at it properly. The entrance animation used to hide the cards until an IntersectionObserver fired, which never happens in a background tab or a full-page capture, so the footer was invisible in every screenshot taken so far. It is now a CSS entrance on load: the cards are visible by default and only animate in. The right-hand column was also squeezing into the link columns, so the panel grid got a wider gutter.
 
 ## Loaders
 
@@ -388,5 +390,5 @@ Em dashes are gone from every user-facing string and the stiff "X — Y" sentenc
 
 - `npx tsc -b` exit 0, `pnpm build` exit 0 (674ms), `pnpm test --run` 52/52.
 - `docs/screenshots/polish/`: corporate, ev, contact, blog and pre-order at 1440 and 390, plus `loader-1440.png` captured with JS disabled so the static fallback stays on screen.
-- Checked in the browser at 390: no page scrolls horizontally, the Electric badges stay readable at two per row, the KYC form now comes before the "why register" aside on mobile, and the footer stacks to two link columns.
+- Checked in the browser at 390: no page scrolls horizontally, the Electric badges stay readable at two per row, the KYC form now comes before the "why register" aside on mobile, and the footer stacks the brand card above the panel with two link columns.
 - The scroll-driven progress line that was drafted for the top of the page did not animate here (scroll timelines report a root timeline but never advance, likely because Lenis owns the scroll), so it was removed rather than shipped broken.
