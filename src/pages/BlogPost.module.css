@@ -5,7 +5,7 @@
   left: 0;
   height: 3px;
   width: 0%;
-  background: linear-gradient(90deg, var(--gold), var(--gold-dark));
+  background: var(--navy);
   z-index: 400;
   pointer-events: none;
   transition: width 80ms linear;
@@ -49,7 +49,6 @@
   margin: 0 auto;
   padding: var(--space-7) var(--space-4) var(--space-5);
   width: 100%;
-  animation: fadeInUp 600ms 100ms var(--ease-out) both;
 }
 
 .backLink {
@@ -151,7 +150,7 @@
 .body ol { list-style: decimal; }
 .body li { color: var(--ink); }
 .body blockquote {
-  border-left: 3px solid var(--gold);
+  border-left: 3px solid var(--navy);
   padding: var(--space-1) var(--space-3);
   margin: 1.6em 0;
   color: var(--stone);
@@ -329,24 +328,15 @@
   border-radius: 6px;
   background: linear-gradient(90deg, var(--border-light) 25%, rgba(11, 46, 89, 0.06) 50%, var(--border-light) 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.6s infinite;
 }
 .loadingImg {
   aspect-ratio: 16 / 9;
   border-radius: var(--radius-xl);
   background: linear-gradient(90deg, var(--border-light) 25%, rgba(11, 46, 89, 0.06) 50%, var(--border-light) 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.6s infinite;
-}
-@keyframes shimmer {
-  to { background-position: -200% 0; }
 }
 
 /* ── Animations ── */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
 /* ── Responsive ── */
 @media (max-width: 768px) {

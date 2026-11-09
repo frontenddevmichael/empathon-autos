@@ -53,6 +53,27 @@ src/
 └── supabase/                # Migration scripts
 ```
 
+## Design System
+
+Styling is CSS Modules on top of a token layer — no utility framework.
+
+| Layer | File | Rule |
+|-------|------|------|
+| Tokens | `src/tokens.css` | The only place raw colors live. Prefer semantic tokens (`--text-inverse`, `--navy-a08`, `--z-nav`, `--container-pad`) over hex/rgba in components. |
+| Layout | `src/components/layout/` | `Section` (tone + vertical rhythm + container) and `Container` (max width + gutter). Pages should not re-declare `.section` / `.sectionInner`. |
+| Page hero | `src/components/ui/PageHero` | The single page hero (`image` or `band`). `HeroSection` is a thin adapter kept for existing pages. |
+| Section heading | `src/components/ui/SectionHeader` | The single heading pattern: `label`, `title`, `desc`, `align`, `size`, `dark`. |
+| Button | `src/components/ui/Button` | One primitive, five variants, three sizes, built-in click ripple. Use it instead of bespoke button markup. |
+| Lot card | `src/components/ui/AuctionLotCard` | Shared auction tile for the live and past grids (`variant="live"` or `"past"`). |
+| Lot helpers | `src/lib/auction.ts` | `lotTitle`, `lotYear`, `lotMileage`, `primaryLotImage`, `getLotDeadline`, `computeBidIncrement` — shared by the auction list and detail pages. |
+
+Conventions:
+
+- Every page hero, section heading and card grid uses the shared primitive — do not re-implement them per page.
+- Interactive controls size themselves; there is no global `min-height` on buttons or anchors.
+- All motion respects `prefers-reduced-motion`; prefer CSS transitions over scroll-driven React state.
+- Build new UI with the circular dependency rule in mind: `layout` → `ui` → page. Never import a page from a component.
+
 ## Getting Started
 
 ### Prerequisites

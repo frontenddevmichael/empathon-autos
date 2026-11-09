@@ -33,7 +33,6 @@
 }
 
 .result {
-  animation: slideUp 500ms var(--ease-out) forwards;
 }
 
 .resultHeader {
@@ -65,7 +64,7 @@
 .refStatus {
   font-size: var(--text-sm);
   font-weight: 600;
-  color: var(--gold);
+  color: var(--text-inverse-secondary);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -167,10 +166,9 @@
 }
 
 .stepCurrent .stepDot {
-  border-color: var(--gold);
+  border-color: var(--navy);
   color: var(--navy);
-  box-shadow: 0 0 0 4px var(--gold-light);
-  animation: glow-pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 0 3px var(--navy-a12);
 }
 
 .stepLabel {
@@ -195,7 +193,7 @@
   font-size: var(--text-2xs);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--gold-dark);
+  color: var(--stone);
   font-weight: 700;
 }
 
@@ -247,4 +245,9 @@
   .timeline {
     padding: var(--space-3);
   }
+}
+
+.sectionTitle {
+  margin-bottom: var(--space-2);
+  text-align: center;
 }

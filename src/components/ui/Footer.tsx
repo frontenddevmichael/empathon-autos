@@ -42,31 +42,6 @@ function FacebookIcon({ size = 16 }: { size?: number }) {
   )
 }
 
-/** Decorative SVG car silhouette for footer accent */
-function FooterDeco() {
-  return (
-    <svg
-      width="140"
-      height="46"
-      viewBox="0 0 120 40"
-      fill="none"
-      aria-hidden="true"
-      style={{ position: 'absolute', bottom: 0, right: '4%', opacity: 0.03, pointerEvents: 'none' }}
-    >
-      <path
-        d="M 10 30 Q 8 30 8 28 Q 8 24 16 24 Q 22 18 30 16 Q 38 14 50 14 Q 58 14 64 18 Q 70 20 76 24 Q 78 26 78 28 Q 78 30 74 30 L 10 30 Z"
-        stroke="white"
-        strokeWidth="1"
-        strokeLinecap="round"
-        fill="white"
-        fillOpacity="0.05"
-      />
-      <circle cx="24" cy="32" r="5" stroke="white" strokeWidth="0.8" fill="none" />
-      <circle cx="62" cy="32" r="5" stroke="white" strokeWidth="0.8" fill="none" />
-    </svg>
-  )
-}
-
 export function Footer() {
   const [inventoryCount, setInventoryCount] = useState<number | null>(null)
 
@@ -88,10 +63,7 @@ export function Footer() {
   }, [])
 
   return (
-    <footer className={`scroll-reveal ${styles.footer}`}>
-      {/* Gold hairline — the closing echo of the hero's brand tick */}
-      <div className={styles.goldLine} aria-hidden="true" />
-      <FooterDeco />
+    <footer className={styles.footer}>
       <div className={styles.inner}>
         <div className={styles.brand}>
           <img src="/Empathon logo.png" alt="Empathon Autos" className={styles.logo} />
@@ -124,7 +96,7 @@ export function Footer() {
               <Link key={item.to} to={item.to}>
                 {item.label}
                 {item.live && inventoryCount !== null && (
-                  <span className={styles.liveBadge}>{inventoryCount}</span>
+                  <span className={styles.count}>{inventoryCount}</span>
                 )}
               </Link>
             ))}
@@ -140,7 +112,7 @@ export function Footer() {
       </div>
       <div className={styles.bottom}>
         <span>&copy; {new Date().getFullYear()} Empathon Autos. All rights reserved.</span>
-        <span className={styles.tagline}><span className={styles.taglineDot} aria-hidden="true" />Trust . Fit . Drive.</span>
+        <span className={styles.tagline}>Trust · Fit · Drive</span>
       </div>
     </footer>
   )

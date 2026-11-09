@@ -1,16 +1,14 @@
 import { useState } from 'react'
 import { HeartPulse, Shield, Landmark, Truck, Hotel, Flame, Check, ArrowRight, Users, Car, Phone, Mail, Building, Factory, ChevronDown, ChevronUp } from 'lucide-react'
-import { HeroSection } from '@/components/HeroSection'
+import { PageHero } from '@/components/ui/PageHero'
 import { SectionHeader } from '@/components/ui/SectionHeader'
-import { RippleButton } from '@/components/RippleButton'
+import { Button } from '@/components/ui/Button'
 import { Section } from '@/components/PageLayout'
 import { useSiteContent, parseJsonContent, getTextContent } from '@/hooks/useSiteContent'
 import { LeadForm } from '@/components/LeadForm'
 import { Input, TextArea } from '@/components/ui/Input'
 import { useToast } from '@/context/ToastContext'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
-import { ParallaxSection } from '@/components/ParallaxSection'
-import { Handshake, Compass, UnderlineFlourish } from '@/components/DecoSvgs'
 import styles from './Corporate.module.css'
 
 interface Client {
@@ -107,8 +105,19 @@ export function Corporate() {
     { name: 'Johnvents Group', desc: 'Corporate account', logo: null },
     { name: 'Dangote Industries', desc: 'Executive fleet provider', logo: null },
   ])
-  const fleetDeals = parseJsonContent(clientContent, 'fleet_deals', FLEET_DEALS_FALLBACK)
-  const whyChooseUs = parseJsonContent(clientContent, 'why_choose_us', WHY_CHOOSE_US_FALLBACK)
+  // CMS JSON cannot carry icon components — restore them from the fallback set
+  // by position, otherwise `<deal.icon>` renders as an undefined element.
+  const fleetDeals = parseJsonContent<Omit<(typeof FLEET_DEALS_FALLBACK)[number], 'icon'>>(
+    clientContent,
+    'fleet_deals',
+    FLEET_DEALS_FALLBACK,
+  ).map((deal, i) => ({ ...deal, icon: FLEET_DEALS_FALLBACK[i % FLEET_DEALS_FALLBACK.length].icon }))
+
+  const whyChooseUs = parseJsonContent<Omit<(typeof WHY_CHOOSE_US_FALLBACK)[number], 'icon'>>(
+    clientContent,
+    'why_choose_us',
+    WHY_CHOOSE_US_FALLBACK,
+  ).map((item, i) => ({ ...item, icon: WHY_CHOOSE_US_FALLBACK[i % WHY_CHOOSE_US_FALLBACK.length].icon }))
   const volumeTiers = parseJsonContent(clientContent, 'volume_tiers', VOLUME_TIERS_FALLBACK)
   const heroTitle = getTextContent(clientContent, 'hero_title') || "Fleet Solutions for Nigeria's Leading Organisations"
   const heroSubtitle = getTextContent(clientContent, 'hero_subtitle') || 'Better pricing on bulk orders, a dedicated account manager, and after-sales support that actually shows up.'
@@ -141,7 +150,7 @@ export function Corporate() {
 
   return (
     <>
-      <HeroSection
+      <PageHero
         images={[
           { url: '/heroimg2.jpg' },
           { url: '/heroimg3.jpg' },
@@ -150,13 +159,12 @@ export function Corporate() {
         label="Corporate Sales"
         title={heroTitle}
         subtitle={heroSubtitle}
-        deco="dots"
+        size="lg"
       />
 
       {/* Volume Pricing Tiers */}
-      <ParallaxSection>
-        <Section className="scroll-reveal reveal-scale" style={{ background: 'var(--navy-deep)', color: 'white', position: 'relative' }}>
-          <Handshake className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-3)', right: 'var(--space-3)', opacity: 0.1 }} size={72} />
+      <section>
+        <Section className="scroll-reveal" style={{ background: 'var(--navy-deep)', color: 'white', position: 'relative' }}>
           <SectionHeader
             label="Volume Pricing"
             title="The More You Buy, The More You Save"
@@ -172,10 +180,10 @@ export function Corporate() {
             ))}
           </div>
         </Section>
-      </ParallaxSection>
+      </section>
 
       {/* Fleet Deals by Sector */}
-      <Section className="scroll-reveal reveal-left">
+      <Section className="scroll-reveal">
         <SectionHeader
           label="Fleet Deals by Sector"
           title="Packages Built Around Your Organisation"
@@ -215,7 +223,7 @@ export function Corporate() {
                   </ul>
                 )}
 
-                <RippleButton size="sm" onClick={() => setLeadSector(deal.sector)}>Request This Package <ArrowRight size={14} /></RippleButton>
+                <Button size="sm" onClick={() => setLeadSector(deal.sector)}>Request This Package <ArrowRight size={14} /></Button>
               </div>
             )
           })}
@@ -223,8 +231,8 @@ export function Corporate() {
       </Section>
 
       {/* Why Choose Us */}
-      <ParallaxSection>
-        <Section className="scroll-reveal reveal-right" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
+      <section>
+        <Section className="scroll-reveal" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
           <SectionHeader label="Why Choose Us" title="More Than Just Vehicles" align="center" />
           <div className={`scroll-reveal stagger-fade-in ${styles.whyGrid}`}>
             {whyChooseUs.map((item) => (
@@ -236,12 +244,11 @@ export function Corporate() {
             ))}
           </div>
         </Section>
-      </ParallaxSection>
+      </section>
 
       {/* Trusted By */}
       {realClients.length > 0 && (
-        <Section className="scroll-reveal reveal-fade" style={{ position: 'relative' }}>
-          <Compass className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', left: 'var(--space-2)', opacity: 0.06 }} size={64} />
+        <Section className="scroll-reveal" style={{ position: 'relative' }}>
           <SectionHeader label="Trusted By" title="Our Corporate Clients" align="center" />
           <div className={`scroll-reveal stagger-fade-in ${styles.trustGrid}`}>
             {realClients.map(c => (
@@ -262,14 +269,13 @@ export function Corporate() {
       )}
 
       {/* Contact Form */}
-      <Section className="scroll-reveal reveal-big" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
+      <Section className="scroll-reveal" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
         <div style={{ maxWidth: 600, margin: '0 auto' }}>
           <SectionHeader
             label="Corporate Enquiry"
             title="Get a Custom Quote"
             desc="Tell us about your fleet needs and we'll prepare a tailored proposal within 24 hours."
             align="center"
-            deco={<UnderlineFlourish />}
           />
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1-5)' }}>
             <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
@@ -285,7 +291,7 @@ export function Corporate() {
             </div>
             <Input label="Fleet Size (approximate)" value={form.fleetSize} onChange={e => setForm(f => ({ ...f, fleetSize: e.target.value }))} placeholder="e.g. 10-20 vehicles" />
             <TextArea label="Additional Requirements" value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={3} placeholder="Specific models, budget range, delivery timeline..." />
-            <RippleButton type="submit" loading={saving}>Submit Enquiry <ArrowRight size={16} /></RippleButton>
+            <Button type="submit" loading={saving}>Submit Enquiry <ArrowRight size={16} /></Button>
           </form>
         </div>
       </Section>

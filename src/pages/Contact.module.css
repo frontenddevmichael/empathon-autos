@@ -1,86 +1,3 @@
-/* ── Hero ── */
-.hero {
-  position: relative;
-  min-height: 45vh;
-  display: flex;
-  align-items: flex-end;
-  overflow: hidden;
-  background: var(--navy);
-}
-
-.heroImage {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 60%;
-  animation: kenBurns 20s ease-in-out infinite alternate;
-  will-change: transform;
-}
-
-@keyframes kenBurns {
-  0% { transform: scale(1) translate(0, 0); }
-  100% { transform: scale(1.06) translate(-0.5%, -0.5%); }
-}
-
-.heroOverlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to top,
-    var(--navy-deep) 0%,
-    rgba(6, 20, 40, 0.65) 45%,
-    rgba(6, 20, 40, 0.15) 75%,
-    transparent 100%
-  );
-}
-
-.heroContent {
-  position: relative;
-  z-index: 2;
-  max-width: var(--container-max);
-  margin: 0 auto;
-  padding: var(--space-7) var(--space-4) var(--space-5);
-  width: 100%;
-  animation: fadeInUp 700ms 150ms var(--ease-out) both;
-}
-
-.heroLabel {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1-5);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: rgba(255, 255, 255, 0.4);
-  margin-bottom: var(--space-1-5);
-}
-
-.heroLabelLine {
-  width: 24px;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.heroTitle {
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.04em;
-  color: white;
-  margin-bottom: var(--space-1-5);
-}
-
-.heroSubtitle {
-  font-size: var(--text-base);
-  color: rgba(255, 255, 255, 0.5);
-  max-width: 420px;
-  line-height: 1.7;
-}
-
 /* ── Main Section ── */
 .mainSection {
   padding: var(--section-y) var(--space-4);
@@ -121,9 +38,6 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   transition: all 300ms var(--ease-out);
-  opacity: 0;
-  transform: translateY(12px);
-  animation: fadeInUp 400ms var(--ease-out) forwards;
 }
 
 .detailCard:hover {
@@ -166,7 +80,7 @@
   align-items: center;
   gap: var(--space-1-5);
   padding: var(--space-2-5) var(--space-3);
-  background: #25D366;
+  background: var(--whatsapp);
   color: white;
   border-radius: var(--radius-lg);
   font-size: var(--text-sm);
@@ -175,9 +89,9 @@
 }
 
 .whatsappButton:hover {
-  background: #1da851;
+  background: var(--whatsapp-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.25);
+  box-shadow: 0 8px 24px var(--whatsapp-shadow);
 }
 
 .whatsappArrow {
@@ -196,9 +110,6 @@
   border-radius: var(--radius-xl);
   padding: var(--space-4);
   box-shadow: var(--shadow-sm);
-  opacity: 0;
-  transform: translateY(12px);
-  animation: fadeInUp 500ms 100ms var(--ease-out) forwards;
 }
 
 .formTitle {
@@ -286,23 +197,9 @@
 }
 
 /* ── Animations ── */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-  .hero {
-    min-height: 35vh;
-  }
-
   .layout {
     grid-template-columns: 1fr;
     gap: var(--space-4);

@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { LeadForm } from '@/components/LeadForm'
 import { Section } from '@/components/PageLayout'
-import { SteeringWheel, Speedometer, CarSilhouette } from '@/components/DecoSvgs'
 import { config } from '@/lib/config'
 import styles from './VehicleDetail.module.css'
 
@@ -54,9 +53,9 @@ export function VehicleDetail() {
   if (loading) {
     return (
       <Section>
-        <div style={{ background: 'var(--paper-warm)', borderRadius: 'var(--radius-lg)', aspectRatio: '16/9', marginBottom: 'var(--space-3)' }} />
-        <div style={{ height: 32, width: '40%', background: 'var(--border)', borderRadius: 8, marginBottom: 8 }} />
-        <div style={{ height: 20, width: '30%', background: 'var(--border)', borderRadius: 8 }} />
+        <div className={styles.skeletonImage} />
+        <div className={styles.skeletonTitle} />
+        <div className={styles.skeletonSub} />
       </Section>
     )
   }
@@ -64,9 +63,9 @@ export function VehicleDetail() {
   if (error || !vehicle) {
     return (
       <Section>
-        <div style={{ textAlign: 'center', padding: 'var(--space-6)' }}>
-          <h2>Vehicle not found</h2>
-          <p style={{ marginBottom: 'var(--space-2)', color: 'var(--stone)' }}>This vehicle may have been removed or the link is incorrect.</p>
+        <div className={styles.errorState}>
+          <h1>Vehicle not found</h1>
+          <p className={styles.errorText}>This vehicle may have been removed or the link is incorrect.</p>
           <Link to="/inventory"><Button>Browse Inventory</Button></Link>
         </div>
       </Section>
@@ -147,20 +146,20 @@ export function VehicleDetail() {
         <link rel="canonical" href={`${config.seo.siteUrl}/inventory/${vehicle.id}`} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </Helmet>
-      <section className={styles.hero}>
+      <section className={`${styles.hero} ${images.length === 0 ? styles.heroPlain : ''}`}>
         <div className={styles.heroBg}>
           {activeImage ? (
             <img src={activeImage.url} alt={vehicleAlt} className={styles.heroImage} />
           ) : (
-            <div style={{ width: '100%', height: '100%', background: 'var(--paper-warm)' }} />
+            <div className={styles.noImage} />
           )}
           <div className={styles.heroOverlay} />
           {images.length > 1 && (
             <>
-              <button onClick={prevImage} className={styles.heroArrow} style={{ left: 'var(--space-3)' }} aria-label="Previous image">
+              <button type="button" onClick={prevImage} className={`${styles.heroArrow} ${styles.arrowPrev}`} aria-label="Previous image">
                 <ChevronLeft size={22} />
               </button>
-              <button onClick={nextImage} className={styles.heroArrow} style={{ right: 'var(--space-3)' }} aria-label="Next image">
+              <button type="button" onClick={nextImage} className={`${styles.heroArrow} ${styles.arrowNext}`} aria-label="Next image">
                 <ChevronRight size={22} />
               </button>
               <span className={styles.imageCounter}>{activeImg + 1} / {images.length}</span>
@@ -179,20 +178,17 @@ export function VehicleDetail() {
       </section>
 
       <Section style={{ position: 'relative' }}>
-        <SteeringWheel className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.03 }} size={72} />
-        <Speedometer className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-2)', left: 'var(--space-3)', opacity: 0.03 }} size={56} />
-        <CarSilhouette className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-1)', right: 'var(--space-3)', opacity: 0.02 }} size={80} />
         {images.length > 1 && (
           <div className={styles.thumbs}>
             {images.map((img, i) => (
-              <button key={img.id} onClick={() => setActiveImg(i)} aria-label={`View image ${i + 1}`}>
+              <button key={img.id} type="button" onClick={() => setActiveImg(i)} className={styles.thumbButton} aria-label={`View image ${i + 1}`}>
                 <img src={img.url} alt={`${vehicleAlt} view ${i + 1}`} className={`${styles.thumb} ${i === activeImg ? styles.thumbActive : ''}`} loading="lazy" />
               </button>
             ))}
           </div>
         )}
 
-        <div className="responsive-grid-2" style={{ display: 'grid', gap: 'var(--space-4)', alignItems: 'start' }}>
+        <div className={styles.layout}>
           <div>
             <div className={styles.metaGrid}>
               <div className={styles.metaItem}>
@@ -239,7 +235,7 @@ export function VehicleDetail() {
 
             <div className={styles.specs}>
               <h3>Specifications</h3>
-              <div style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
+              <div className={styles.specTable}>
                 {Object.entries({
                   Make: vehicle.make, Model: vehicle.model, Trim: vehicle.trim || '—',
                   Year: vehicle.year, Mileage: formatMileage(vehicle.mileage),
@@ -249,10 +245,10 @@ export function VehicleDetail() {
                   'Body Type': vehicle.body_type.charAt(0).toUpperCase() + vehicle.body_type.slice(1),
                   Condition: vehicle.condition.replace('-', ' '),
                   Status: vehicle.status.replace('-', ' '),
-                }).map(([key, val], i) => (
-                  <div key={key} style={{ display: 'flex', padding: 'var(--space-1-5) var(--space-2)', background: i % 2 === 0 ? 'var(--surface)' : 'transparent', borderBottom: i < 10 ? '1px solid var(--border-light)' : 'none' }}>
-                    <span style={{ flex: 1, fontSize: 'var(--text-sm)', color: 'var(--stone)' }}>{key}</span>
-                    <span className="tabular-nums" style={{ flex: 1, fontSize: 'var(--text-sm)', fontWeight: 500 }}>{val}</span>
+                }).map(([key, val]) => (
+                  <div key={key} className={styles.specRow}>
+                    <span className={styles.specKey}>{key}</span>
+                    <span className={`${styles.specVal} tabular-nums`}>{val}</span>
                   </div>
                 ))}
               </div>
@@ -260,9 +256,9 @@ export function VehicleDetail() {
           </div>
 
           <aside className={styles.sidebar}>
-            <div style={{ padding: 'var(--space-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', background: 'var(--surface)' }}>
-              <p className="tabular-nums" style={{ fontSize: 'var(--text-lg)', fontWeight: 700, marginBottom: 'var(--space-1)' }}>{price}</p>
-              <p style={{ fontSize: 'var(--text-xs)', marginBottom: 'var(--space-2)' }}>
+            <div className={styles.sidebarCard}>
+              <p className={`${styles.sidebarPrice} tabular-nums`}>{price}</p>
+              <p className={styles.sidebarMeta}>
                 {formatMileage(vehicle.mileage)} &middot; {vehicle.year} &middot; {vehicle.make}
               </p>
               <div className={styles.ctas}>
@@ -272,7 +268,7 @@ export function VehicleDetail() {
                 <a
                   href={config.whatsapp.getDeepLink(whatsappMsg)}
                   target="_blank" rel="noopener noreferrer"
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-1)', height: 40, borderRadius: 'var(--radius-md)', fontSize: 'var(--text-sm)', fontWeight: 500, border: '1px solid var(--border)', color: 'var(--ink)', transition: 'all var(--transition-fast)' }}
+                  className={styles.whatsappButton}
                 >
                   <MessageCircle size={16} /> WhatsApp
                 </a>
@@ -282,19 +278,16 @@ export function VehicleDetail() {
         </div>
 
         {similar.length > 0 && (
-          <div style={{ marginTop: 'var(--space-5)' }}>
-            <h3 style={{ fontSize: 'var(--text-xl)', marginBottom: 'var(--space-2)' }}>Similar Vehicles</h3>
+          <div className={styles.similarSection}>
+            <h2 className={styles.similarTitle}>Similar Vehicles</h2>
             <div className={styles.similarGrid}>
               {similar.map(v => {
                 const img = v.media?.find(m => m.is_primary) ?? v.media?.[0]
                 return (
-                  <Link key={v.id} to={`/inventory/${v.id}`} style={{ display: 'block', padding: 'var(--space-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', background: 'var(--surface)', transition: 'border-color var(--transition-fast), transform var(--transition-fast)' }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--navy-light)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = ''; e.currentTarget.style.transform = '' }}
-                  >
-                    {img && <img src={img.url} alt={`${v.make} ${v.model} ${v.trim || ''} ${v.year}`.trim()} style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', borderRadius: 'var(--radius-md)' }} loading="lazy" />}
-                    <p style={{ fontWeight: 600, marginTop: 8 }}>{v.make} {v.model}</p>
-                    <p className="tabular-nums" style={{ fontSize: 'var(--text-sm)', color: 'var(--navy)', fontWeight: 600 }}>{formatPrice(v.price)}</p>
+                  <Link key={v.id} to={`/inventory/${v.id}`} className={styles.similarCard}>
+                    {img && <img src={img.url} alt={`${v.make} ${v.model} ${v.trim || ''} ${v.year}`.trim()} className={styles.similarImg} loading="lazy" />}
+                    <p className={styles.similarName}>{v.make} {v.model}</p>
+                    <p className={`${styles.similarPrice} tabular-nums`}>{formatPrice(v.price)}</p>
                   </Link>
                 )
               })}

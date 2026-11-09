@@ -4,16 +4,17 @@ import { Helmet } from 'react-helmet-async'
 import { supabase } from '@/lib/supabase'
 import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 import { formatPrice, formatMileage } from '@/lib/format'
-import { getLotDeadline, computeBidIncrement, SEVERITY_META, GRADE_META, firstName } from '@/lib/auction'
+import { getLotDeadline, computeBidIncrement, SEVERITY_META, GRADE_META, firstName, lotTitle } from '@/lib/auction'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
 import { AuctionTimer, auctionTimeColor } from '@/components/ui/AuctionTimer'
-import { Section } from '@/components/PageLayout'
+import { Section } from '@/components/layout/Section'
 import { useToast } from '@/context/ToastContext'
 import { useAutoCloseLots } from '@/hooks/useAutoCloseLots'
 import type { Lot, Bid, LotMedia } from '@/types'
 import { Zap, ShoppingCart } from 'lucide-react'
+import styles from './AuctionDetail.module.css'
 
 const ERROR_MESSAGES: Record<string, string> = {
   LOT_NOT_FOUND: 'Auction not found',
@@ -22,14 +23,6 @@ const ERROR_MESSAGES: Record<string, string> = {
   BELOW_CURRENT: 'Bid must exceed the current bid',
   BELOW_INCREMENT: 'Bid is below the minimum bid increment',
   BELOW_OPENING: 'Bid must exceed the opening bid',
-}
-
-function lotTitle(l: Lot): string {
-  if (l.title) return l.title
-  const own = [l.make, l.model].filter(Boolean).join(' ')
-  if (own) return own
-  if (l.vehicles) return `${l.vehicles.make} ${l.vehicles.model}`
-  return 'Untitled lot'
 }
 
 export function AuctionDetail() {
@@ -67,6 +60,14 @@ export function AuctionDetail() {
 
   // Poll for server-side status transitions so the page reflects close without a reload.
   useAutoCloseLots(fetchAll)
+
+  // Escape closes the image lightbox
+  useEffect(() => {
+    if (!lightbox) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setLightbox(null) }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [lightbox])
 
   const lotRef = useRef(lot)
   lotRef.current = lot
@@ -159,23 +160,21 @@ export function AuctionDetail() {
 
   if (loading) {
     return (
-      <Section>
-        <div className="responsive-grid-2" style={{ display: 'grid', gap: 'var(--space-4)', maxWidth: 1200, margin: '0 auto' }}>
+      <Section space="sm">
+        <div className={styles.layout}>
           <div>
-            <div style={{ aspectRatio: '4/3', background: 'var(--paper-warm)', borderRadius: 'var(--radius-lg)', marginBottom: 'var(--space-2)' }} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div className={styles.skeletonImage} />
+            <div className={styles.skeletonLines}>
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} style={{ height: 14, background: 'var(--border)', borderRadius: 6 }} />
+                <div key={i} className={styles.skeletonLine} />
               ))}
             </div>
           </div>
-          <div>
-            <div style={{ padding: 'var(--space-3)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)' }}>
-              <div style={{ height: 24, width: '60%', background: 'var(--border)', borderRadius: 6, marginBottom: 8 }} />
-              <div style={{ height: 12, width: '40%', background: 'var(--border)', borderRadius: 6, marginBottom: 16 }} />
-              <div style={{ height: 48, background: 'var(--navy-light)', borderRadius: 'var(--radius-md)', marginBottom: 16 }} />
-              <div style={{ height: 36, background: 'var(--border)', borderRadius: 'var(--radius-md)' }} />
-            </div>
+          <div className={styles.skeletonPanel}>
+            <div className={styles.skeletonBar} style={{ width: '60%', height: 24 }} />
+            <div className={styles.skeletonBar} style={{ width: '40%' }} />
+            <div className={styles.skeletonPrice} />
+            <div className={styles.skeletonCta} />
           </div>
         </div>
       </Section>
@@ -184,9 +183,10 @@ export function AuctionDetail() {
 
   if (!lot) {
     return (
-      <Section>
-        <div style={{ textAlign: 'center', padding: 'var(--space-6)' }}>
-          <h2>Auction not found</h2>
+      <Section space="sm">
+        <div className={styles.emptyState}>
+          <h1 className={styles.title}>Auction not found</h1>
+          <p className={styles.emptyText}>This lot may have closed or been removed.</p>
           <Link to="/auctions"><Button variant="secondary">Back to Auctions</Button></Link>
         </div>
       </Section>
@@ -226,6 +226,17 @@ export function AuctionDetail() {
   const auctionImg = active?.url || '/og-image.jpg'
   const winner = lot.status === 'sold' ? firstName(lot.winner_name) : null
 
+  const specs: [string, string][] = [
+    ['Make', lot.make || lot.vehicles?.make || '—'],
+    ['Model', lot.model || lot.vehicles?.model || '—'],
+    ['Year', year ? String(year) : '—'],
+    ['Mileage', formatMileage(mileage)],
+    ['Transmission', transmission],
+    ['Fuel', fuel],
+    ['Colour', colour],
+    ['Condition', vCondition],
+  ]
+
   return (
     <>
       <Helmet>
@@ -237,240 +248,227 @@ export function AuctionDetail() {
         <meta property="og:url" content={`${siteUrl}/auctions/${lot.id}`} />
         <link rel="canonical" href={`${siteUrl}/auctions/${lot.id}`} />
       </Helmet>
-      <Section style={{ paddingBottom: 0 }}>
-        <Link to="/auctions" style={{ fontSize: 'var(--text-sm)', color: 'var(--navy)', display: 'inline-flex', alignItems: 'center', gap: 4, marginBottom: 'var(--space-1)' }}>&larr; Back to Auctions</Link>
-      </Section>
 
       {lightbox && (
         <div
+          className={styles.lightbox}
           onClick={() => setLightbox(null)}
-          style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out' }}
-          role="presentation"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Enlarged image"
         >
-          <img src={lightbox} alt="Full size" style={{ maxWidth: '90vw', maxHeight: '90vh', borderRadius: 8 }} />
+          <img src={lightbox} alt="Full size" className={styles.lightboxImage} />
         </div>
       )}
 
-      <div className="responsive-grid-2" style={{ display: 'grid', gap: 'var(--space-4)', maxWidth: 1200, margin: '0 auto', padding: '0 var(--space-3) var(--space-4)' }}>
-        <div>
-          {active ? (
-            <img
-              src={active.url}
-              alt={title}
-              onClick={() => setLightbox(active.url)}
-              style={{ width: '100%', aspectRatio: '4/3', objectFit: 'cover', borderRadius: 'var(--radius-lg)', cursor: 'zoom-in' }}
-            />
-          ) : (
-            <div style={{ width: '100%', aspectRatio: '4/3', background: 'var(--paper-warm)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--stone-light)' }}>No image</div>
-          )}
+      <Section space="sm">
+        <Link to="/auctions" className={styles.back}>&larr; Back to Auctions</Link>
 
-          {sortedByPrimary.length > 1 && (
-            <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
-              {sortedByPrimary.map((img, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => setActiveImage(i)}
-                  style={{
-                    padding: 0, border: i === Math.min(activeImage, sortedByPrimary.length - 1) ? '2px solid var(--navy)' : '1px solid var(--border)',
-                    borderRadius: 6, overflow: 'hidden', cursor: 'pointer', background: 'none',
-                  }}
-                  aria-label={`Image ${i + 1}`}
-                >
-                  <img src={img?.url} alt="" style={{ width: 64, height: 48, objectFit: 'cover', display: 'block' }} />
-                </button>
-              ))}
-            </div>
-          )}
-
-          <div style={{ marginTop: 'var(--space-2)' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--text-sm)' }}>
-              <tbody>
-                {[
-                  ['Make', lot.make || lot.vehicles?.make || '—'], ['Model', lot.model || lot.vehicles?.model || '—'],
-                  ['Year', year ? String(year) : '—'], ['Mileage', formatMileage(mileage)],
-                  ['Transmission', transmission], ['Fuel', fuel], ['Colour', colour], ['Condition', vCondition],
-                ].map(([label, val]) => (
-                  <tr key={label} style={{ borderBottom: '1px solid var(--border-light)' }}>
-                    <td style={{ padding: '6px var(--space-1)', color: 'var(--stone)', width: '40%' }}>{label}</td>
-                    <td style={{ padding: '6px var(--space-1)', fontWeight: 500, textTransform: 'capitalize' }} className="tabular-nums">{val}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {(lot.condition_grade || (lot.faults && lot.faults.length > 0)) && (
-            <div style={{ marginTop: 'var(--space-2)', padding: 'var(--space-3)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)' }}>
-              <h3 style={{ fontSize: 'var(--text-base)', marginBottom: 'var(--space-1-5)' }}>Condition Report</h3>
-              {lot.condition_grade && GRADE_META[lot.condition_grade] && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 'var(--space-1-5)' }}>
-                  <span style={{ display: 'inline-block', minWidth: 28, textAlign: 'center', padding: '3px 10px', borderRadius: 'var(--radius-sm)', background: GRADE_META[lot.condition_grade].bg, color: GRADE_META[lot.condition_grade].color, fontWeight: 700 }}>{lot.condition_grade}</span>
-                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)' }}>{GRADE_META[lot.condition_grade].label}</span>
-                </div>
-              )}
-              {(lot.faults && lot.faults.length > 0) ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {[...lot.faults].sort((a, b) => a.sort_order - b.sort_order).map(f => {
-                    const meta = SEVERITY_META[f.severity]
-                    return (
-                      <div key={f.id} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                        <span style={{ flexShrink: 0, marginTop: 2, fontSize: 'var(--text-2xs)', fontWeight: 700, padding: '2px 8px', borderRadius: 'var(--radius-sm)', background: meta.bg, color: meta.color, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{meta.label}</span>
-                        <div style={{ flex: 1 }}>
-                          <p style={{ fontSize: 'var(--text-sm)', fontWeight: 600 }}>{f.title}</p>
-                          {f.description && <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)', marginTop: 2 }}>{f.description}</p>}
-                          {f.image_url && (
-                            <button type="button" onClick={() => setLightbox(f.image_url)} style={{ marginTop: 6, padding: 0, border: 'none', background: 'none', cursor: 'zoom-in', display: 'block' }}>
-                              <img src={f.image_url} alt={`Proof: ${f.title}`} style={{ width: 88, height: 62, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--border)' }} />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
+        <div className={styles.layout}>
+          {/* ── Gallery + condition report ── */}
+          <div>
+            <div className={styles.gallery}>
+              {active ? (
+                <img
+                  src={active.url}
+                  alt={title}
+                  onClick={() => setLightbox(active.url)}
+                  className={styles.mainImage}
+                />
               ) : (
-                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)' }}>No faults recorded.</p>
+                <div className={styles.noImage}>No image</div>
+              )}
+
+              {sortedByPrimary.length > 1 && (
+                <div className={styles.thumbs}>
+                  {sortedByPrimary.map((img, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setActiveImage(i)}
+                      className={`${styles.thumb} ${i === Math.min(activeImage, sortedByPrimary.length - 1) ? styles.thumbActive : ''}`}
+                      aria-label={`Image ${i + 1}`}
+                      aria-current={i === Math.min(activeImage, sortedByPrimary.length - 1)}
+                    >
+                      <img src={img?.url} alt="" className={styles.thumbImg} />
+                    </button>
+                  ))}
+                </div>
               )}
             </div>
-          )}
-        </div>
 
-        <div>
-          <div style={{ padding: 'var(--space-3)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', background: 'var(--surface)' }}>
-            <Badge variant={isOpen ? 'live' : lot.status === 'sold' ? 'sold' : 'draft'} label={isOpen ? 'Live' : lot.status} />
-            <h2 style={{ fontSize: 'var(--text-2xl)', marginTop: 'var(--space-1)' }}>{title}</h2>
-            <p style={{ color: 'var(--stone)', fontSize: 'var(--text-sm)' }}>{year ? `${year} · ` : ''}{formatMileage(mileage)}</p>
+            <div className={styles.panelSpaced}>
+              <table className={styles.specTable}>
+                <tbody>
+                  {specs.map(([label, val]) => (
+                    <tr key={label} className={styles.specRow}>
+                      <td className={styles.specLabel}>{label}</td>
+                      <td className={`${styles.specValue} tabular-nums`}>{val}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-            {lot.status === 'sold' ? (
-              <div style={{ margin: 'var(--space-2) 0', padding: 'var(--space-2)', background: 'var(--navy-light)', borderRadius: 'var(--radius-md)' }}>
-                <p style={{ fontSize: 'var(--text-xs)', color: 'var(--navy-muted)' }}>{winner ? `Sold to ${winner}` : 'Sold'}</p>
-                <p className="tabular-nums" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--navy)' }}>{formatPrice(lot.current_bid)}</p>
-                {lot.sold_at && <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>Closed {new Date(lot.sold_at).toLocaleDateString()}</p>}
-              </div>
-            ) : (
-              <div style={{ margin: 'var(--space-2) 0', padding: 'var(--space-2)', background: 'var(--navy-light)', borderRadius: 'var(--radius-md)' }}>
-                <p style={{ fontSize: 'var(--text-xs)', color: 'var(--navy-muted)' }}>Current Bid</p>
-                <p className="tabular-nums" style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--navy)' }}>
-                  {formatPrice(lot.current_bid)}
-                </p>
-                <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>
-                  Opening bid: {formatPrice(lot.opening_bid)}
-                </p>
-                {hasReserve && isOpen && (
-                  <p style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: reserveMet ? 'var(--success)' : 'var(--live)', marginTop: 4 }}>
-                    {reserveMet ? 'Reserve met' : 'Reserve not met yet'}
-                  </p>
+            {(lot.condition_grade || (lot.faults && lot.faults.length > 0)) && (
+              <div className={`${styles.panel} ${styles.panelSpaced}`}>
+                <h2 className={styles.panelTitle}>Condition Report</h2>
+                {lot.condition_grade && GRADE_META[lot.condition_grade] && (
+                  <div className={styles.gradeRow}>
+                    <span
+                      className={styles.gradeBadge}
+                      style={{ background: GRADE_META[lot.condition_grade].bg, color: GRADE_META[lot.condition_grade].color }}
+                    >
+                      {lot.condition_grade}
+                    </span>
+                    <span className={styles.gradeLabel}>{GRADE_META[lot.condition_grade].label}</span>
+                  </div>
+                )}
+                {(lot.faults && lot.faults.length > 0) ? (
+                  <div className={styles.faults}>
+                    {[...lot.faults].sort((a, b) => a.sort_order - b.sort_order).map(f => {
+                      const meta = SEVERITY_META[f.severity]
+                      return (
+                        <div key={f.id} className={styles.fault}>
+                          <span className={styles.faultBadge} style={{ background: meta.bg, color: meta.color }}>{meta.label}</span>
+                          <div className={styles.faultBody}>
+                            <p className={styles.faultTitle}>{f.title}</p>
+                            {f.description && <p className={styles.faultDesc}>{f.description}</p>}
+                            {f.image_url && (
+                              <button type="button" onClick={() => setLightbox(f.image_url)} className={styles.faultProof}>
+                                <img src={f.image_url} alt={`Proof: ${f.title}`} className={styles.faultProofImg} />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <p className={styles.muted}>No faults recorded.</p>
                 )}
               </div>
             )}
+          </div>
 
-            <div style={{ marginBottom: 'var(--space-2)' }}>
-              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>Time Remaining</p>
-              <p style={{ fontSize: 'var(--text-xl)', fontWeight: 600, color: auctionTimeColor(timeLeft) }}>
-                <AuctionTimer closesAt={deadline} />
-              </p>
-              {isOpen && timeLeft <= 3 * 60_000 && (
-                <p style={{ fontSize: 'var(--text-xs)', color: 'var(--live)', marginTop: 4 }}>
-                  Ending soon — bids in the last 3 minutes extend the auction by 5.
+          {/* ── Bid panel ── */}
+          <div>
+            <div className={styles.panel}>
+              <Badge variant={isOpen ? 'live' : lot.status === 'sold' ? 'sold' : 'draft'} label={isOpen ? 'Live' : lot.status} />
+              <h1 className={styles.title}>{title}</h1>
+              <p className={styles.subtitle}>{year ? `${year} · ` : ''}{formatMileage(mileage)}</p>
+
+              {lot.status === 'sold' ? (
+                <div className={styles.priceBox}>
+                  <p className={styles.priceLabel}>{winner ? `Sold to ${winner}` : 'Sold'}</p>
+                  <p className={`${styles.priceValue} tabular-nums`}>{formatPrice(lot.current_bid)}</p>
+                  {lot.sold_at && <p className={styles.priceNote}>Closed {new Date(lot.sold_at).toLocaleDateString()}</p>}
+                </div>
+              ) : (
+                <div className={styles.priceBox}>
+                  <p className={styles.priceLabel}>Current Bid</p>
+                  <p className={`${styles.priceValue} tabular-nums`}>{formatPrice(lot.current_bid)}</p>
+                  <p className={styles.priceNote}>Opening bid: {formatPrice(lot.opening_bid)}</p>
+                  {hasReserve && isOpen && (
+                    <p className={`${styles.reserve} ${reserveMet ? styles.reserveMet : styles.reserveNot}`}>
+                      {reserveMet ? 'Reserve met' : 'Reserve not met yet'}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <div className={styles.timerBlock}>
+                <p className={styles.timerLabel}>Time Remaining</p>
+                <p className={styles.timerValue} style={{ color: auctionTimeColor(timeLeft) }}>
+                  <AuctionTimer closesAt={deadline} />
                 </p>
+                {isOpen && timeLeft <= 3 * 60_000 && (
+                  <p className={styles.endingSoon}>Ending soon — bids in the last 3 minutes extend the auction by 5.</p>
+                )}
+              </div>
+
+              {showBuyNow && buyNowPrice && (
+                <div className={styles.buyNowBlock}>
+                  <Button
+                    onClick={() => {
+                      setBidAmount(buyNowPrice.toString())
+                      showToast(`Buy Now price: ${formatPrice(buyNowPrice)} — enter your details below to purchase`)
+                    }}
+                    className={styles.buyNowButton}
+                  >
+                    <ShoppingCart size={16} /> Buy Now — {formatPrice(buyNowPrice)}
+                  </Button>
+                  <p className={styles.buyNowNote}>Skip the bidding — purchase immediately at this price</p>
+                </div>
+              )}
+
+              {isOpen && (
+                <form onSubmit={placeBid} className={styles.bidForm}>
+                  <p className={styles.formTitle}>Place a bid</p>
+                  <Input
+                    label="Your name"
+                    type="text"
+                    value={bidderName}
+                    onChange={e => setBidderName(e.target.value)}
+                    placeholder="e.g. Ada Obi"
+                    required
+                  />
+                  <Input
+                    label="Email"
+                    type="email"
+                    value={bidderEmail}
+                    onChange={e => setBidderEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    required
+                  />
+                  <Input
+                    label="Phone (optional)"
+                    type="tel"
+                    value={bidderPhone}
+                    onChange={e => setBidderPhone(e.target.value)}
+                    placeholder="+234 800 000 0000"
+                  />
+                  <Input
+                    label={`Your bid (₦) — next bid must be at least ${formatPrice(Math.max(lot.current_bid + nextIncrement, lot.opening_bid))}`}
+                    type="text"
+                    inputMode="numeric"
+                    value={bidAmount}
+                    onChange={e => setBidAmount(e.target.value.replace(/[^\d,]/g, ''))}
+                    placeholder="e.g. 85,000,000"
+                    required
+                  />
+                  <Button type="submit" loading={saving}>
+                    <Zap size={16} /> Place Bid
+                  </Button>
+                </form>
+              )}
+
+              {!isOpen && lot.status !== 'sold' && (
+                <p className={styles.closedNote}>This auction is {lot.status}.</p>
               )}
             </div>
 
-            {/* Buy Now Button - Only shows when current bid is below buy_now_price */}
-            {showBuyNow && buyNowPrice && (
-              <div style={{ marginBottom: 'var(--space-2)' }}>
-                <Button
-                  onClick={() => {
-                    setBidAmount(buyNowPrice.toString())
-                    showToast(`Buy Now price: ${formatPrice(buyNowPrice)} — enter your details below to purchase`)
-                  }}
-                  style={{ 
-                    width: '100%', 
-                    background: 'var(--success)', 
-                    color: 'white',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 'var(--space-1)',
-                  }}
-                >
-                  <ShoppingCart size={16} /> Buy Now — {formatPrice(buyNowPrice)}
-                </Button>
-                <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)', textAlign: 'center', marginTop: 4 }}>
-                  Skip the bidding — purchase immediately at this price
-                </p>
-              </div>
-            )}
-
-            {isOpen && (
-              <form onSubmit={placeBid} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-                <p style={{ fontSize: 'var(--text-sm)', fontWeight: 600 }}>Place a bid</p>
-                <Input
-                  label="Your name"
-                  type="text"
-                  value={bidderName}
-                  onChange={e => setBidderName(e.target.value)}
-                  placeholder="e.g. Ada Obi"
-                  required
-                />
-                <Input
-                  label="Email"
-                  type="email"
-                  value={bidderEmail}
-                  onChange={e => setBidderEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  required
-                />
-                <Input
-                  label="Phone (optional)"
-                  type="tel"
-                  value={bidderPhone}
-                  onChange={e => setBidderPhone(e.target.value)}
-                  placeholder="+234 800 000 0000"
-                />
-                <Input
-                  label={`Your bid (₦) — next bid must be at least ${formatPrice(Math.max(lot.current_bid + nextIncrement, lot.opening_bid))}`}
-                  type="text"
-                  inputMode="numeric"
-                  value={bidAmount}
-                  onChange={e => setBidAmount(e.target.value.replace(/[^\d,]/g, ''))}
-                  placeholder="e.g. 85,000,000"
-                  required
-                />
-                <Button type="submit" loading={saving}>
-                  <Zap size={16} /> Place Bid
-                </Button>
-              </form>
-            )}
-
-            {!isOpen && lot.status !== 'sold' && (
-              <p style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)', textAlign: 'center', marginTop: 'var(--space-1)' }}>
-                This auction is {lot.status}.
-              </p>
-            )}
-          </div>
-
-          <div style={{ marginTop: 'var(--space-2)', padding: 'var(--space-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)' }}>
-            <h3 style={{ fontSize: 'var(--text-base)', marginBottom: 'var(--space-1)' }}>Bid History ({bids.length})</h3>
-            {bids.length === 0 ? (
-              <p style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)' }}>No bids yet. Be the first!</p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 240, overflowY: 'auto' }}>
-                {bids.map(b => (
-                  <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 'var(--text-sm)', padding: '4px 0', borderBottom: '1px solid var(--border-light)' }}>
-                    <span className="tabular-nums" style={{ fontWeight: 600 }}>{formatPrice(b.amount)}</span>
-                    <span style={{ color: 'var(--stone)', fontSize: 'var(--text-xs)', textAlign: 'right' }}>
-                      {b.bidder_name || 'Anonymous bidder'}
-                      <span className="tabular-nums" style={{ display: 'block' }}>{new Date(b.placed_at).toLocaleString()}</span>
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className={styles.history}>
+              <h2 className={styles.historyTitle}>Bid History ({bids.length})</h2>
+              {bids.length === 0 ? (
+                <p className={styles.muted}>No bids yet. Be the first!</p>
+              ) : (
+                <div className={styles.historyList}>
+                  {bids.map(b => (
+                    <div key={b.id} className={styles.historyRow}>
+                      <span className={`${styles.historyAmount} tabular-nums`}>{formatPrice(b.amount)}</span>
+                      <span className={styles.historyMeta}>
+                        {b.bidder_name || 'Anonymous bidder'}
+                        <span className={`${styles.historyTime} tabular-nums`}>{new Date(b.placed_at).toLocaleString()}</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </Section>
     </>
   )
 }

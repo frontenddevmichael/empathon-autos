@@ -1,0 +1,46 @@
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  transition: color 180ms var(--ease-out);
+}
+
+.back:hover {
+  color: var(--navy);
+}
+
+.title {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+  text-wrap: balance;
+}
+
+.updated {
+  margin-bottom: var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.block h2 {
+  font-size: var(--text-base);
+  margin-bottom: 4px;
+}
+
+.block p {
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  color: var(--text-secondary);
+}

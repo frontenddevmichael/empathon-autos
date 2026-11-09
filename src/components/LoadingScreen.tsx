@@ -1,53 +1,38 @@
+import styles from './LoadingScreen.module.css'
+
 /**
- * Full-page loading skeleton used as Suspense fallback for lazy routes.
- * Matches the visual structure of the page layout.
+ * Route-level Suspense fallback. A skeleton that matches the page structure
+ * rather than a branded splash — no logo, no pulse ring.
  */
-export function LoadingScreen({ height = '60vh' }: { height?: string }) {
+export function LoadingScreen() {
   return (
-    <div style={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 var(--space-4)' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
-        {/* Branded pulse animation */}
-        <div style={{ position: 'relative', width: 120, height: 120 }}>
-          <img
-            src="/Empathon logo.png"
-            alt="Empathon Autos"
-            width="120"
-            height="120"
-            style={{ position: 'relative', borderRadius: 20, zIndex: 1, objectFit: 'contain' }}
-          />
-          <div style={{
-            position: 'absolute', inset: -12,
-            borderRadius: '50%',
-            border: '2px solid rgba(0,51,102,0.08)',
-            animation: 'loadingRing 1.5s ease-in-out infinite',
-          }} />
+    <div className={styles.page} aria-busy="true" aria-label="Loading">
+      <div className={styles.hero} />
+      <div className={styles.body}>
+        <div className={styles.line} data-wide />
+        <div className={styles.line} />
+        <div className={styles.grid}>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className={styles.card} />
+          ))}
         </div>
       </div>
     </div>
   )
 }
 
-/**
- * Minimal admin skeleton for sidebar-heavy layouts.
- * Includes its own @keyframes so it works when rendered independently of LoadingScreen.
- */
+/** Minimal admin skeleton for sidebar-heavy layouts. */
 export function AdminSkeleton() {
   return (
-    <div style={{ height: '70vh', display: 'flex', gap: 16, padding: 'var(--space-4)' }}>
-      <style>{`
-        @keyframes loadingShimmer {
-          0%, 100% { opacity: 0.4; }
-          50% { opacity: 0.8; }
-        }
-      `}</style>
-      <div style={{ width: 200, display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <div className={styles.admin} aria-busy="true" aria-label="Loading">
+      <div className={styles.adminSide}>
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} style={{ height: 14, background: 'var(--border)', borderRadius: 4, animation: 'loadingShimmer 1.2s ease-in-out infinite', animationDelay: `${i * 0.08}s` }} />
+          <div key={i} className={styles.line} data-short />
         ))}
       </div>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div className={styles.adminMain}>
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} style={{ height: 14, background: 'var(--border)', borderRadius: 4, animation: 'loadingShimmer 1.2s ease-in-out infinite', animationDelay: `${i * 0.05}s` }} />
+          <div key={i} className={styles.line} />
         ))}
       </div>
     </div>

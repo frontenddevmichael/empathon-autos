@@ -1,17 +1,14 @@
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { HelmetProvider, Helmet } from 'react-helmet-async'
 import { ToastProvider } from '@/context/ToastContext'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
-import { FloatingCTA } from '@/components/FloatingCTA'
-import { LeadForm } from '@/components/LeadForm'
 import { PageLayout } from '@/components/PageLayout'
 import { PageTransition } from '@/components/PageTransition'
 import { Nav } from '@/components/ui/Nav'
 import { Footer } from '@/components/ui/Footer'
 import { AdminGuard } from '@/components/admin/AdminGuard'
 import { AdminLayout } from '@/pages/admin/AdminLayout'
-import { ScrollProgress } from '@/components/ScrollProgress'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
 import { useScrollToTop } from '@/hooks/useScrollToTop'
 import { usePageTitle } from '@/hooks/usePageTitle'
@@ -77,14 +74,11 @@ const UserDashboard = namedLazy(() => import('@/pages/UserDashboard'), 'UserDash
 const KYCRegistration = namedLazy(() => import('@/pages/KYCRegistration'), 'KYCRegistration')
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
-  const [leadOpen, setLeadOpen] = useState(false)
   return (
     <PageLayout>
       <Nav />
       <PageTransition>{children}</PageTransition>
       <Footer />
-      <FloatingCTA onEnquire={() => setLeadOpen(true)} />
-      <LeadForm open={leadOpen} onClose={() => setLeadOpen(false)} type="enquiry" />
     </PageLayout>
   )
 }
@@ -99,12 +93,7 @@ function AppShell({ children }: { children: React.ReactNode }) {
   useScrollToTop()
   usePageTitle()
   useLenis()
-  return (
-    <>
-      <ScrollProgress />
-      {children}
-    </>
-  )
+  return <>{children}</>
 }
 
 export function App() {
@@ -135,7 +124,7 @@ export function App() {
           <Route path="/dashboard" element={<PublicLayout><Lazy cmp={UserDashboard} /></PublicLayout>} />
           <Route path="/register" element={<PublicLayout><Lazy cmp={KYCRegistration} /></PublicLayout>} />
 
-          <Route path="/admin/login" element={<Suspense fallback={<LoadingScreen height="60vh" />}><AdminLogin /></Suspense>} />
+          <Route path="/admin/login" element={<Suspense fallback={<LoadingScreen />}><AdminLogin /></Suspense>} />
           <Route path="/admin" element={<AdminGuard><AdminLayout /></AdminGuard>}>
             <Route index element={<Suspense fallback={<AdminSkeleton />}><AdminDashboard /></Suspense>} />
             <Route path="vehicles" element={<Suspense fallback={<AdminSkeleton />}><AdminVehicles /></Suspense>} />

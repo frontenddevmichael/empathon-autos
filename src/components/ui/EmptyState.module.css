@@ -7,20 +7,6 @@
   padding: var(--space-8) var(--space-4);
 }
 
-/* Monoline art draws itself once the empty state enters the viewport */
-.root :global(.deco-draw-reveal) {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 1.6s var(--ease-in-out);
-}
-.root.visible :global(.deco-draw-reveal) {
-  stroke-dashoffset: 0;
-}
-
-.art {
-  margin-bottom: var(--space-3);
-}
-
 .title {
   font-size: var(--text-xl);
   font-weight: 600;
@@ -37,9 +23,8 @@
   margin-bottom: var(--space-3);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .root :global(.deco-draw-reveal) {
-    stroke-dashoffset: 0;
-    transition: none;
+@media (max-width: 768px) {
+  .root {
+    padding: var(--space-6) var(--space-3);
   }
 }

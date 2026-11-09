@@ -35,7 +35,7 @@
   border-color: white;
 }
 .tierFeatured:hover {
-  background: #f2f2f4;
+  background: var(--paper-warm);
   border-color: white;
 }
 .tierFeatured .tierUnits,

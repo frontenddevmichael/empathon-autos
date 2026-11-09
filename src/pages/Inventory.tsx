@@ -7,11 +7,11 @@ import type { Vehicle, VehicleMedia } from '@/types'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { VehicleCard } from '@/components/ui/VehicleCard'
+import { PageHero } from '@/components/ui/PageHero'
+import { Container } from '@/components/layout/Container'
 import { VehicleCardSkeleton } from '@/components/ui/Skeleton'
-import { CarSilhouette, Sparkle, Compass, ChatBubble } from '@/components/DecoSvgs'
 import { EmptyState } from '@/components/ui/EmptyState'
 import styles from './Inventory.module.css'
-import { RippleButton } from '@/components/RippleButton'
 import { config } from '@/lib/config'
 
 const PAGE_SIZE = 12
@@ -155,16 +155,17 @@ export function Inventory() {
 
   return (
     <>
-      <header className={styles.slimHeader}>
-        <div className={styles.slimHeaderInner}>
-          <p className={styles.slimHeaderLabel} style={{ animation: 'fadeInUp 600ms var(--ease-out) both' }}>Inventory</p>
-          <h1 className={styles.slimHeaderTitle} style={{ animation: 'fadeInUp 600ms 120ms var(--ease-out) both' }}>Browse Our Collection</h1>
-          <p className={styles.slimHeaderSub} style={{ animation: 'fadeInUp 600ms 240ms var(--ease-out) both' }}>Real cars. Real prices. Ready to drive.</p>
-        </div>
-      </header>
+      <PageHero
+        variant="band"
+        size="sm"
+        align="center"
+        label="Inventory"
+        title="Browse Our Collection"
+        subtitle="Real cars. Real prices. Ready to drive."
+      />
 
-      <div className={styles.content} style={{ position: 'relative' }}>
-      <div className={`scroll-reveal reveal-fade ${styles.toolbar}`}>
+      <Container className={styles.content}>
+      <div className={`scroll-reveal ${styles.toolbar}`}>
         <div className={styles.searchRow}>
           <div className={styles.searchInput}>
             <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by make, model, or trim..." />
@@ -174,7 +175,7 @@ export function Inventory() {
             className={styles.filterToggle}
           >
             <SlidersHorizontal size={14} />
-            {showAdvancedFilters ? 'Hide Filters' : 'Show Filters'}
+            {showAdvancedFilters ? 'Fewer filters' : 'More filters'}
             {activeFilterCount > 0 && <span className={styles.filterBadge}>{activeFilterCount}</span>}
           </button>
           {hasAnyFilter && (
@@ -298,21 +299,19 @@ export function Inventory() {
         </p>
       )}
 
-      <CarSilhouette className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-1)', left: 'var(--space-1)', opacity: 0.03 }} size={100} />
       <div className={styles.grid}>
         {loading ? (
           Array.from({ length: 6 }).map((_, i) => <VehicleCardSkeleton key={i} />)
         ) : vehicles.length === 0 ? (
           <EmptyState
             className={styles.emptyState}
-            art="search"
             title="No vehicles found"
             message={hasAnyFilter
               ? 'Try widening your search or clearing a few filters — there may be more to see.'
               : "We're restocking the lot. Tell us what you're after and we'll hunt it down."}
             action={hasAnyFilter
               ? <Button variant="secondary" size="sm" onClick={clearAll}>Clear all filters</Button>
-              : <Link to="/pre-order"><RippleButton size="sm" variant="secondary">Request a Vehicle</RippleButton></Link>}
+              : <Link to="/pre-order"><Button size="sm" variant="secondary">Request a Vehicle</Button></Link>}
           />
         ) : (
           vehicles.map(v => <VehicleCard key={v.id} vehicle={v} />)
@@ -321,14 +320,14 @@ export function Inventory() {
 
       {/* Load More */}
       {hasMore && !loading && (
-        <div style={{ textAlign: 'center', marginTop: 'var(--space-3)' }}>
+        <div className={styles.loadMore}>
           <Button
             variant="secondary"
             size="md"
             onClick={() => fetchVehicles(true)}
             loading={loading}
           >
-            <ChevronDown size={14} style={{ marginRight: 4 }} />
+            <ChevronDown size={14} />
             Load More ({total - vehicles.length} remaining)
           </Button>
         </div>
@@ -337,9 +336,6 @@ export function Inventory() {
       {/* ── Need Help? Lead CTA ── */}
       <div className={`scroll-reveal ${styles.leadCta}`}>
         <div className={styles.leadCtaInner}>
-          <Compass className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', left: 'var(--space-2)', opacity: 0.06 }} size={60} />
-          <ChatBubble className="deco-positioned" style={{ position: 'absolute', bottom: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.05 }} size={50} />
-          <Sparkle className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-3)', right: '20%', opacity: 0.08 }} size={28} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
             <div style={{ flex: 1, minWidth: 240 }}>
               <p className={styles.leadCtaLabel}>Can't find what you're looking for?</p>
@@ -350,25 +346,25 @@ export function Inventory() {
             </div>
             <div style={{ display: 'flex', gap: 'var(--space-1-5)', flexWrap: 'wrap' }}>
               <Link to="/contact">
-                <RippleButton variant="primary" size="md">
+                <Button variant="primary" size="md">
                   <HelpCircle size={15} style={{ marginRight: 4 }} />
                   Send Enquiry
-                </RippleButton>
+                </Button>
               </Link>
               <a
                 href={config.whatsapp.getDeepLink("Hi Empathon Autos! I need help finding a vehicle.")}
                 target="_blank" rel="noopener noreferrer"
               >
-                <RippleButton variant="secondary" size="md">
+                <Button variant="secondary" size="md">
                   <MessageCircle size={15} style={{ marginRight: 4 }} />
                   WhatsApp Us
-                </RippleButton>
+                </Button>
               </a>
             </div>
           </div>
         </div>
       </div>
-    </div>
+      </Container>
     </>
   )
 }

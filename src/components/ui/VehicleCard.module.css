@@ -45,7 +45,7 @@
 .overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(8, 26, 51, 0.5) 0%, transparent 45%);
+  background: linear-gradient(to top, var(--scrim-mid) 0%, transparent 45%);
   opacity: 0;
   transition: opacity 400ms var(--ease-out);
   display: flex;
@@ -65,11 +65,10 @@
   gap: 6px;
   padding: 8px 16px;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--surface);
   color: var(--ink);
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   font-weight: 600;
-  backdrop-filter: blur(8px);
   transform: translateY(6px);
   transition: transform 400ms var(--ease-out);
 }
@@ -101,7 +100,7 @@
 }
 
 .title {
-  font-size: 1.0625rem;
+  font-size: var(--text-lg);
   font-weight: 600;
   letter-spacing: -0.015em;
   color: var(--ink);
@@ -123,7 +122,7 @@
 }
 
 .price {
-  font-size: 1.25rem;
+  font-size: var(--text-xl);
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--ink);

@@ -1,147 +1,111 @@
+/* ── Button — one pill, four quiet treatments ── */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-1);
-  height: 48px;
+  height: 40px;
   padding: 0 var(--space-3);
   border-radius: var(--radius-full);
   font-family: var(--font-body);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: 600;
   line-height: 1;
   border: 1px solid transparent;
   white-space: nowrap;
-  letter-spacing: 0.01em;
-  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1), background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), border-color 200ms cubic-bezier(0.4, 0, 0.2, 1), color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: -0.01em;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  will-change: transform;
+  transition:
+    background-color 200ms var(--ease-out),
+    border-color 200ms var(--ease-out),
+    color 200ms var(--ease-out),
+    transform 120ms var(--ease-out);
 }
+
 .btn:focus-visible {
   outline: 2px solid var(--navy);
   outline-offset: 3px;
 }
 
-/* Bubble effect on click */
-.btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(255,255,255,0.15);
-  border-radius: inherit;
-  transform: scale(0);
-  opacity: 0;
-  transition: transform 400ms var(--ease-out), opacity 300ms var(--ease-out);
-  pointer-events: none;
-}
-.btn:active::after {
-  transform: scale(1);
-  opacity: 0;
-  transition: 0s;
-}
-
-/* Premium press feedback */
+/* Press — the only transform a button ever gets */
 .btn:active {
-  transform: scale(0.97);
-  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scale(0.98);
 }
 
-/* Primary — solid deep navy, lift on hover */
+/* Primary — solid brand navy. Hover darkens, nothing else. */
 .primary {
   background: var(--navy);
-  color: white;
+  color: var(--text-inverse);
 }
 .primary:hover {
   background: var(--navy-hover);
-  box-shadow: var(--shadow-navy);
-  transform: translateY(-2px);
-}
-.primary:active {
-  transform: translateY(0) scale(0.97);
 }
 
-/* Secondary — ghost with hairline, fills on hover */
+/* Secondary on light — transparent, navy text, hairline border */
 .secondary {
   background: transparent;
-  color: var(--ink);
-  border-color: var(--border);
+  color: var(--navy);
+  border-color: var(--navy-a24);
 }
 .secondary:hover {
-  border-color: rgba(29,29,31,0.18);
-  background: var(--paper-warm);
-  transform: translateY(-2px);
-}
-.secondary:active {
-  transform: translateY(0) scale(0.97);
+  border-color: var(--navy);
+  background: var(--navy-a04);
 }
 
-/* Ghost — text only, quiet */
+/* Ghost — quiet text action on light */
 .ghost {
   background: transparent;
-  color: var(--stone);
-  border-color: rgba(29,29,31,0.12);
+  color: var(--text-secondary);
+  border-color: transparent;
 }
 .ghost:hover {
-  color: var(--ink);
-  border-color: rgba(29,29,31,0.24);
-  background: rgba(29,29,31,0.04);
-  transform: translateY(-2px);
-}
-.ghost:active {
-  transform: translateY(0) scale(0.97);
+  color: var(--text-primary);
+  background: var(--navy-a04);
 }
 
-/* White — for dark surfaces: solid white pill, navy text (strongest CTA on dark) */
+/* Secondary on dark — hairline outline, white text */
+.ghostLight {
+  background: transparent;
+  color: var(--text-inverse);
+  border-color: rgba(255, 255, 255, 0.42);
+}
+.ghostLight:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.72);
+}
+
+/* Primary on dark — solid white, navy text */
 .white {
-  background: white;
+  background: var(--text-inverse);
   color: var(--navy);
 }
 .white:hover {
   background: var(--paper-warm);
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-}
-.white:active {
-  transform: translateY(0) scale(0.97);
 }
 
-/* GhostLight — for dark surfaces: white hairline, quiet */
-.ghostLight {
-  background: transparent;
-  color: rgba(255,255,255,0.85);
-  border-color: rgba(255,255,255,0.25);
-}
-.ghostLight:hover {
-  color: white;
-  border-color: rgba(255,255,255,0.5);
-  background: rgba(255,255,255,0.08);
-  transform: translateY(-2px);
-}
-.ghostLight:active {
-  transform: translateY(0) scale(0.97);
-}
-
-/* Sizes */
-.sm { height: 38px; padding: 0 var(--space-2); font-size: var(--text-xs); }
-.md { height: 46px; padding: 0 var(--space-2-5); }
-.lg { height: 54px; padding: 0 var(--space-3-5, 32px); font-size: var(--text-base); }
+/* Sizes — 48px large, 40px default */
+.sm { height: 34px; padding: 0 var(--space-2); font-size: var(--text-sm); }
+.md { height: 40px; padding: 0 var(--space-3); }
+.lg { height: 48px; padding: 0 var(--space-4); }
 
 .full { width: 100%; }
 
-.loading { opacity: 0.6; pointer-events: none; }
+.loading { opacity: 0.65; pointer-events: none; }
 
 .spinner {
-  width: 16px; height: 16px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: currentColor;
+  width: 15px;
+  height: 15px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
   border-radius: 50%;
+  opacity: 0.8;
   animation: spin 0.6s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
 @media (max-width: 768px) {
-  .lg { height: 52px; }
+  .lg { height: 48px; }
 }

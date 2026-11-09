@@ -6,9 +6,8 @@ import { Input, TextArea } from '@/components/ui/Input'
 import { Section } from '@/components/PageLayout'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { useToast } from '@/context/ToastContext'
-import { RippleButton } from '@/components/RippleButton'
-import { HeroSection } from '@/components/HeroSection'
-import { CarKey, RoadDraw } from '@/components/DecoSvgs'
+import { Button } from '@/components/ui/Button'
+import { PageHero } from '@/components/ui/PageHero'
 import { VehicleCard } from '@/components/ui/VehicleCard'
 import { VehicleCardSkeleton } from '@/components/ui/Skeleton'
 import { useMounted } from '@/hooks/useMounted'
@@ -79,7 +78,7 @@ export function PreOrder() {
 
   return (
     <>
-      <HeroSection
+      <PageHero
         images={[
           { url: '/heroimg4.jpg' },
           { url: '/heroimg5.jpg' },
@@ -87,11 +86,11 @@ export function PreOrder() {
         label="Pre-Order"
         title="Order the Vehicle You Really Want"
         subtitle="Can't find that exact spec on the lot? Tell us what you want and we'll track it down through our global network."
-        deco="circle"
+        size="lg"
       />
 
       {/* Pre-Order Fleet */}
-      <Section className="scroll-reveal reveal-right" style={{ position: 'relative' }}>
+      <Section className="scroll-reveal" style={{ position: 'relative' }}>
         <SectionHeader
           label="Pre-Order Fleet"
           title="Inbound & Available to Order"
@@ -99,7 +98,7 @@ export function PreOrder() {
         />
 
         {loading ? (
-          <div className="stagger-fade-in" style={{ display: 'grid', gap: 'var(--space-4)', gridTemplateColumns: 'repeat(auto-fill, minmax(min(300px, 100%), 1fr))' }}>
+          <div style={{ display: 'grid', gap: 'var(--space-4)', gridTemplateColumns: 'repeat(auto-fill, minmax(min(300px, 100%), 1fr))' }}>
             {Array.from({ length: 3 }).map((_, i) => <VehicleCardSkeleton key={i} />)}
           </div>
         ) : vehicles.length > 0 ? (
@@ -109,7 +108,7 @@ export function PreOrder() {
             </div>
             <div style={{ textAlign: 'center', marginTop: 'var(--space-4)' }}>
               <Link to="/inventory?status=pre-order">
-                <RippleButton variant="secondary">View All Pre-Order Vehicles <ArrowRight size={14} /></RippleButton>
+                <Button variant="secondary">View All Pre-Order Vehicles <ArrowRight size={14} /></Button>
               </Link>
             </div>
           </>
@@ -121,15 +120,13 @@ export function PreOrder() {
       </Section>
 
       {/* How It Works */}
-      <Section className="scroll-reveal reveal-scale" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
-        <CarKey className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-2)', opacity: 0.08 }} size={64} />
+      <Section className="scroll-reveal" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
         <SectionHeader
           label="How It Works"
           title="Four Simple Steps"
           desc="You tell us what you want. We find it, ship it, clear it, and call you when it's ready. Simple."
         />
         {/* Hand-drawn road — the journey from request to delivery, draws on reveal */}
-        <RoadDraw className="deco-positioned" style={{ margin: 'var(--space-1) auto var(--space-4)', maxWidth: 620 }} />
         <div className={`scroll-reveal stagger-fade-in ${styles.stepsGrid}`}>
           {steps.map((s, i) => (
             <div key={s.title} className={styles.stepCard}>
@@ -142,7 +139,7 @@ export function PreOrder() {
       </Section>
 
       {/* Request Form */}
-      <Section className="scroll-reveal reveal-big" style={{ position: 'relative' }}>
+      <Section className="scroll-reveal" style={{ position: 'relative' }}>
         <div id="request" style={{ maxWidth: 520, margin: '0 auto' }}>
           <SectionHeader
             label="Start the Search"
@@ -162,7 +159,7 @@ export function PreOrder() {
               <Input label="Preferred Model" value={form.model} onChange={e => setForm(f => ({ ...f, model: e.target.value }))} />
             </div>
             <TextArea label="Additional Notes" value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={3} placeholder="Colour, trim level, budget, timing..." />
-            <RippleButton type="submit" loading={saving}>Submit Pre-Order Request</RippleButton>
+            <Button type="submit" loading={saving}>Submit Pre-Order Request</Button>
           </form>
         </div>
       </Section>

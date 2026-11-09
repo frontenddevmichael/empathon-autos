@@ -3,9 +3,8 @@ import { Check, Package, Ship, Search, Truck, ShieldCheck } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { Section } from '@/components/PageLayout'
 import { useToast } from '@/context/ToastContext'
-import { RippleButton } from '@/components/RippleButton'
-import { SplitHeading } from '@/components/SplitHeading'
-import { HeroSection } from '@/components/HeroSection'
+import { Button } from '@/components/ui/Button'
+import { PageHero } from '@/components/ui/PageHero'
 import { lookupOrder, validateReference, ORDER_STAGES } from '@/lib/mockOrders'
 import type { TrackedOrder } from '@/lib/mockOrders'
 import styles from './TrackOrder.module.css'
@@ -74,7 +73,7 @@ export function TrackOrder() {
 
   return (
     <>
-      <HeroSection
+      <PageHero
         images={[
           { url: '/heroimg.jpg' },
           { url: '/heroimg2.jpg' },
@@ -82,14 +81,12 @@ export function TrackOrder() {
         label="Track Order"
         title="Where's My Vehicle?"
         subtitle="Enter the order reference we sent you and follow your vehicle from sourcing all the way to your driveway."
-        deco="car"
+        size="lg"
       />
 
       <Section style={{ position: 'relative' }}>
         <div className={styles.lookup} style={{ maxWidth: 640, margin: '0 auto' }}>
-          <SplitHeading as="h2" style={{ marginBottom: 'var(--space-2)', textAlign: 'center' }}>
-            Track Your Order
-          </SplitHeading>
+          <h2 className={styles.sectionTitle}>Track Your Order</h2>
           <div className="section-divider section-divider-center" />
           <p style={{ color: 'var(--stone)', marginBottom: 'var(--space-3)', textAlign: 'center' }}>
             Your reference looks like <strong style={{ color: 'var(--ink)', fontFamily: 'var(--font-mono)' }}>EA-XXXXXX</strong> and is on your order confirmation.
@@ -103,10 +100,10 @@ export function TrackOrder() {
               error={error || undefined}
               aria-describedby={error ? 'track-error' : undefined}
             />
-            <RippleButton type="submit" variant="primary" magnetic>
+            <Button type="submit" variant="primary">
               <Search size={16} style={{ marginRight: 8 }} aria-hidden="true" />
               Track Order
-            </RippleButton>
+            </Button>
           </form>
           {!order && !error && (
             <p className={styles.hint}>

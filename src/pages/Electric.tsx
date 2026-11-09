@@ -6,10 +6,8 @@ import { Input, TextArea } from '@/components/ui/Input'
 import { Section } from '@/components/PageLayout'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { useToast } from '@/context/ToastContext'
-import { RippleButton } from '@/components/RippleButton'
-import { HeroSection } from '@/components/HeroSection'
-import { ParallaxSection } from '@/components/ParallaxSection'
-import { Sparkle } from '@/components/DecoSvgs'
+import { Button } from '@/components/ui/Button'
+import { PageHero } from '@/components/ui/PageHero'
 import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
 import styles from './Electric.module.css'
 
@@ -101,7 +99,7 @@ export function Electric() {
 
   return (
     <>
-      <HeroSection
+      <PageHero
         images={[
           { url: '/heroimg5.jpg' },
           { url: '/heroimg.jpg' },
@@ -109,12 +107,12 @@ export function Electric() {
         label="Electric Vehicles"
         title="GO Electric. GO Green."
         subtitle="Premium electric vehicles imported, prepped, and ready for Nigerian roads. Save money, save time, save the planet."
-        deco="circle"
+        size="lg"
       />
 
       {/* Brands — first thing users see */}
-      <ParallaxSection>
-        <Section className="scroll-reveal reveal-fade" style={{ position: 'relative' }}>
+      <section>
+        <Section className="scroll-reveal" style={{ position: 'relative' }}>
           <SectionHeader
             label="Our EV Partners"
             title="Premium Electric Brands"
@@ -136,12 +134,11 @@ export function Electric() {
             ))}
           </div>
         </Section>
-      </ParallaxSection>
+      </section>
 
       {/* Cost Savings */}
-      <ParallaxSection>
-        <Section className="scroll-reveal reveal-scale" style={{ background: 'var(--navy-deep)', color: 'white', position: 'relative' }}>
-          <Sparkle className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-3)', right: '18%', opacity: 0.12 }} size={36} />
+      <section>
+        <Section className="scroll-reveal" style={{ background: 'var(--navy-deep)', color: 'white', position: 'relative' }}>
           <SectionHeader
             label="Cost Savings"
             title="Save Money with Electric"
@@ -169,17 +166,17 @@ export function Electric() {
 
           <div style={{ textAlign: 'center', marginTop: 'var(--space-4)' }}>
             <Link to="/contact">
-              <RippleButton size="md" variant="white">
+              <Button size="md" variant="white">
                 Calculate Your Savings <ArrowRight size={16} />
-              </RippleButton>
+              </Button>
             </Link>
           </div>
         </Section>
-      </ParallaxSection>
+      </section>
 
       {/* Models */}
-      <ParallaxSection>
-        <Section className="scroll-reveal reveal-left" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
+      <section>
+        <Section className="scroll-reveal" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 'var(--space-2)' }}>
             <SectionHeader
               label="Available Models"
@@ -213,7 +210,7 @@ export function Electric() {
                   <p className={styles.modelPrice}>{m.price}</p>
                   <div style={{ marginTop: 'var(--space-3)' }}>
                     <Link to="/contact">
-                      <RippleButton size="sm" variant="secondary">Enquire Now <ArrowRight size={13} /></RippleButton>
+                      <Button size="sm" variant="secondary">Enquire Now <ArrowRight size={13} /></Button>
                     </Link>
                   </div>
                 </div>
@@ -221,11 +218,11 @@ export function Electric() {
             ))}
           </div>
         </Section>
-      </ParallaxSection>
+      </section>
 
       {/* Benefits */}
-      <ParallaxSection>
-        <Section className="scroll-reveal reveal-right" style={{ position: 'relative' }}>
+      <section>
+        <Section className="scroll-reveal" style={{ position: 'relative' }}>
           <SectionHeader
             label="Why Go Electric"
             title="The Future Is Already Here"
@@ -241,10 +238,10 @@ export function Electric() {
             ))}
           </div>
         </Section>
-      </ParallaxSection>
+      </section>
 
       {/* Contact Section */}
-      <Section className="scroll-reveal reveal-big" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
+      <Section className="scroll-reveal" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
         <div style={{ maxWidth: 520, margin: '0 auto' }}>
           <SectionHeader
             label="EV Enquiry"
@@ -261,7 +258,7 @@ export function Electric() {
             <Input label="Phone *" type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} required />
             <Input label="Model of Interest" value={form.model} onChange={e => setForm(f => ({ ...f, model: e.target.value }))} placeholder="e.g. Mercedes-Benz EQS 450" />
             <TextArea label="Questions / Notes" value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={3} placeholder="Budget, colour, timing..." />
-            <RippleButton type="submit" loading={saving}>Request EV Enquiry</RippleButton>
+            <Button type="submit" loading={saving}>Request EV Enquiry</Button>
           </form>
         </div>
       </Section>

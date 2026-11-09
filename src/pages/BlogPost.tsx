@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async'
 import { supabase } from '@/lib/supabase'
 import type { BlogPost } from '@/types'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { RippleButton } from '@/components/RippleButton'
+import { Button } from '@/components/ui/Button'
 import styles from './BlogPost.module.css'
 
 function escapeHtml(s: string): string {
@@ -178,12 +178,11 @@ export function BlogPost() {
       <section className={styles.errorSection}>
         <div className="scroll-reveal" style={{ maxWidth: 640, margin: '0 auto' }}>
           <EmptyState
-            art="book"
             title="Post not found"
             message="This article may have been removed or the link is incorrect."
             action={
               <Link to="/blog">
-                <RippleButton size="sm" variant="secondary">Back to Blog</RippleButton>
+                <Button size="sm" variant="secondary">Back to Blog</Button>
               </Link>
             }
           />

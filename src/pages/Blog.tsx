@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import type { BlogPost } from '@/types'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { RippleButton } from '@/components/RippleButton'
+import { Button } from '@/components/ui/Button'
+import { PageHero } from '@/components/ui/PageHero'
 import styles from './Blog.module.css'
 
 function readTime(body: string): string {
@@ -47,26 +48,14 @@ export function Blog() {
   return (
     <>
       {/* ── Hero ── */}
-      <section className={styles.hero}>
-        <img
-          src="/heroimg3.jpg"
-          alt=""
-          className={styles.heroImage}
-          loading="eager"
-          fetchPriority="high"
-        />
-        <div className={styles.heroOverlay} />
-        <div className={styles.heroContent}>
-          <p className={styles.heroLabel}>
-            <span className={styles.heroLabelLine} />
-            Blog
-          </p>
-          <h1 className={styles.heroTitle}>Latest Articles</h1>
-          <p className={styles.heroSubtitle}>
-            Insights, tips, and stories from the Empathon Autos team.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        images={[{ url: '/heroimg3.jpg' }]}
+        label="Blog"
+        title="Latest Articles"
+        subtitle="Insights, tips, and stories from the Empathon Autos team."
+        size="md"
+        overlay="bottom"
+      />
 
       {/* ── Content ── */}
       <section className={styles.section}>
@@ -87,12 +76,11 @@ export function Blog() {
           ) : posts.length === 0 ? (
             <div className="scroll-reveal">
               <EmptyState
-                art="book"
                 title="No articles yet"
                 message="We're writing our first stories — guides, market insights, and buying advice. In the meantime, tell us what you'd like to read about."
                 action={
                   <Link to="/contact">
-                    <RippleButton size="sm" variant="secondary">Request a Topic</RippleButton>
+                    <Button size="sm" variant="secondary">Request a Topic</Button>
                   </Link>
                 }
               />
@@ -125,7 +113,7 @@ export function Blog() {
 
               {/* Article grid */}
               {rest.length > 0 && (
-                <div className={`scroll-reveal reveal-right stagger-fade-in ${styles.grid}`}>
+                <div className={`scroll-reveal stagger-fade-in ${styles.grid}`}>
                   {rest.map(p => (
                     <Link key={p.id} to={`/blog/${p.slug}`} className={styles.card}>
                       {p.cover_image && (
@@ -149,11 +137,11 @@ export function Blog() {
               )}
 
               {/* CTA */}
-              <div className={`scroll-reveal reveal-big ${styles.ctaStrip}`}>
+              <div className={`scroll-reveal ${styles.ctaStrip}`}>
                 <h2>Have a topic in mind?</h2>
                 <p>Tell us what you'd like us to cover — buying guides, import insights, EV deep-dives. We read every request.</p>
                 <Link to="/contact">
-                  <RippleButton variant="white">Request a Topic</RippleButton>
+                  <Button variant="white">Request a Topic</Button>
                 </Link>
               </div>
             </>

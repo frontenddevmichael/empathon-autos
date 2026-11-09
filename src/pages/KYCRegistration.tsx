@@ -5,8 +5,7 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { Input, TextArea } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { Section } from '@/components/PageLayout'
-import { SplitHeading } from '@/components/SplitHeading'
-import { HeroSection } from '@/components/HeroSection'
+import { PageHero } from '@/components/ui/PageHero'
 import { useToast } from '@/context/ToastContext'
 import { config } from '@/lib/config'
 
@@ -71,12 +70,12 @@ export function KYCRegistration() {
   if (submitted) {
     return (
       <>
-        <HeroSection
+        <PageHero
           images={[{ url: '/heroimg2.jpg' }]}
           label="Registration"
           title="Welcome Aboard!"
           subtitle="Your registration has been submitted successfully."
-          deco="dots"
+          size="lg"
         />
         <Section>
           <div style={{ textAlign: 'center', maxWidth: 500, margin: '0 auto' }}>
@@ -115,18 +114,18 @@ export function KYCRegistration() {
 
   return (
     <>
-      <HeroSection
+      <PageHero
         images={[{ url: '/heroimg3.jpg' }]}
         label="Registration"
         title="Register to Bid"
         subtitle="Complete your KYC registration to participate in auctions and receive personalised offers."
-        deco="dots"
+        size="lg"
       />
 
       <Section>
         <div style={{ maxWidth: 700, margin: '0 auto' }}>
           <div style={{ marginBottom: 'var(--space-4)' }}>
-            <SplitHeading as="h2" style={{ marginBottom: 'var(--space-1)' }}>Account Registration</SplitHeading>
+            <h2 style={{ marginBottom: 'var(--space-1)' }}>Account Registration</h2>
             <div className="section-divider" />
             <p style={{ color: 'var(--stone)', marginTop: 'var(--space-1)' }}>
               Fill in your details below. This information helps us verify your identity and provide you with the best service.
@@ -138,7 +137,7 @@ export function KYCRegistration() {
             background: 'var(--surface)', 
             border: '1px solid var(--border)', 
             borderRadius: 'var(--radius-xl)',
-            boxShadow: 'var(--shadow-premium)'
+            boxShadow: 'var(--shadow-sm)'
           }}>
             <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
               <input tabIndex={-1} value={form.honeypot} onChange={e => setForm(f => ({ ...f, honeypot: e.target.value }))} />

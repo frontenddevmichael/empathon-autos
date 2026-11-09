@@ -3,7 +3,8 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { Phone, Mail, MapPin, Clock, MessageCircle, ArrowRight, Send } from 'lucide-react'
 import { Input, TextArea } from '@/components/ui/Input'
 import { useToast } from '@/context/ToastContext'
-import { RippleButton } from '@/components/RippleButton'
+import { Button } from '@/components/ui/Button'
+import { PageHero } from '@/components/ui/PageHero'
 import { config } from '@/lib/config'
 import { useRateLimit } from '@/hooks/useRateLimit'
 import styles from './Contact.module.css'
@@ -45,26 +46,14 @@ export function Contact() {
   return (
     <>
       {/* ── Hero ── */}
-      <section className={styles.hero}>
-        <img
-          src="/heroimg5.jpg"
-          alt=""
-          className={styles.heroImage}
-          loading="eager"
-          fetchPriority="high"
-        />
-        <div className={styles.heroOverlay} />
-        <div className={styles.heroContent}>
-          <p className={styles.heroLabel}>
-            <span className={styles.heroLabelLine} />
-            Contact
-          </p>
-          <h1 className={styles.heroTitle}>Let's Talk</h1>
-          <p className={styles.heroSubtitle}>
-            Have a question, need a quote, or just want to talk cars? We'd love to hear from you.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        images={[{ url: '/heroimg5.jpg' }]}
+        label="Contact"
+        title="Let's Talk"
+        subtitle="Have a question, need a quote, or just want to talk cars? We'd love to hear from you."
+        size="md"
+        overlay="bottom"
+      />
 
       {/* ── Main Content ── */}
       <section className={styles.mainSection}>
@@ -142,10 +131,10 @@ export function Contact() {
                   required
                 />
 
-                <RippleButton type="submit" loading={saving} className={styles.submitButton}>
+                <Button type="submit" loading={saving} className={styles.submitButton}>
                   <Send size={16} />
                   Send Message
-                </RippleButton>
+                </Button>
               </form>
             </div>
           </div>

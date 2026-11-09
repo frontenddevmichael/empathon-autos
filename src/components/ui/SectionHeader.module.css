@@ -7,7 +7,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: var(--stone);
+  color: var(--text-secondary);
   margin-bottom: var(--space-1);
 }
 
@@ -16,12 +16,12 @@
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.08;
-  color: var(--ink);
+  color: var(--text-primary);
   margin-bottom: var(--space-2);
   text-wrap: balance;
 }
 
-/* Decorative accent between title and desc (drawn flourish etc.) */
+/* Optional decorative accent between title and desc (drawn flourish etc.) */
 .deco {
   display: flex;
   justify-content: flex-start;
@@ -29,17 +29,28 @@
 }
 
 .desc {
-  color: var(--stone);
-  max-width: 520px;
+  color: var(--text-secondary);
+  max-width: 56ch;
   line-height: var(--leading-relaxed);
 }
 
+/* Sizes */
+.sm .title { font-size: var(--text-2xl); letter-spacing: -0.02em; }
+.md .title { font-size: var(--text-h2); }
+.lg .title { font-size: clamp(2.25rem, 4.5vw, 3.75rem); letter-spacing: -0.035em; }
+
 /* Dark surfaces — labels, title, desc adapt */
-.dark .label { color: rgba(255,255,255,0.5); }
-.dark .title { color: white; }
-.dark .desc { color: rgba(255,255,255,0.6); }
+.dark .label { color: var(--text-inverse-muted); }
+.dark .title { color: var(--text-inverse); }
+.dark .desc { color: var(--text-inverse-secondary); }
 
 /* Centered alignment */
 .center { text-align: center; }
 .center .deco { justify-content: center; }
 .center .desc { margin-left: auto; margin-right: auto; }
+
+@media (max-width: 768px) {
+  .root { margin-bottom: var(--space-4); }
+  .lg .title { font-size: var(--text-3xl); }
+  .desc { max-width: 100%; }
+}

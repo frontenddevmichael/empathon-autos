@@ -1,0 +1,15 @@
+.section {
+  position: relative;
+  isolation: isolate;
+}
+
+.paper { background: var(--paper); }
+.warm { background: var(--paper-warm); }
+.navy { background: var(--navy); color: var(--text-inverse); }
+.deep { background: var(--navy-deep); color: var(--text-inverse); }
+.transparent { background: transparent; }
+
+.spaceNone { padding-block: 0; }
+.spaceSm { padding-block: clamp(2.5rem, 5vw, 4rem); }
+.spaceMd { padding-block: var(--section-y); }
+.spaceLg { padding-block: clamp(6rem, 12vw, 10rem); }

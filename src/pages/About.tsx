@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
+import { AnimatedCounter } from '@/components/AnimatedCounter'
 import { Link } from 'react-router-dom'
 import { MessageCircle, ArrowRight, Search, ClipboardCheck, Truck, Handshake } from 'lucide-react'
-import { RippleButton } from '@/components/RippleButton'
+import { Button } from '@/components/ui/Button'
+import { PageHero } from '@/components/ui/PageHero'
 import { config } from '@/lib/config'
-import { useSiteContent, parseJsonContent, getTextContent } from '@/hooks/useSiteContent'
+import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
 import styles from './About.module.css'
 
 interface TeamMember {
@@ -39,51 +41,19 @@ const WHY_US_FALLBACK = [
   },
 ]
 
-function AnimatedCounter({ value, suffix, label }: { value: number; suffix: string; label: string }) {
-  const [count, setCount] = useState(0)
-  const ref = useRef<HTMLDivElement>(null)
-  const hasAnimated = useRef(false)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated.current) {
-          hasAnimated.current = true
-          const duration = 1800
-          const start = performance.now()
-          const animate = (now: number) => {
-            const elapsed = now - start
-            const progress = Math.min(elapsed / duration, 1)
-            const eased = 1 - Math.pow(1 - progress, 3)
-            setCount(Math.round(eased * value))
-            if (progress < 1) requestAnimationFrame(animate)
-          }
-          requestAnimationFrame(animate)
-        }
-      },
-      { threshold: 0.5 }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [value])
-
-  return (
-    <div ref={ref} className={styles.statItem}>
-      <span className={styles.statValue}>
-        {count}{suffix}
-      </span>
-      <span className={styles.statLabel}>{label}</span>
-    </div>
-  )
-}
-
 export function About() {
   const { content: aboutContent } = useSiteContent('about')
   const stats = parseJsonContent(aboutContent, 'stats', STATS_FALLBACK)
-  const processSteps = parseJsonContent(aboutContent, 'process_steps', PROCESS_STEPS_FALLBACK)
+  // CMS JSON cannot carry React icon components, so pair CMS copy with the
+  // fallback icon set by position — otherwise <Icon> is undefined at runtime.
+  const processSteps = parseJsonContent<{ title: string; desc: string }>(
+    aboutContent,
+    'process_steps',
+    PROCESS_STEPS_FALLBACK,
+  ).map((step, i) => ({
+    ...step,
+    icon: PROCESS_STEPS_FALLBACK[i % PROCESS_STEPS_FALLBACK.length].icon,
+  }))
   const whyUs = parseJsonContent(aboutContent, 'why_us', WHY_US_FALLBACK)
   const leadership = parseJsonContent<TeamMember>(aboutContent, 'leadership', [
     { name: 'Hassan', role: 'Team Member', photo: '/team/Hassan.jpeg' },
@@ -116,31 +86,21 @@ export function About() {
   return (
     <>
       {/* ── Section 1: Cinematic Hero ── */}
-      <section className={styles.hero}>
-        <img
-          src="/heroimg.jpg"
-          alt=""
-          className={styles.heroImage}
-          loading="eager"
-          fetchPriority="high"
-        />
-        <div className={styles.heroOverlay} />
-        <div className={styles.heroContent}>
-          <h1 className={styles.heroTitle}>
-            Premium Vehicles,<br />Sourced Globally.
-          </h1>
-          <p className={styles.heroSubtitle}>
-            From Tokyo to Lagos — we bring the world's finest vehicles to your driveway. No shortcuts, no surprises.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        images={[{ url: '/heroimg.jpg' }]}
+        size="lg"
+        overlay="bottom"
+        title={<>Premium Vehicles,<br />Sourced Globally.</>}
+        subtitle="From Tokyo to Lagos — we bring the world's finest vehicles to your driveway. No shortcuts, no surprises."
+      />
 
       {/* ── Section 2: Stats Bar ── */}
       <section className={styles.statsBar}>
         <div className={styles.statsInner}>
           {stats.map((stat, i) => (
             <div key={stat.label} className={styles.statItem}>
-              <AnimatedCounter value={stat.value} suffix={stat.suffix} label={stat.label} />
+              <AnimatedCounter target={stat.value} suffix={stat.suffix} className={styles.statValue} />
+              <span className={styles.statLabel}>{stat.label}</span>
               {i < stats.length - 1 && <div className={styles.statDivider} />}
             </div>
           ))}
@@ -265,16 +225,16 @@ export function About() {
           </p>
           <div className={styles.ctaButtons}>
             <Link to="/inventory">
-              <RippleButton size="md">Browse Inventory <ArrowRight size={15} /></RippleButton>
+              <Button size="md">Browse Inventory <ArrowRight size={15} /></Button>
             </Link>
             <a
               href={config.whatsapp.getDeepLink("Hi Empathon Autos! I'd like to know more.")}
               target="_blank" rel="noopener noreferrer"
             >
-              <RippleButton variant="secondary" size="md">
+              <Button variant="secondary" size="md">
                 <MessageCircle size={15} style={{ marginRight: 4 }} />
                 WhatsApp Us
-              </RippleButton>
+              </Button>
             </a>
           </div>
         </div>

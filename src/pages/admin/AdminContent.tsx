@@ -83,7 +83,7 @@ function JsonPreview({ data, depth = 0 }: { data: unknown; depth?: number }) {
 
   if (data === null) return <span style={{ color: 'var(--stone-light)', fontStyle: 'italic' }}>null</span>
   if (typeof data === 'boolean') return <span style={{ color: 'var(--navy)', fontWeight: 600 }}>{String(data)}</span>
-  if (typeof data === 'number') return <span className="tabular-nums" style={{ color: 'var(--gold)' }}>{data}</span>
+  if (typeof data === 'number') return <span className="tabular-nums" style={{ color: 'var(--navy)' }}>{data}</span>
   if (typeof data === 'string') {
     // Truncate long strings in preview
     const max = 120
