@@ -172,3 +172,40 @@ Scope as executed: `src/tokens.css`, `src/index.css`, `Nav`, `Footer`, `Button`,
 - Captured at 1440×900 and 390×844: Home, Inventory, Contact (`docs/screenshots/phase2/`). Checked after the fixes above.
 - Measured in the browser: nav 56px, transparent `rgba(0,0,0,0)` with white type over the home hero and `rgba(255,255,255,0.92)` + navy type on inner pages; footer `rgb(6,20,40)`; stats band four equal columns; no horizontal overflow at 390 or 1440.
 
+---
+
+# Phase 3 — Home hero
+
+## Choices
+
+- **Headline** (client's pick): "Your next drive starts here." Set in sentence case at `clamp(3rem, 7vw, 6rem)`, weight 600, tracking -0.03em, two lines by hand at desktop.
+- **Photograph**: `heroimg3.jpg` — G-Wagon on a wet plaza at dusk. It is the darkest of the five frames, its lower-left quadrant is empty paving so the copy never lands on the car, and its front three-quarter survives the 390px crop.
+  - `heroimg2.jpg` (Cullinan, coastal road): the strongest sense of journey, but the car fills the exact zone the headline occupies.
+  - `heroimg5.jpg` (Velar, mountains): same journey read, but the sunset sits directly behind the type, so white copy needs a scrim heavy enough to muddy the photo.
+  - `heroimg4.jpg` (Defender, cliff road): pale sea and sky on the left; white type needs a muddy scrim and the car crops badly at 390.
+  - `heroimg.jpg` is byte-identical to `heroimg3.jpg`. The CMS `hero_image` for the home page still points at it, so the rendered frame is the chosen one either way; the fallback is the same file.
+
+## What changed
+
+- `Home.tsx`: one `<img>`, no slideshow. Deleted the five-image array, the 5s `setInterval`, `currentIndex`, the dot buttons and click handlers, and the scroll "peel" (rAF handler writing `translate3d`/`scale` to a stage node). The image now settles once: 1.8s from `scale(1.06)`.
+- Copy block reduced to eyebrow ("Lagos · Since 2019"), headline, one supporting line ("Premium vehicles from four continents — inspected, explained and delivered.") and two actions. The row of secondary links — Corporate & Fleet Sales · Pre-Order a Vehicle · Chat on WhatsApp — is deleted, per the pack; WhatsApp is still in the nav sheet, footer, Contact, Inventory and vehicle detail.
+- `Home.module.css`: hero block rewritten as `.hero` / `.heroImage` / `.heroScrim` / `.heroInner`, 100svh, `object-fit: cover`, `object-position: 60% 50%` desktop and `74% 50%` under 768px. Hero dots, overlay, panel, secondary row and every mobile override for them deleted.
+- `HeroSection.tsx` deleted. The eight pages that imported it (Corporate, UserDashboard, TrackOrder, KYCRegistration ×2, Auctions, PreOrder, Electric) now render `PageHero` at `size="lg"` — 64vh, the 60–70svh smaller variant the pack asked for — and the dead `deco` prop is gone.
+
+## Self-critique against apple.com
+
+1. Type and subject share the same left half: at 1440 the headline crosses the car's rear window and doors. Apple usually keeps the product clear of the copy, or lets the type sit in negative space.
+2. There are three scrim layers now (bottom floor, left falloff, top). Apple's hero scrim is barely visible; ours is a visible treatment.
+3. White nav links sat over a bright glass facade with roughly 2:1 contrast — a real legibility failure, not a taste issue.
+4. The navy primary button sank into a near-black photograph, so the secondary outline read as the stronger action: inverted hierarchy.
+5. The photograph is 1376px wide and upscales ~5% on a 1440 viewport, so the grille is fractionally soft at that size.
+
+**Fixed (the two worst):** (1) a top scrim now darkens the band behind the nav, and the left falloff was reduced from 0.6 to 0.46 so the car stops looking muddy; (4) the primary action is now the `white` pill with navy text, matching the nav CTA over the hero, so the two actions rank correctly.
+
+**Not fixed, flagged:** the type-over-car overlap (1) is inherent to a 16:9 photograph in a 100svh frame with only ~170px of crop slack; fixing it needs a new photograph with the subject off-centre, which is a client asset decision. (2) and (5) are the same story: scrim strength is a trade against a soft, small source image.
+
+## Verification
+
+- `npx tsc -b` exit 0, `pnpm build` exit 0, `pnpm test --run` 52/52. There is no ESLint in this project (no config, no dependency, and Phase 3 rules out adding one), so `tsc` is the only static check available.
+- Screenshots at 1440×900 and 390×844 in `docs/screenshots/phase3/`, plus `/corporate` to confirm the `PageHero` migration renders its 64vh variant.
+- Mobile CTA widths measured equal (full width) at 390px; hero image `naturalWidth` 1376 loading at both sizes; no horizontal overflow.

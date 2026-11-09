@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Clock, ChevronLeft, ChevronRight } from 'lucide-react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
@@ -6,14 +6,11 @@ import { useMounted } from '@/hooks/useMounted'
 import type { Vehicle, VehicleMedia, Testimonial } from '@/types'
 import { useSiteContent, parseJsonContent, getTextContent } from '@/hooks/useSiteContent'
 import { Button } from '@/components/ui/Button'
+import { SectionHeader } from '@/components/ui/SectionHeader'
+import { Section } from '@/components/layout/Section'
 import { VehicleCard } from '@/components/ui/VehicleCard'
 import { VehicleCardSkeleton } from '@/components/ui/Skeleton'
-import { RippleButton } from '@/components/RippleButton'
-import { SplitHeading } from '@/components/SplitHeading'
-import { config } from '@/lib/config'
 import { AnimatedCounter } from '@/components/AnimatedCounter'
-import { ParallaxSection } from '@/components/ParallaxSection'
-import { ForkRoad, UnderlineFlourish } from '@/components/DecoSvgs'
 
 import styles from './Home.module.css'
 
@@ -55,46 +52,9 @@ export function Home() {
   const { content: homeContent } = useSiteContent('home')
   const clientLogos = parseJsonContent<Client>(homeContent, 'clients', FALLBACK_CLIENTS)
   const cmsImage = getTextContent(homeContent, 'hero_image')
-  const heroImages = [
-    cmsImage || '/heroimg.jpg',
-    '/heroimg2.jpg',
-    '/heroimg3.jpg',
-    '/heroimg4.jpg',
-    '/heroimg5.jpg',
-  ]
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const nextImage = useCallback(() => setCurrentIndex(i => (i + 1) % heroImages.length), [heroImages.length])
-  useEffect(() => {
-    const id = setInterval(nextImage, 5000)
-    return () => clearInterval(id)
-  }, [nextImage])
-
-  // Signature scroll moment — the hero image set peels gently as the hero scrolls away.
-  // Writes straight to the DOM node (no React state), so scroll frames never re-render
-  // the page — the same zero-re-render pattern ParallaxSection uses.
-  const heroRef = useRef<HTMLElement>(null)
-  const stageRef = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    if (mq.matches) return
-    let raf = 0
-    const onScroll = () => {
-      cancelAnimationFrame(raf)
-      raf = requestAnimationFrame(() => {
-        const el = heroRef.current
-        const stage = stageRef.current
-        if (!el || !stage) return
-        const rect = el.getBoundingClientRect()
-        const t = Math.max(0, Math.min(1, -rect.top / rect.height))
-        // easeOutCubic — the peel starts brisk and settles as it leaves, never abrupt
-        const e = 1 - Math.pow(1 - t, 3)
-        stage.style.transform = `translate3d(0, ${(e * 48).toFixed(2)}px, 0) scale(${(1 + e * 0.07).toFixed(4)})`
-      })
-    }
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf) }
-  }, [])
+  // One photograph, chosen for its empty lower-left quadrant and front three-quarter crop.
+  // The CMS value wins over the fallback when the client has set one.
+  const heroImage = cmsImage || '/heroimg3.jpg'
 
   // Learning carousel state
   const [learningIndex, setLearningIndex] = useState(0)
@@ -174,53 +134,27 @@ export function Home() {
 
   return (
     <>
-      {/* HERO */}
-      <section ref={heroRef} className={styles.hero}>
-        {/* Hero images — crossfade, on a scroll-peel stage */}
-        <div ref={stageRef} className={styles.heroStage}>
-          {heroImages.map((url, i) => (
-            <img
-              key={url}
-              className={`${styles.heroImage} ${i === currentIndex ? styles.heroImageActive : styles.heroImageInactive}`}
-              src={url}
-              alt="Premium luxury car"
-              loading={i === 0 ? 'eager' : 'lazy'}
-              fetchPriority={i === 0 ? 'high' : 'low'}
-            />
-          ))}
-        </div>
-        {/* Single clean gradient — dark on the left for text, clear on the right for the car */}
-        <div className={styles.heroOverlay} />
-        {/* Image indicators */}
-        <div className={styles.heroDots}>
-          {heroImages.map((_, i) => (
-            <button
-              key={i}
-              className={`${styles.heroDot} ${i === currentIndex ? styles.heroDotActive : ''}`}
-              onClick={() => setCurrentIndex(i)}
-              aria-label={`Image ${i + 1}`}
-            />
-          ))}
-        </div>
-        <div className={styles.heroContent}>
-          <div className={styles.heroPanel}>
-            <p className={styles.heroTag} style={{ animation: 'fadeInDown 600ms var(--ease-out) forwards' }}>Lagos &middot; Since 2019</p>
-            <SplitHeading as="h1" className={styles.heroTitle}>Your Next Drive<br />Starts Here.</SplitHeading>
-            <p className={styles.heroSub} style={{ animation: 'fadeInUp 600ms 300ms var(--ease-out) both' }}>
-              Premium vehicles sourced from four continents. Inspected, explained, and delivered —
-              with honest guidance at every step.
-            </p>
-            <div className={styles.heroCtas} style={{ animation: 'fadeInUp 600ms 500ms var(--ease-out) both' }}>
-              <Link to="/inventory"><RippleButton size="lg" magnetic>Browse Inventory <ArrowRight size={16} /></RippleButton></Link>
-              <Link to="/contact"><RippleButton size="lg" variant="ghostLight">Book a Test Drive</RippleButton></Link>
-            </div>
-            <div className={styles.heroSecondary} style={{ animation: 'fadeInUp 600ms 700ms var(--ease-out) both' }}>
-              <Link to="/corporate">Corporate &amp; Fleet Sales</Link>
-              <span aria-hidden="true" style={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(255,255,255,0.35)' }} />
-              <Link to="/pre-order">Pre-Order a Vehicle</Link>
-              <span aria-hidden="true" style={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(255,255,255,0.35)' }} />
-              <a href={config.whatsapp.link} target="_blank" rel="noopener noreferrer">Chat on WhatsApp</a>
-            </div>
+      {/* HERO — one photograph, one headline, two actions */}
+      <section className={styles.hero}>
+        <img
+          className={styles.heroImage}
+          src={heroImage}
+          alt=""
+          aria-hidden="true"
+          width={1376}
+          height={768}
+          fetchPriority="high"
+        />
+        <div className={styles.heroScrim} aria-hidden="true" />
+        <div className={styles.heroInner}>
+          <p className={styles.heroTag}>Lagos &middot; Since 2019</p>
+          <h1 className={styles.heroTitle}>Your next drive<br />starts here.</h1>
+          <p className={styles.heroSub}>
+            Premium vehicles from four continents — inspected, explained and delivered.
+          </p>
+          <div className={styles.heroCtas}>
+            <Link to="/inventory"><Button size="lg" variant="white">Browse Inventory</Button></Link>
+            <Link to="/contact"><Button size="lg" variant="ghostLight">Book a Test Drive</Button></Link>
           </div>
         </div>
       </section>
@@ -245,19 +179,21 @@ export function Home() {
       </section>
 
       {/* FEATURED VEHICLES */}
-      <ParallaxSection className={`scroll-reveal ${styles.section}`} style={{ background: 'var(--paper-warm)' }}>
+      <section className={`scroll-reveal ${styles.section} ${styles.sectionWarm}`}>
         <div className={styles.sectionInner}>
-          <p className={styles.sectionLabel}>Collection</p>
-          <h2 className={styles.sectionTitle}>Featured Vehicles</h2>
-          <p className={styles.sectionDesc}>Handpicked and ready to go. Every car here is sourced from trusted partners across North America, Europe, the Middle East, and the Far East — then prepped and waiting for you in Lagos.</p>
+          <SectionHeader
+            label="Collection"
+            title="Featured Vehicles"
+            desc="Handpicked and ready to go. Every car here is sourced from trusted partners across North America, Europe, the Middle East, and the Far East — then prepped and waiting for you in Lagos."
+          />
 
           {loading ? (
             <div className={styles.featuredGrid}>
               {Array.from({ length: 3 }).map((_, i) => <VehicleCardSkeleton key={i} />)}
             </div>
           ) : fetchError ? (
-            <div style={{ textAlign: 'center', padding: 'var(--space-4)' }}>
-              <p style={{ color: 'var(--error, #dc2626)', marginBottom: 'var(--space-2)' }}>{fetchError}</p>
+            <div className={styles.errorState}>
+              <p className={styles.errorText}>{fetchError}</p>
               <Button variant="secondary" size="sm" onClick={loadVehicles}>Try Again</Button>
             </div>
           ) : vehicles.length > 0 ? (
@@ -266,21 +202,23 @@ export function Home() {
                 {vehicles.map(v => <VehicleCard key={v.id} vehicle={v} />)}
               </div>
               <div className={styles.sectionCta}>
-                <Link to="/inventory"><RippleButton variant="secondary">View All Vehicles <ArrowRight size={14} /></RippleButton></Link>
+                <Link to="/inventory"><Button variant="secondary">View All Vehicles <ArrowRight size={14} /></Button></Link>
               </div>
             </>
           ) : null}
         </div>
-      </ParallaxSection>
+      </section>
 
       {/* LEARNING CAROUSEL */}
-      <ParallaxSection className={`scroll-reveal reveal-right ${styles.section}`} style={{ position: 'relative' }}>
+      <section className={`scroll-reveal ${styles.section}`}>
         <div className={styles.sectionInner}>
           <div className={styles.learningHeader}>
-            <div>
-              <p className={styles.sectionLabel}>Learning Centre</p>
-              <h2 className={styles.sectionTitle}>Drive Smarter</h2>
-            </div>
+            <SectionHeader
+              label="Learning Centre"
+              title="Drive Smarter"
+              desc="Tips, guides, and insights to help you make smarter automotive decisions."
+              className={styles.learningHeaderText}
+            />
             <div className={styles.carouselArrows}>
               <button onClick={prevLearning} disabled={learningIndex === 0} aria-label="Previous articles" className={styles.arrowBtn}>
                 <ChevronLeft size={18} />
@@ -290,7 +228,6 @@ export function Home() {
               </button>
             </div>
           </div>
-          <p className={styles.sectionDesc}>Tips, guides, and insights to help you make smarter automotive decisions.</p>
 
           <div className={styles.learningGrid}>
             {learningPosts.slice(learningIndex, learningIndex + learningItemsToShow).map((post) => (
@@ -311,22 +248,23 @@ export function Home() {
           </div>
 
           <div className={styles.sectionCta}>
-            <Link to="/blog"><RippleButton variant="secondary">View All Articles <ArrowRight size={14} /></RippleButton></Link>
+            <Link to="/blog"><Button variant="secondary">View All Articles <ArrowRight size={14} /></Button></Link>
           </div>
         </div>
-      </ParallaxSection>
+      </section>
 
       {/* EV TEASER */}
-      <ParallaxSection className={`scroll-reveal reveal-left ${styles.evSection} ${styles.onDark}`}>
+      <section className={`scroll-reveal ${styles.evSection}`}>
         <div className={styles.sectionInner}>
           <div className={styles.evGrid}>
             <div className={styles.evCopy}>
-              <p className={styles.sectionLabel}>Electric Vehicles</p>
-              <h2 className={styles.sectionTitle}>Go Electric. Go Green.</h2>
-              <p className={styles.sectionDesc}>
-                Premium EVs — Mercedes-Benz EQ series and more. Lower running costs, serious performance, and the latest tech, imported and ready for Nigerian roads.
-              </p>
-              <Link to="/ev"><RippleButton size="md" variant="white" magnetic>Explore Electric Vehicles <ArrowRight size={15} /></RippleButton></Link>
+              <SectionHeader
+                label="Electric Vehicles"
+                title="Go Electric. Go Green."
+                desc="Premium EVs — Mercedes-Benz EQ series and more. Lower running costs, serious performance, and the latest tech, imported and ready for Nigerian roads."
+                dark
+              />
+              <Link to="/ev"><Button size="md" variant="white">Explore Electric Vehicles <ArrowRight size={15} /></Button></Link>
             </div>
             <div className={styles.evImageWrap}>
               <img
@@ -338,19 +276,16 @@ export function Home() {
             </div>
           </div>
         </div>
-      </ParallaxSection>
+      </section>
 
       {/* WALK-IN vs PRE-ORDER */}
-      <ParallaxSection className={`scroll-reveal ${styles.section}`} style={{ position: 'relative' }}>
-        <ForkRoad
-          className="deco-positioned"
-          size={132}
-          style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)' }}
-        />
+      <section className={`scroll-reveal ${styles.section}`}>
         <div className={styles.sectionInner}>
-          <p className={styles.sectionLabel}>How to Buy</p>
-          <h2 className={styles.sectionTitle}>Two Ways to Drive</h2>
-          <p className={styles.sectionDesc}>If you want to drive it today, we've got stock. If you want something specific, we'll find it. Simple as that.</p>
+          <SectionHeader
+            label="How to Buy"
+            title="Two Ways to Drive"
+            desc="If you want to drive it today, we've got stock. If you want something specific, we'll find it. Simple as that."
+          />
 
           <div className={`${styles.explainerGrid} stagger-fade-in`}>
             <div className={styles.explainerCard}>
@@ -358,7 +293,7 @@ export function Home() {
               <h3>Walk-In — In Stock</h3>
               <p>Come see us at 123 Ajao Road, off Awolowo Way, Ikeja. Test drive whatever catches your eye, ask all the questions you want, and drive home the same day if it feels right. Paperwork included.</p>
               <div className={styles.explainerCta}>
-                <Link to="/inventory?status=walk-in"><RippleButton size="sm" variant="secondary">Browse In-Stock Vehicles</RippleButton></Link>
+                <Link to="/inventory?status=walk-in"><Button size="sm" variant="secondary">Browse In-Stock Vehicles</Button></Link>
               </div>
             </div>
             <div className={styles.explainerCard}>
@@ -366,19 +301,21 @@ export function Home() {
               <h3>Pre-Order — Import &amp; Allocation</h3>
               <p>Can't find that exact spec on the lot? Tell us what you want and we'll track it down through our network — Japan, Dubai, Europe, wherever it takes. A small deposit secures your place in line.</p>
               <div className={styles.explainerCta}>
-                <Link to="/pre-order"><RippleButton size="sm" variant="secondary">Learn About Pre-Ordering</RippleButton></Link>
+                <Link to="/pre-order"><Button size="sm" variant="secondary">Learn About Pre-Ordering</Button></Link>
               </div>
             </div>
           </div>
         </div>
-      </ParallaxSection>
+      </section>
 
       {/* CORPORATE vs INDIVIDUAL */}
-      <ParallaxSection className={`scroll-reveal reveal-right ${styles.section}`} style={{ background: 'var(--paper-warm)', position: 'relative' }}>
+      <section className={`scroll-reveal ${styles.section} ${styles.sectionWarm}`}>
         <div className={styles.sectionInner}>
-          <p className={styles.sectionLabel}>Who We Serve</p>
-          <h2 className={styles.sectionTitle}>Tailored for You</h2>
-          <p className={styles.sectionDesc}>One car or a whole fleet — we'll treat you the same: with respect, transparency, and straight talk.</p>
+          <SectionHeader
+            label="Who We Serve"
+            title="Tailored for You"
+            desc="One car or a whole fleet — we'll treat you the same: with respect, transparency, and straight talk."
+          />
 
           <div className={`${styles.explainerGrid} stagger-fade-in`}>
             <div className={styles.explainerCard}>
@@ -386,7 +323,7 @@ export function Home() {
               <h3>Individual Buyers</h3>
               <p>Browse what we've got, book a test drive, or just walk in. We'll walk you through everything — financing, documents, registration — so you can focus on the fun part.</p>
               <div className={styles.explainerCta}>
-                <Link to="/inventory"><RippleButton size="sm" variant="secondary">Browse as Individual</RippleButton></Link>
+                <Link to="/inventory"><Button size="sm" variant="secondary">Browse as Individual</Button></Link>
               </div>
             </div>
             <div className={styles.explainerCard}>
@@ -394,19 +331,21 @@ export function Home() {
               <h3>Corporate &amp; Fleet Buyers</h3>
               <p>Better pricing on bulk orders, a dedicated person who knows your account, and after-sales support that actually shows up. Trusted by Radisson Blu Hotel, Johnvents Group, and others.</p>
               <div className={styles.explainerCta}>
-                <Link to="/corporate"><RippleButton size="sm" variant="secondary">Explore Corporate Sales</RippleButton></Link>
+                <Link to="/corporate"><Button size="sm" variant="secondary">Explore Corporate Sales</Button></Link>
               </div>
             </div>
           </div>
         </div>
-      </ParallaxSection>
+      </section>
 
       {/* TRUST + CLIENT LOGOS */}
-      <section className={`scroll-reveal reveal-fade ${styles.section} ${styles.sectionCentered}`} style={{ position: 'relative' }}>
-        <div className={styles.sectionInner}>
-          <p className={styles.sectionLabel}>Trusted By</p>
-          <h2 className={styles.sectionTitle}>Our Clients</h2>
-          <p className={styles.sectionDesc}>Organisations that trust us to keep their teams moving.</p>
+      <Section className="scroll-reveal" space="md">
+          <SectionHeader
+            label="Trusted By"
+            title="Our Clients"
+            desc="Organisations that trust us to keep their teams moving."
+            align="center"
+          />
           <div className={styles.trustStrip}>
             {clientLogos.map((client) => (
               client.logo ? (
@@ -421,21 +360,19 @@ export function Home() {
           <p className={styles.trustLink}>
             <Link to="/about">See all clients and partners &rarr;</Link>
           </p>
-        </div>
-      </section>
+      </Section>
 
       {/* TESTIMONIALS */}
       {testimonialsLoaded && displayTestimonials.length > 0 && (
-        <ParallaxSection className={`scroll-reveal reveal-blur ${styles.section} ${styles.onDark} ${styles.sectionCentered}`} style={{ background: 'var(--navy-deep)' }}>
+        <section className={`scroll-reveal ${styles.section} ${styles.sectionDeep}`}>
           <div className={styles.sectionInner}>
-            <p className={styles.sectionLabel}>Testimonials</p>
-            <h2 className={styles.sectionTitle}>What Our Clients Say</h2>
+            <SectionHeader label="Testimonials" title="What Our Clients Say" align="center" dark />
             <div className={`${styles.testimonialGrid} stagger-fade-in`}>
               {displayTestimonials.map(t => (
                 <div key={t.id} className={styles.testimonialCard}>
                   <div className={styles.stars}>
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <span key={i} className={styles.star} style={{ color: i < (t.rating || 5) ? 'var(--gold)' : 'rgba(255,255,255,0.15)' }}>★</span>
+                      <span key={i} className={styles.star} style={{ color: i < (t.rating || 5) ? 'var(--text-inverse-secondary)' : 'var(--text-inverse-faint)' }}>★</span>
                     ))}
                   </div>
                   <p className={styles.testimonialQuote}>&ldquo;{t.quote}&rdquo;</p>
@@ -454,21 +391,20 @@ export function Home() {
               ))}
             </div>
           </div>
-        </ParallaxSection>
+        </section>
       )}
 
       {/* CTA SECTION */}
-      <ParallaxSection className={`scroll-reveal reveal-big ${styles.ctaSection}`} style={{ position: 'relative' }}>
+      <section className={`scroll-reveal ${styles.ctaSection}`}>
         <div className={styles.ctaInner}>
-          <h2 className={styles.ctaTitle} style={{ marginBottom: 'var(--space-1)' }}>Ready to Find Your Car?</h2>
-          <UnderlineFlourish style={{ margin: '-6px auto var(--space-2)' }} />
+          <h2 className={styles.ctaTitle}>Ready to Find Your Car?</h2>
           <p className={styles.ctaDesc}>Whether you know exactly what you want or just want to explore, we're here to help. No pressure, no games — just honest advice and real options.</p>
           <div className={styles.ctaCtas}>
-            <Link to="/inventory"><RippleButton size="lg" variant="white" magnetic>Browse Inventory <ArrowRight size={16} /></RippleButton></Link>
-            <Link to="/contact"><RippleButton size="lg" variant="ghostLight">Contact Us</RippleButton></Link>
+            <Link to="/inventory"><Button size="lg" variant="white">Browse Inventory <ArrowRight size={16} /></Button></Link>
+            <Link to="/contact"><Button size="lg" variant="ghostLight">Contact Us</Button></Link>
           </div>
         </div>
-      </ParallaxSection>
+      </section>
     </>
   )
 }
