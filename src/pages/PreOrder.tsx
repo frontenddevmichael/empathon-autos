@@ -9,7 +9,8 @@ import { PageHero } from '@/components/ui/PageHero'
 import { VehicleCard } from '@/components/ui/VehicleCard'
 import { VehicleCardSkeleton } from '@/components/ui/Skeleton'
 import { useMounted } from '@/hooks/useMounted'
-import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
+import { useSiteContent, parseJsonContent, getTextContent } from '@/hooks/useSiteContent'
+import { resolveHeroImage } from '@/lib/heroImage'
 import type { Vehicle, VehicleMedia } from '@/types'
 import styles from './PreOrder.module.css'
 
@@ -28,6 +29,8 @@ export function PreOrder() {
   const mounted = useMounted()
   const { content: preOrderContent } = useSiteContent('pre-order')
   const steps = parseJsonContent(preOrderContent, 'steps', STEPS_FALLBACK)
+  // CMS: page key "pre-order", title "hero_image".
+  const heroImage = resolveHeroImage('pre-order', getTextContent(preOrderContent, 'hero_image'), '/hero-preorder.jpg')
   const [vehicles, setVehicles] = useState<(Vehicle & { media: VehicleMedia[] })[]>([])
   const [loading, setLoading] = useState(true)
   const [form, setForm] = useState({ name: '', email: '', phone: '', make: '', model: '', notes: '', honeypot: '' })
@@ -100,7 +103,7 @@ export function PreOrder() {
         label="Pre-order"
         title="Order the car you actually want"
         subtitle="If it isn't on the lot, we'll source it through our network, anywhere from Lagos to Los Angeles."
-        images={[{ url: '/heroimg4.jpg' }, { url: '/heroimg5.jpg' }]}
+        images={[{ url: heroImage }]}
         overlay="left"
       />
 

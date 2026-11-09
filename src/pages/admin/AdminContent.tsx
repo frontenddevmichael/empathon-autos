@@ -471,6 +471,9 @@ export function AdminContent() {
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                 {[
                   { label: 'Hero Image URL', value: '/heroimg.jpg', pageKey: 'home', title: 'hero_image' },
+                  { label: 'Contact hero', value: '/hero-contact.jpg', pageKey: 'contact', title: 'hero_image' },
+                  { label: 'Pre-Order hero', value: '/hero-preorder.jpg', pageKey: 'pre-order', title: 'hero_image' },
+                  { label: 'EV hero', value: '/hero-ev.jpg', pageKey: 'ev', title: 'hero_image' },
                   { label: 'Client Logos', value: '[{"name": "Company Name"}]', pageKey: 'home', title: 'clients' },
                   { label: 'Team Members', value: '[{"name": "Full Name", "role": "Title"}]' },
                   { label: 'Feature List', value: '[{"title": "Feature", "desc": "Description"}]' },

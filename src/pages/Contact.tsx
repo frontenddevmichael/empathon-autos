@@ -6,6 +6,8 @@ import { Section } from '@/components/layout/Section'
 import { PageHero } from '@/components/ui/PageHero'
 import { config } from '@/lib/config'
 import { useRateLimit } from '@/hooks/useRateLimit'
+import { useSiteContent, getTextContent } from '@/hooks/useSiteContent'
+import { resolveHeroImage } from '@/lib/heroImage'
 import styles from './Contact.module.css'
 
 type Errors = { name?: string; email?: string; message?: string; form?: string }
@@ -14,6 +16,9 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export function Contact() {
   const { canSubmit } = useRateLimit()
+  const { content: contactContent } = useSiteContent('contact')
+  // CMS: page key "contact", title "hero_image".
+  const heroImage = resolveHeroImage('contact', getTextContent(contactContent, 'hero_image'), '/hero-contact.jpg')
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '', honeypot: '' })
   const [errors, setErrors] = useState<Errors>({})
   const [saving, setSaving] = useState(false)
@@ -63,7 +68,7 @@ export function Contact() {
         label="Contact"
         title="Let's talk"
         subtitle="A question, a quote, a car you have your eye on. Send it over and we'll answer within a working day."
-        images={[{ url: '/heroimg5.jpg' }]}
+        images={[{ url: heroImage }]}
         overlay="left"
       />
 

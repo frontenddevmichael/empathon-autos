@@ -7,6 +7,7 @@ import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Button } from '@/components/ui/Button'
 import { PageHero } from '@/components/ui/PageHero'
 import { useSiteContent, parseJsonContent, getTextContent } from '@/hooks/useSiteContent'
+import { resolveHeroImage } from '@/lib/heroImage'
 import styles from './Electric.module.css'
 
 const EV_BRANDS_FALLBACK = [
@@ -71,10 +72,8 @@ export function Electric() {
   const evModels = parseJsonContent(evContent, 'ev_models', EV_MODELS_FALLBACK)
   const costSavings = parseJsonContent(evContent, 'cost_savings', COST_SAVINGS_FALLBACK)
   const benefits = parseJsonContent(evContent, 'benefits', BENEFITS_FALLBACK)
-  const cmsHero = getTextContent(evContent, 'hero_image') || '/heroimg5.jpg'
-  const heroImages = [cmsHero, '/heroimg.jpg']
-    .filter((url, i, all) => all.indexOf(url) === i)
-    .map(url => ({ url }))
+  // CMS: page key "ev", title "hero_image".
+  const heroImage = resolveHeroImage('ev', getTextContent(evContent, 'hero_image'), '/hero-ev.jpg')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -122,7 +121,7 @@ export function Electric() {
         label="Electric"
         title="Electric cars, sourced properly."
         subtitle="We import premium EVs, inspect them, and hand them over with a battery report and honest charging advice."
-        images={heroImages}
+        images={[{ url: heroImage }]}
         overlay="left"
       />
 
