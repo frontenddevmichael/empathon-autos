@@ -114,11 +114,10 @@ export function Footer() {
       <div className={styles.cards}>
         <div className={`${styles.brand} ${styles.reveal}`}>
           <Link to="/" className={styles.logoLink} aria-label="Empathon Autos home">
-            <img src="/Empathon logo.png" alt="Empathon Autos" className={styles.logo} />
+           <img src="/Empathon logo.png" alt="Empathon Autos" className={styles.logoImage} />
           </Link>
 
           <div className={styles.touch}>
-            <p className={styles.touchTitle}>Stay in touch</p>
             <div className={styles.social}>
               <a
                 href={config.whatsapp.getDeepLink('Hi Empathon Autos!')}
