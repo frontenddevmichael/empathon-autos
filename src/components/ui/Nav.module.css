@@ -235,106 +235,158 @@
 .hamburgerOpen::before { top: 0; transform: rotate(45deg); }
 .hamburgerOpen::after { top: 0; transform: rotate(-45deg); }
 
-/* ── Mobile sheet ── */
-.mobileMenu {
+/* ── Mobile sheet ──
+   Sits under the bar (z below --z-nav) so the close control stays reachable.
+   Everything scrolls inside .sheetScroll with the CTA pinned at the bottom. */
+.sheet {
   position: fixed;
-  inset: 0;
-  padding: calc(var(--nav-height) + var(--space-3)) var(--container-pad) var(--space-4);
-  background: var(--surface);
-  display: flex;
-  flex-direction: column;
+  inset: var(--nav-height) 0 0 0;
   z-index: var(--z-sticky);
+  display: flex;
+  background: var(--paper);
+  border-top: 1px solid var(--border);
   opacity: 0;
-  transition: opacity 200ms var(--ease-out);
+  transform: translateY(-6px);
+  visibility: hidden;
   pointer-events: none;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  transition:
+    opacity 220ms var(--ease-out),
+    transform 260ms var(--ease-out),
+    visibility 0s linear 260ms;
 }
-.mobileOpen {
+
+.sheetOpen {
   opacity: 1;
+  transform: none;
+  visibility: visible;
   pointer-events: auto;
+  transition:
+    opacity 220ms var(--ease-out),
+    transform 260ms var(--ease-out),
+    visibility 0s;
 }
 
-.mobileLinks {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-0-5);
+.sheetScroll {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--space-3) var(--container-pad) calc(var(--space-4) + env(safe-area-inset-bottom));
 }
 
-.mobileGroup {
+.sheetNav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sheetGroup {
   display: flex;
   flex-direction: column;
 }
 
-.mobileGroupLabel {
-  display: block;
-  padding: var(--space-2) 0 var(--space-1);
+.sheetLabel {
+  padding-bottom: var(--space-1);
   font-size: var(--text-xs);
   font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
   color: var(--stone);
 }
 
-.mobileDivider {
-  display: block;
-  height: 1px;
-  background: var(--border);
-  margin: var(--space-2) 0;
-}
-
-/* 32px links, staggered in as the sheet opens */
-.mobileLink {
+/* One row per page, staggered in from --i. */
+.sheetLink {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
   min-height: 52px;
-  padding: var(--space-1) 0;
+  padding: var(--space-0-5) 0;
+  border-bottom: 1px solid var(--border);
   font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: 1.625rem;
   font-weight: 600;
+  line-height: 1.15;
   letter-spacing: -0.02em;
   color: var(--ink);
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out);
+  transform: translateY(10px);
+  transition: opacity 360ms var(--ease-out), transform 360ms var(--ease-out), color 160ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 40ms);
 }
-.mobileLink[data-open='true'] {
+
+.sheetOpen .sheetLink {
   opacity: 1;
   transform: none;
 }
-.mobileLinkActive { color: var(--navy); }
 
-.mobileChevron { display: none; }
+.sheetLink:hover,
+.sheetLinkActive {
+  color: var(--navy);
+}
 
-.mobileCta {
-  margin-top: var(--space-3);
+.sheetArrow {
+  flex-shrink: 0;
+  color: var(--stone);
+}
+
+.sheetFoot {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-1-5);
+  padding-top: var(--space-2);
+  padding-bottom: var(--space-1);
+  border-top: 1px solid var(--border);
+  background: var(--paper);
 }
 
-.mobileContactRow {
+.sheetAccounts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+}
+
+.sheetAccountLink {
+  padding-block: 6px;
+  font-size: var(--text-md);
+  color: var(--text-secondary);
+  transition: color 160ms var(--ease-out);
+}
+
+.sheetAccountLink:hover {
+  color: var(--ink);
+}
+
+.sheetContactRow {
   display: flex;
   gap: var(--space-2);
 }
 
-.mobileContactLink {
+.sheetContactLink {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   flex: 1;
-  justify-content: center;
   min-height: 44px;
   padding: 0 var(--space-2);
   border-radius: var(--radius-sm);
+  border: 1px solid var(--navy-a24);
   font-size: var(--text-md);
   font-weight: 600;
   color: var(--navy);
-  border: 1px solid var(--navy-a24);
   transition: background 200ms var(--ease-out), border-color 200ms var(--ease-out);
 }
-.mobileContactLink:hover {
+
+.sheetContactLink:hover {
   background: var(--navy-a04);
   border-color: var(--navy);
 }
@@ -372,8 +424,20 @@
   .logoImage { max-width: 148px; }
 }
 
+/* Short viewports: let the whole sheet scroll instead of pinning the footer
+   over the last group, which would hide its links. */
+@media (max-height: 720px) {
+  .sheetFoot {
+    position: static;
+    background: transparent;
+    border-top: 0;
+    padding-top: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .mobileLink {
+  .sheet { transition: none; }
+  .sheetLink {
     opacity: 1;
     transform: none;
     transition: none;
