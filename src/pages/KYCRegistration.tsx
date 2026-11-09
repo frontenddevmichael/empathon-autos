@@ -4,7 +4,7 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { Input, Select, TextArea } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { Section } from '@/components/layout/Section'
-import { SectionHeader } from '@/components/ui/SectionHeader'
+import { PageHero } from '@/components/ui/PageHero'
 import { config } from '@/lib/config'
 import styles from './KYCRegistration.module.css'
 
@@ -75,7 +75,7 @@ export function KYCRegistration() {
       email: form.email.trim(),
       phone: form.phone.trim(),
       company: form.company.trim() || null,
-      message: `KYC Registration — Occupation: ${form.occupation.trim() || 'N/A'}, Address: ${form.address.trim() || 'N/A'}, ID Type: ${form.idType}, ID Number: ${form.idNumber.trim()}, How heard: ${form.howHeard.trim() || 'N/A'}`,
+      message: `KYC registration. Occupation: ${form.occupation.trim() || 'N/A'}, Address: ${form.address.trim() || 'N/A'}, ID Type: ${form.idType}, ID Number: ${form.idNumber.trim()}, How heard: ${form.howHeard.trim() || 'N/A'}`,
       source_page: '/register',
     })
     setSaving(false)
@@ -103,15 +103,13 @@ export function KYCRegistration() {
 
   return (
     <>
-      <Section tone="paper" space="sm">
-        <SectionHeader
-          as="h1"
-          size="lg"
-          label="Registration"
-          title="Register to bid"
-          desc="Complete your KYC details to take part in auctions and receive personalised offers."
-        />
-      </Section>
+      <PageHero
+        label="Registration"
+        title="Register to bid"
+        subtitle="A few KYC details and you can take part in auctions and get offers that fit what you drive."
+        images={[{ url: '/heroimg2.jpg' }]}
+        overlay="left"
+      />
 
       <Section tone="paper" space="sm">
         <div className={styles.layout}>

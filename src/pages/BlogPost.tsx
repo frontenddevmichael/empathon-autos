@@ -212,7 +212,7 @@ export function BlogPost() {
 
           <div className={styles.byline}>
             <p className={styles.bylineName}>{post.author || 'Empathon Autos'}</p>
-            <p className={styles.bylineRole}>Empathon Autos — Lagos, Nigeria</p>
+            <p className={styles.bylineRole}>Empathon Autos, Lagos</p>
           </div>
         </Container>
 

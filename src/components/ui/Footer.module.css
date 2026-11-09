@@ -51,6 +51,18 @@
   color: var(--text-inverse);
 }
 
+/* Platform with no URL in config yet — visible, not clickable. */
+.socialSoon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border-inverse);
+  color: var(--text-inverse-faint);
+}
+
 .col h4 {
   color: var(--text-inverse-faint);
   font-size: var(--text-xs);

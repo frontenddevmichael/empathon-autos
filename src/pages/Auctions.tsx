@@ -128,7 +128,7 @@ export function Auctions() {
           pastLots.length === 0 ? (
             <EmptyState
               title="No Past Auctions Yet"
-              message="Once the first lot closes, its results — winning bid and final price — will appear here."
+              message="Once the first lot closes, the winning bid and final price will show up here."
               action={
                 <Button size="sm" variant="secondary" onClick={() => setTab('live')}>View Live Auctions</Button>
               }

@@ -266,7 +266,7 @@ export function Inventory() {
               className={styles.emptyState}
               title="No vehicles found"
               message={hasAnyFilter
-                ? 'Try widening your search or clearing a few filters — there may be more to see.'
+                ? 'Try widening the search or clearing a couple of filters. There may be more to see.'
                 : "We're restocking the lot. Tell us what you're after and we'll hunt it down."}
               action={hasAnyFilter
                 ? <Button variant="secondary" size="sm" onClick={clearAll}>Clear all filters</Button>
@@ -289,7 +289,7 @@ export function Inventory() {
           <div>
             <p className={styles.helpTitle}>Can&rsquo;t find what you&rsquo;re looking for?</p>
             <p className={styles.helpText}>
-              Tell us the spec you want and we&rsquo;ll source it — or message us on WhatsApp for a quick answer.
+              Tell us the spec you want and we&rsquo;ll source it, or message us on WhatsApp for a quick answer.
             </p>
           </div>
           <div className={styles.helpActions}>

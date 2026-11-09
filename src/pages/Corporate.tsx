@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button'
 import { Section } from '@/components/layout/Section'
 import { useSiteContent, parseJsonContent, getTextContent } from '@/hooks/useSiteContent'
 import { LeadForm } from '@/components/LeadForm'
+import { PageHero } from '@/components/ui/PageHero'
 import { Input, TextArea } from '@/components/ui/Input'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import styles from './Corporate.module.css'
@@ -102,7 +103,11 @@ export function Corporate() {
   const whyChooseUs = parseJsonContent(clientContent, 'why_choose_us', WHY_CHOOSE_US_FALLBACK)
   const volumeTiers = parseJsonContent(clientContent, 'volume_tiers', VOLUME_TIERS_FALLBACK)
   const heroTitle = getTextContent(clientContent, 'hero_title') || "Fleet solutions for Nigeria's leading organisations"
-  const heroSubtitle = getTextContent(clientContent, 'hero_subtitle') || 'Better pricing on bulk orders, a dedicated account manager, and after-sales support that actually shows up.'
+  const heroSubtitle = getTextContent(clientContent, 'hero_subtitle') || 'Better pricing on bulk orders, one account manager who knows your fleet, and after-sales support that actually shows up.'
+  const cmsHero = getTextContent(clientContent, 'hero_image') || '/heroimg2.jpg'
+  const heroImages = [cmsHero, '/heroimg3.jpg', '/heroimg4.jpg']
+    .filter((url, i, all) => all.indexOf(url) === i)
+    .map(url => ({ url }))
 
   const [leadSector, setLeadSector] = useState<string | null>(null)
   const [expandedSector, setExpandedSector] = useState<string | null>(null)
@@ -134,7 +139,7 @@ export function Corporate() {
       name: form.name.trim(),
       email: form.email.trim(),
       phone: form.phone.trim(),
-      message: `Corporate fleet enquiry — Company: ${form.company.trim()}, Fleet size: ${form.fleetSize.trim() || 'not stated'}. ${form.notes.trim()}`.trim(),
+      message: `Corporate fleet enquiry. Company: ${form.company.trim()}, Fleet size: ${form.fleetSize.trim() || 'not stated'}. ${form.notes.trim()}`.trim(),
       source_page: '/corporate',
     })
     setSaving(false)
@@ -150,9 +155,13 @@ export function Corporate() {
 
   return (
     <>
-      <Section tone="paper" space="sm">
-        <SectionHeader as="h1" size="lg" label="Corporate sales" title={heroTitle} desc={heroSubtitle} />
-      </Section>
+      <PageHero
+        label="Corporate sales"
+        title={heroTitle}
+        subtitle={heroSubtitle}
+        images={heroImages}
+        overlay="left"
+      />
 
       <Section tone="navy" space="sm">
         <div className={styles.tiersHead}>
@@ -173,7 +182,7 @@ export function Corporate() {
         <SectionHeader
           label="Fleet deals by sector"
           title="Packages built around your organisation"
-          desc="One car or fifty — pick your sector, review the package and request a tailored quote."
+          desc="One car or fifty. Pick your sector, look over the package, then ask for a quote."
         />
 
         <div className={styles.sectors}>
@@ -210,6 +219,11 @@ export function Corporate() {
       </Section>
 
       <Section tone="warm" space="sm">
+        <SectionHeader
+          label="Why fleets stay"
+          title="What you get past the discount."
+          desc="The pricing gets you in. These are the things that keep a fleet running."
+        />
         <div className={styles.why}>
           {whyChooseUs.map(item => (
             <div key={item.title} className={styles.whyItem}>
@@ -313,7 +327,7 @@ export function Corporate() {
         open={leadSector !== null}
         onClose={() => setLeadSector(null)}
         type="corporate-quote"
-        initialMessage={leadSector ? `Fleet package enquiry — ${leadSector}` : undefined}
+        initialMessage={leadSector ? `Fleet package enquiry: ${leadSector}` : undefined}
       />
     </>
   )

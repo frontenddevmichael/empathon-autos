@@ -3,7 +3,7 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { Input, TextArea } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { Section } from '@/components/layout/Section'
-import { SectionHeader } from '@/components/ui/SectionHeader'
+import { PageHero } from '@/components/ui/PageHero'
 import { config } from '@/lib/config'
 import { useRateLimit } from '@/hooks/useRateLimit'
 import styles from './Contact.module.css'
@@ -59,15 +59,13 @@ export function Contact() {
 
   return (
     <>
-      <Section tone="paper" space="sm">
-        <SectionHeader
-          as="h1"
-          size="lg"
-          label="Contact"
-          title="Let's talk"
-          desc="A question, a quote, a specific car in mind — send it over and we'll answer within a working day."
-        />
-      </Section>
+      <PageHero
+        label="Contact"
+        title="Let's talk"
+        subtitle="A question, a quote, a car you have your eye on. Send it over and we'll answer within a working day."
+        images={[{ url: '/heroimg5.jpg' }]}
+        overlay="left"
+      />
 
       <Section tone="paper" space="sm">
         <div className={styles.layout}>
@@ -102,6 +100,7 @@ export function Contact() {
             >
               Message us on WhatsApp
             </a>
+
           </div>
 
           <div className={styles.formColumn}>
@@ -109,7 +108,7 @@ export function Contact() {
               <div className={styles.success} role="status">
                 <h2 className={styles.successTitle}>Message sent.</h2>
                 <p className={styles.successBody}>
-                  Thanks {form.name.split(' ')[0] || 'for reaching out'} — we'll reply to {form.email} within a working day.
+                  Thanks {form.name.split(' ')[0] || 'for reaching out'}. We'll reply to {form.email} within a working day.
                 </p>
                 <Button variant="secondary" size="sm" onClick={reset}>Send another</Button>
               </div>

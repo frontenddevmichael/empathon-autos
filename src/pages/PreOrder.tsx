@@ -5,6 +5,7 @@ import { Input, TextArea } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { Section } from '@/components/layout/Section'
 import { SectionHeader } from '@/components/ui/SectionHeader'
+import { PageHero } from '@/components/ui/PageHero'
 import { VehicleCard } from '@/components/ui/VehicleCard'
 import { VehicleCardSkeleton } from '@/components/ui/Skeleton'
 import { useMounted } from '@/hooks/useMounted'
@@ -13,9 +14,9 @@ import type { Vehicle, VehicleMedia } from '@/types'
 import styles from './PreOrder.module.css'
 
 const STEPS_FALLBACK = [
-  { title: 'Tell us what you want', desc: 'Make, model, trim, colour, year, budget — the more specific you are, the better we can hunt.' },
+  { title: 'Tell us what you want', desc: 'Make, model, trim, colour, year, budget. The more specific you are, the better we can hunt.' },
   { title: 'Secure it with a deposit', desc: "A refundable deposit locks in your place. We'll give you a timeline and keep you posted." },
-  { title: 'We handle everything', desc: "Sourcing, shipping, customs clearance — we've done it hundreds of times. You just wait for the call." },
+  { title: 'We handle everything', desc: "Sourcing, shipping and customs clearance. We've done it hundreds of times, so you just wait for the call." },
   { title: 'Inspect and drive away', desc: 'When it arrives at our Ikeja showroom, come and inspect it. If everything checks out, you drive home.' },
 ]
 
@@ -79,7 +80,7 @@ export function PreOrder() {
       name: form.name.trim(),
       email: form.email.trim(),
       phone: form.phone.trim(),
-      message: `Pre-order request — Make: ${form.make.trim() || 'Any'}, Model: ${form.model.trim() || 'Any'}. ${form.notes.trim()}`.trim(),
+      message: `Pre-order request. Make: ${form.make.trim() || 'Any'}, Model: ${form.model.trim() || 'Any'}. ${form.notes.trim()}`.trim(),
       source_page: '/pre-order',
     })
     setSaving(false)
@@ -95,15 +96,13 @@ export function PreOrder() {
 
   return (
     <>
-      <Section tone="paper" space="sm">
-        <SectionHeader
-          as="h1"
-          size="lg"
-          label="Pre-order"
-          title="Order the car you actually want"
-          desc="If it isn't on the lot, we'll source it through our network — anywhere from Lagos to Los Angeles."
-        />
-      </Section>
+      <PageHero
+        label="Pre-order"
+        title="Order the car you actually want"
+        subtitle="If it isn't on the lot, we'll source it through our network, anywhere from Lagos to Los Angeles."
+        images={[{ url: '/heroimg4.jpg' }, { url: '/heroimg5.jpg' }]}
+        overlay="left"
+      />
 
       <Section tone="paper" space="sm">
         <SectionHeader
@@ -127,7 +126,7 @@ export function PreOrder() {
           </>
         ) : (
           <p className={styles.empty}>
-            No pre-order vehicles right now — <a href="#request">tell us what you want below</a> and we'll find it.
+            Nothing inbound at the moment. <a href="#request">Tell us what you want below</a> and we'll go looking.
           </p>
         )}
       </Section>
@@ -136,7 +135,7 @@ export function PreOrder() {
         <SectionHeader
           label="How it works"
           title="From request to keys"
-          desc="You tell us what you want. We find it, ship it, clear it, and call you when it's ready."
+          desc="You tell us what you want. We find it, ship it, clear it, then call you when it's ready."
         />
         <ol className={`scroll-reveal stagger-fade-in ${styles.steps}`}>
           {steps.map((s, i) => (

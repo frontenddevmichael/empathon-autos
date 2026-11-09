@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { Input } from '@/components/ui/Input'
 import { Section } from '@/components/layout/Section'
-import { SectionHeader } from '@/components/ui/SectionHeader'
+import { PageHero } from '@/components/ui/PageHero'
 import { Button } from '@/components/ui/Button'
 import { lookupOrder, validateReference, ORDER_STAGES } from '@/lib/mockOrders'
 import type { TrackedOrder } from '@/lib/mockOrders'
@@ -55,15 +55,13 @@ export function TrackOrder() {
 
   return (
     <>
-      <Section tone="paper" space="sm">
-        <SectionHeader
-          as="h1"
-          size="lg"
-          label="Track order"
-          title="Where's my vehicle?"
-          desc="Enter the reference from your order confirmation and follow the car from sourcing to your driveway."
-        />
-      </Section>
+      <PageHero
+        label="Track order"
+        title="Where's my vehicle?"
+        subtitle="Enter the reference from your order confirmation and follow the car from sourcing to your driveway."
+        images={[{ url: '/heroimg.jpg' }, { url: '/heroimg2.jpg' }]}
+        overlay="left"
+      />
 
       <Section tone="paper" space="sm">
         <div className={styles.lookup}>

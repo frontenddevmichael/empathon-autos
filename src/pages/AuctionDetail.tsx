@@ -153,7 +153,7 @@ export function AuctionDetail() {
         }
       }
     } catch {
-      showToast('Network error — please try again', 'error')
+      showToast('Network error. Please try again', 'error')
     }
     setSaving(false)
   }
@@ -203,10 +203,10 @@ export function AuctionDetail() {
   const title = lotTitle(lot)
   const year = lot.year || lot.vehicles?.year || null
   const mileage = lot.mileage || lot.vehicles?.mileage || 0
-  const transmission = lot.transmission || lot.vehicles?.transmission || '—'
-  const fuel = lot.fuel_type || lot.vehicles?.fuel_type || '—'
-  const colour = lot.colour || lot.vehicles?.colour || '—'
-  const vCondition = lot.vehicles?.condition || '—'
+  const transmission = lot.transmission || lot.vehicles?.transmission || 'Not stated'
+  const fuel = lot.fuel_type || lot.vehicles?.fuel_type || 'Not stated'
+  const colour = lot.colour || lot.vehicles?.colour || 'Not stated'
+  const vCondition = lot.vehicles?.condition || 'Not stated'
 
   const deadline = getLotDeadline(lot)
   const timeLeft = Math.max(0, new Date(deadline).getTime() - Date.now())
@@ -227,9 +227,9 @@ export function AuctionDetail() {
   const winner = lot.status === 'sold' ? firstName(lot.winner_name) : null
 
   const specs: [string, string][] = [
-    ['Make', lot.make || lot.vehicles?.make || '—'],
-    ['Model', lot.model || lot.vehicles?.model || '—'],
-    ['Year', year ? String(year) : '—'],
+    ['Make', lot.make || lot.vehicles?.make || 'Not stated'],
+    ['Model', lot.model || lot.vehicles?.model || 'Not stated'],
+    ['Year', year ? String(year) : 'Not stated'],
     ['Mileage', formatMileage(mileage)],
     ['Transmission', transmission],
     ['Fuel', fuel],
@@ -370,7 +370,7 @@ export function AuctionDetail() {
                   <AuctionTimer closesAt={deadline} />
                 </p>
                 {isOpen && timeLeft <= 3 * 60_000 && (
-                  <p className={styles.endingSoon}>Ending soon — bids in the last 3 minutes extend the auction by 5.</p>
+                  <p className={styles.endingSoon}>Ending soon. A bid in the last 3 minutes extends the auction by 5.</p>
                 )}
               </div>
 
@@ -379,13 +379,13 @@ export function AuctionDetail() {
                   <Button
                     onClick={() => {
                       setBidAmount(buyNowPrice.toString())
-                      showToast(`Buy Now price: ${formatPrice(buyNowPrice)} — enter your details below to purchase`)
+                      showToast(`Buy Now price: ${formatPrice(buyNowPrice)}. Enter your details below to purchase.`)
                     }}
                     className={styles.buyNowButton}
                   >
-                    Buy now — {formatPrice(buyNowPrice)}
+                    Buy now for {formatPrice(buyNowPrice)}
                   </Button>
-                  <p className={styles.buyNowNote}>Skip the bidding — purchase immediately at this price</p>
+                  <p className={styles.buyNowNote}>Skip the bidding and buy at this price</p>
                 </div>
               )}
 
@@ -416,7 +416,7 @@ export function AuctionDetail() {
                     placeholder="+234 800 000 0000"
                   />
                   <Input
-                    label={`Your bid (₦) — next bid must be at least ${formatPrice(Math.max(lot.current_bid + nextIncrement, lot.opening_bid))}`}
+                    label={`Your bid (₦). Next bid must be at least ${formatPrice(Math.max(lot.current_bid + nextIncrement, lot.opening_bid))}`}
                     type="text"
                     inputMode="numeric"
                     value={bidAmount}

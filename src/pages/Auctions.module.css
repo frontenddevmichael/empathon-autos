@@ -3,7 +3,7 @@
   gap: 4px;
   padding: 4px;
   margin-bottom: var(--space-5);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-sm);
   background: var(--paper-warm);
 }
 
@@ -15,7 +15,7 @@
   height: 40px;
   padding: 0 18px;
   border: none;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-sm);
   background: transparent;
   font-size: var(--text-sm);
   font-weight: 500;

@@ -349,3 +349,44 @@ Contact and Corporate keep their Supabase `leads` inserts and the honeypot field
 - The EV model images were rendering as broken images (the `ev_models` CMS rows have no `img` field). The media frame is now omitted when a row has no image, so the models read as text. Restoring photography there needs images added in the CMS.
 - `content_blocks` supplies most of the copy on Corporate and Electric, so wording such as "Fuel Savings" and "N25M per unit" comes from the database, not from these files.
 - `Footer.tsx`, `Footer.module.css` and `tokens.css` were being changed by something other than this work; they are untouched and not in this commit. The footer area is blank in most of these screenshots because that in-progress footer had not rendered at capture time.
+
+---
+
+# Polish pass
+
+Feedback on the finished phases, applied across the site.
+
+## Photo headers are back
+
+The plain headline bands were too quiet. Corporate, Electric, Pre-Order, Contact, Blog, Track Order and Register now open on a photograph again, with the same navy scrim and the label, headline and one sentence over it. Corporate and Electric read their image from the CMS `hero_image` block and fall back to `/heroimg2.jpg` and `/heroimg5.jpg`; the rest use the image the page used before the redesign. About keeps its plain band, as asked, and Privacy, Terms and the 404 stay text-only.
+
+## No photography where it was only filling space
+
+The mid-page split photographs added during the phase (Corporate "why", Electric "why electric", Pre-Order "how it works", the Contact showroom figure) are gone. Those sections are text again: four hairline "why" blocks on Corporate, the two-column benefit list on Electric, the four numbered rows on Pre-Order, and details beside the form on Contact.
+
+## Sharper controls
+
+`Button` moved from a full pill to a 6px radius, and the same radius went to the filter buttons, inventory chips, auction tabs and the mobile nav button. Status badges, gallery arrows and the counter keep their pill or circular shape, because they are not buttons.
+
+## Electric partner badges
+
+The brand filter is a row of bordered badges with the real marque marks from `/brands` (Mercedes, BMW, Tesla, Audi, Porsche, Hyundai), the name and the model count. Picking one highlights it and narrows the list below; the same click clears it. When the CMS brand list has no `logo`, the file is matched by name.
+
+## Footer
+
+Restored the navy four-column footer and kept its structure. Three changes: the brand block leads with the logo file rather than a name, the social row carries WhatsApp plus Instagram, Facebook, TikTok and X marks, and the platforms with no URL in `config.social` render as muted, non-clickable icons instead of disappearing. Add the profile URLs in `src/lib/config.ts` and the icon becomes a live link.
+
+## Loaders
+
+The pre-React fallback in `index.html` was a white page with a spinner, fake nav, fake buttons and "Trust . Fit . Drive." in 800-weight display type. It is now the navy field, the logo and a single 2px progress line, nothing else. The route-level `LoadingScreen` now mirrors the page it is standing in for: a hero band with headline lines, then a section head and three card frames, with one hairline sweeping at the top.
+
+## Copy
+
+Em dashes are gone from every user-facing string and the stiff "X — Y" sentence shape with them. Rewritten by hand: the home hero, process and closing copy, the About story lines, the Electric and Pre-Order section descriptions, the Contact and blog headers, and the auction and form microcopy. Dashes inside CMS content and inside `config.company.hours` are untouched because they live in the database and the config.
+
+## Verification
+
+- `npx tsc -b` exit 0, `pnpm build` exit 0 (674ms), `pnpm test --run` 52/52.
+- `docs/screenshots/polish/`: corporate, ev, contact, blog and pre-order at 1440 and 390, plus `loader-1440.png` captured with JS disabled so the static fallback stays on screen.
+- Checked in the browser at 390: no page scrolls horizontally, the Electric badges stay readable at two per row, the KYC form now comes before the "why register" aside on mobile, and the footer stacks to two link columns.
+- The scroll-driven progress line that was drafted for the top of the page did not animate here (scroll timelines report a root timeline but never advance, likely because Lenis owns the scroll), so it was removed rather than shipped broken.

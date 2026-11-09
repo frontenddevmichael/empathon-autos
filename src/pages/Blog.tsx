@@ -5,7 +5,7 @@ import type { BlogPost } from '@/types'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Button } from '@/components/ui/Button'
 import { Section } from '@/components/layout/Section'
-import { SectionHeader } from '@/components/ui/SectionHeader'
+import { PageHero } from '@/components/ui/PageHero'
 import styles from './Blog.module.css'
 
 function readTime(body: string): string {
@@ -40,15 +40,13 @@ export function Blog() {
 
   return (
     <>
-      <Section tone="paper" space="sm">
-        <SectionHeader
-          as="h1"
-          size="lg"
-          label="Blog"
-          title="Latest articles"
-          desc="Guides, market notes and buying advice from the Empathon Autos team."
-        />
-      </Section>
+      <PageHero
+        label="Blog"
+        title="Notes from the lot"
+        subtitle="Guides, market notes and buying advice from the people who source the cars."
+        images={[{ url: '/heroimg3.jpg' }]}
+        overlay="left"
+      />
 
       <Section tone="paper" space="sm">
         {loading ? (
@@ -64,7 +62,7 @@ export function Blog() {
         ) : posts.length === 0 ? (
           <EmptyState
             title="No articles yet"
-            message="We're writing our first stories — guides, market insights and buying advice. Tell us what you'd like to read about."
+            message="We're writing our first stories: guides, market notes and buying advice. Tell us what you'd like to read about."
             action={<Link to="/contact"><Button size="sm" variant="secondary">Request a topic</Button></Link>}
           />
         ) : (

@@ -115,7 +115,7 @@ export function VehicleDetail() {
 
   const DEFAULT_IMG = '/og-image.jpg'
   const vehicleTitle = `${vehicle.make} ${vehicle.model} ${vehicle.trim || ''} ${vehicle.year}`.trim()
-  const vehicleDesc = vehicle.description?.slice(0, 200) || `${vehicleTitle} — ${formatPrice(vehicle.price)}, ${formatMileage(vehicle.mileage)}, ${vehicle.transmission}`
+  const vehicleDesc = vehicle.description?.slice(0, 200) || `${vehicleTitle}, ${formatPrice(vehicle.price)}, ${formatMileage(vehicle.mileage)}, ${vehicle.transmission}`
   const vehicleImg = activeImage?.url || DEFAULT_IMG
 
   const specRows: (SpecRow | null)[] = [

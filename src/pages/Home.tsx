@@ -42,7 +42,7 @@ const PROCESS = [
   {
     n: '04',
     title: 'Take the keys',
-    body: 'Collect from the showroom at 123 Ajao Road, off Awolowo Way, or have it delivered — paperwork done, no surprises.',
+    body: 'Collect it from the showroom at 123 Ajao Road, off Awolowo Way, or have it delivered. Paperwork done, no surprises.',
   },
 ]
 
@@ -162,7 +162,7 @@ export function Home() {
           <p className={styles.heroTag}>Lagos &middot; Since 2019</p>
           <h1 className={styles.heroTitle}>Your next drive<br />starts here.</h1>
           <p className={styles.heroSub}>
-            Premium vehicles from four continents — inspected, explained and delivered.
+            Premium vehicles from four continents, inspected, explained and delivered.
           </p>
           <div className={styles.heroCtas}>
             <Link to="/inventory"><Button size="lg" variant="white">Browse Inventory</Button></Link>
@@ -229,7 +229,7 @@ export function Home() {
           <SectionHeader
             label={text('featured_section_label', 'Collection')}
             title={text('featured_section_title', 'Featured Vehicles')}
-            desc={text('featured_section_desc', 'Handpicked vehicles from Japan, Dubai, Europe, and the US — inspected, imported, and ready to drive.')}
+            desc={text('featured_section_desc', 'Handpicked cars from Japan, Dubai, Europe and the US, inspected, imported and ready to drive.')}
           />
           <Link to="/inventory" className={styles.allLink}>View all vehicles</Link>
         </div>
@@ -262,7 +262,7 @@ export function Home() {
             dark
             label={text('ev_teaser_label', 'Electric Vehicles')}
             title={text('ev_teaser_title', 'Go Electric. Go Green.')}
-            desc={text('ev_teaser_desc', 'The future of driving is here. Explore our range of premium electric vehicles — from city commuters to luxury SUVs.')}
+            desc={text('ev_teaser_desc', 'Quiet, quick and cheap to run. Have a look at the electric cars we can source, from city cars to big SUVs.')}
           />
           <Link to="/ev"><Button size="lg" variant="white">Explore electric vehicles</Button></Link>
         </div>
@@ -310,7 +310,7 @@ export function Home() {
         <div className={styles.closing}>
           <h2 className={styles.closingTitle}>{text('cta_title', 'Ready to Find Your Car?')}</h2>
           <p className={styles.closingDesc}>
-            {text('cta_desc', "Whether you're buying your first car or building a fleet, we're here to help. No pressure — just honest guidance.")}
+            {text('cta_desc', "Whether it's your first car or a whole fleet, we're here to help. No pressure, just straight answers.")}
           </p>
           <div className={styles.closingActions}>
             <Link to="/inventory"><Button size="lg">Browse inventory</Button></Link>

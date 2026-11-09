@@ -32,7 +32,7 @@ export function AuctionLotCard({ lot, variant = 'live' }: AuctionLotCardProps) {
 
   const priceValue = variant === 'live'
     ? formatPrice(hasBid ? lot.current_bid : lot.opening_bid)
-    : isSold ? formatPrice(lot.current_bid) : '—'
+    : isSold ? formatPrice(lot.current_bid) : 'No bids yet'
 
   return (
     <Link to={`/auctions/${lot.id}`} className={styles.link}>

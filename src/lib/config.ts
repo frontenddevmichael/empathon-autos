@@ -34,10 +34,12 @@ export const config = {
     siteUrl: 'https://www.emphatonautos.com',
   },
 
-  /** Social profiles — add your business URLs here to show them in the footer */
+  /** Social profiles — any URL left empty shows as a muted icon in the footer */
   social: {
     instagram: '', // e.g. 'https://instagram.com/empathonautos'
     facebook: '',  // e.g. 'https://facebook.com/empathonautos'
+    tiktok: '',
+    x: '',
   },
 
   /** Rate limiting (ms) */

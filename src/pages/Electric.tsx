@@ -5,7 +5,8 @@ import { Input, TextArea } from '@/components/ui/Input'
 import { Section } from '@/components/layout/Section'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Button } from '@/components/ui/Button'
-import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
+import { PageHero } from '@/components/ui/PageHero'
+import { useSiteContent, parseJsonContent, getTextContent } from '@/hooks/useSiteContent'
 import styles from './Electric.module.css'
 
 const EV_BRANDS_FALLBACK = [
@@ -26,6 +27,15 @@ const EV_MODELS_FALLBACK = [
   { name: 'BMW i4', range: '520 km', power: '335 hp', tag: 'Electric gran coupé', price: '₦55M+', img: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=900&q=80&fit=crop' },
 ]
 
+const BRAND_LOGOS: Record<string, string> = {
+  'Mercedes-Benz': '/brands/mercedes.svg',
+  BMW: '/brands/bmw.svg',
+  Tesla: '/brands/tesla.svg',
+  Audi: '/brands/audi.svg',
+  Porsche: '/brands/porsche.svg',
+  Hyundai: '/brands/hyundai.svg',
+}
+
 const COST_SAVINGS_FALLBACK = [
   { title: 'Fuel', desc: 'Compared with a petrol equivalent over a year of Lagos driving.', amount: '₦2M+' },
   { title: 'Maintenance', desc: 'Fewer moving parts, no oil changes and less brake wear.', amount: '₦500K+' },
@@ -34,13 +44,13 @@ const COST_SAVINGS_FALLBACK = [
 ]
 
 const BENEFITS_FALLBACK = [
-  { title: 'Long real-world range', desc: 'Modern EVs deliver 400–700 km on a single charge — plenty for Lagos and beyond.' },
-  { title: 'Serious performance', desc: 'Instant torque, a near-silent drivetrain, and 0–100 in under five seconds on flagship models.' },
+  { title: 'Long real-world range', desc: 'Most EVs do 400 to 700 km on a charge, which covers a week of Lagos driving.' },
+  { title: 'Serious performance', desc: 'Instant torque, a near-silent drivetrain, and 0 to 100 in under five seconds on the flagship models.' },
   { title: 'Zero emissions', desc: 'No tailpipe emissions at all.' },
   { title: 'Technology that leads', desc: 'Hyperscreens, over-the-air updates and driver assistance that keeps improving.' },
   { title: 'Charging made simple', desc: 'Charge overnight at home or the office. We help you plan the setup.' },
   { title: 'Battery health, verified', desc: 'Every unit ships with a battery health report and care guidance.' },
-  { title: 'A quiet, refined ride', desc: 'No engine noise and no gearbox lag — just smooth acceleration.' },
+  { title: 'A quiet, refined ride', desc: 'No engine noise and no gearbox lag. Just smooth acceleration.' },
   { title: 'Long-term value', desc: 'Fewer moving parts and strong resale demand in Nigeria.' },
 ]
 
@@ -61,6 +71,10 @@ export function Electric() {
   const evModels = parseJsonContent(evContent, 'ev_models', EV_MODELS_FALLBACK)
   const costSavings = parseJsonContent(evContent, 'cost_savings', COST_SAVINGS_FALLBACK)
   const benefits = parseJsonContent(evContent, 'benefits', BENEFITS_FALLBACK)
+  const cmsHero = getTextContent(evContent, 'hero_image') || '/heroimg5.jpg'
+  const heroImages = [cmsHero, '/heroimg.jpg']
+    .filter((url, i, all) => all.indexOf(url) === i)
+    .map(url => ({ url }))
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -84,7 +98,7 @@ export function Electric() {
       name: form.name.trim(),
       email: form.email.trim(),
       phone: form.phone.trim(),
-      message: `EV enquiry — Model: ${form.model.trim() || 'Any'}. ${form.notes.trim()}`.trim(),
+      message: `EV enquiry. Model: ${form.model.trim() || 'Any'}. ${form.notes.trim()}`.trim(),
       source_page: '/ev',
     })
     setSaving(false)
@@ -104,30 +118,44 @@ export function Electric() {
 
   return (
     <>
-      <Section tone="paper" space="sm">
-        <SectionHeader
-          as="h1"
-          size="lg"
-          label="Electric"
-          title="Electric, without the compromise."
-          desc="Premium EVs imported, inspected and ready for Nigerian roads — with charging advice and battery reports on every unit."
-        />
-      </Section>
+      <PageHero
+        label="Electric"
+        title="Electric cars, sourced properly."
+        subtitle="We import premium EVs, inspect them, and hand them over with a battery report and honest charging advice."
+        images={heroImages}
+        overlay="left"
+      />
 
       <Section tone="paper" space="sm">
-        <SectionHeader label="Our EV partners" title="Brands we source" />
-        <div className={styles.chips}>
-          {evBrands.map(brand => (
-            <button
-              key={brand.name}
-              type="button"
-              className={`${styles.chip} ${selectedBrand === brand.name ? styles.chipActive : ''}`}
-              onClick={() => setSelectedBrand(selectedBrand === brand.name ? null : brand.name)}
-            >
-              {brand.name}
-              {selectedBrand === brand.name && <span aria-hidden="true"> ×</span>}
-            </button>
-          ))}
+        <SectionHeader
+          label="Our EV partners"
+          title="Brands we source"
+          desc="Pick a badge to narrow the models below."
+        />
+        <div className={styles.brandRow}>
+          {evBrands.map(brand => {
+            const logo = brand.logo || BRAND_LOGOS[brand.name]
+            const active = selectedBrand === brand.name
+            return (
+              <button
+                key={brand.name}
+                type="button"
+                aria-pressed={active}
+                className={`${styles.brandTile} ${active ? styles.brandTileOn : ''}`}
+                onClick={() => setSelectedBrand(active ? null : brand.name)}
+              >
+                {logo ? (
+                  <img src={logo} alt="" className={styles.brandLogo} loading="lazy" />
+                ) : (
+                  <span className={styles.brandMark} aria-hidden="true">{brand.name.charAt(0)}</span>
+                )}
+                <span className={styles.brandText}>
+                  <span className={styles.brandName}>{brand.name}</span>
+                  {brand.models ? <span className={styles.brandCount}>{brand.models} models</span> : null}
+                </span>
+              </button>
+            )
+          })}
         </div>
       </Section>
 
@@ -156,8 +184,8 @@ export function Electric() {
           title={selectedBrand ? `${selectedBrand} models` : 'A taste of what we can source'}
           desc={
             selectedBrand
-              ? "Can't see your exact spec? Ask — we'll track it down."
-              : 'Filter by brand above, or ask about any model.'
+              ? "Can't see the exact spec? Tell us what you want and we'll find it."
+              : 'Pick a brand above, or ask us about any model.'
           }
         />
 
@@ -190,7 +218,11 @@ export function Electric() {
       </Section>
 
       <Section tone="warm" space="sm">
-        <SectionHeader label="Why electric" title="The case for it" />
+        <SectionHeader
+          label="Why electric"
+          title="The case for it"
+          desc="The short version: fewer parts to service, cheaper running costs, and a much quieter morning."
+        />
         <ul className={styles.benefits}>
           {benefits.map(b => (
             <li key={b.title} className={styles.benefit}>
@@ -206,7 +238,7 @@ export function Electric() {
           <SectionHeader
             label="EV enquiry"
             title="Interested in an EV?"
-            desc="Tell us which model you're after and we'll source it — charging advice included."
+            desc="Tell us the model you have in mind and we'll source it, charging advice included."
           />
 
           {sent ? (

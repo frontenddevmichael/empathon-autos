@@ -30,7 +30,7 @@ const PROCESS_STEPS_FALLBACK = [
 const WHY_US_FALLBACK = [
   {
     heading: 'Global sourcing, local trust',
-    desc: 'We work directly with exporters in Japan, Dubai, Europe and the US. No middlemen and no hidden markups — just honest pricing on quality vehicles.',
+    desc: 'We work directly with exporters in Japan, Dubai, Europe and the US. No middlemen, no hidden markups. Just honest pricing on good cars.',
   },
   {
     heading: 'Every vehicle, verified',
@@ -62,7 +62,7 @@ export function About() {
           size="lg"
           label="About"
           title="Premium vehicles, sourced globally."
-          desc="From Tokyo to Lagos — we bring the world's finest cars to Nigerian driveways. No shortcuts, no surprises."
+          desc="Cars sourced from Tokyo, Dubai, Europe and the US, then brought to Nigerian driveways. No shortcuts, no surprises."
         />
       </Section>
 
@@ -151,7 +151,7 @@ export function About() {
         <div className={styles.cta}>
           <h2 className={styles.ctaTitle}>Ready to find your next car?</h2>
           <p className={styles.ctaText}>
-            Buying your first car or building a fleet — we'll help. No pressure, just honest guidance.
+            Buying your first car or building a fleet? We'll help. No pressure, just honest guidance.
           </p>
           <div className={styles.ctaActions}>
             <Link to="/inventory">
