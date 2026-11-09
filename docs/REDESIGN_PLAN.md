@@ -392,6 +392,22 @@ The footer keeps the design it already had: a navy gradient brand card on the le
 
 Two fixes came out of looking at it properly. The entrance animation used to hide the cards until an IntersectionObserver fired, which never happens in a background tab or a full-page capture, so the footer was invisible in every screenshot taken so far. It is now a CSS entrance on load: the cards are visible by default and only animate in. The right-hand column was also squeezing into the link columns, so the panel grid got a wider gutter.
 
+## Mobile navigation
+
+The sheet was rebuilt. It now starts under the bar (56px) instead of covering the whole viewport, so the hamburger stays visible and turns into the close control, and everything inside it scrolls with the contact actions pinned at the bottom on tall phones. Content is grouped Buy / Explore / Company with 26px display links, a hairline under each, and an arrow on the right; below them sit Register to bid, My dashboard and Track an order as quiet text links, then Call us, WhatsApp and the Enquire button.
+
+Bugs fixed in the process:
+
+- **The menu never closed on navigation.** Tapping a link routed the page but left the sheet over it with the document still locked, so the site looked frozen. It closes on every link tap, on any route change, and on Escape.
+- **The close button could fail.** The outside-click handler fired on the hamburger's own mousedown and toggled the sheet back open. The handler now ignores the hamburger.
+- **Scroll lock was incomplete.** Only `body` overflow was hidden, which Lenis ignored, so the page kept scrolling behind the sheet. Body and html are both locked now and `window.__lenis` is stopped and restarted.
+- Focus moves into the sheet on open, is trapped there, and returns to the hamburger on close; background links are removed from the tab order while it is shut.
+- On viewports shorter than 720px the footer stops being sticky, so it can never cover the Company links.
+
+## Page titles
+
+`usePageTitle` treated the `/` key as a catch-all prefix, so `/register`, `/dashboard` and any unknown route were titled "Home". Matching is now exact-first with the longest real prefix, `/register` and `/dashboard` have titles, and the 404 falls back to the brand name.
+
 ## Loaders
 
 The pre-React fallback in `index.html` was a white page with a spinner, fake nav, fake buttons and "Trust . Fit . Drive." in 800-weight display type. It is now the navy field, the logo and a single 2px progress line, nothing else. The route-level `LoadingScreen` now mirrors the page it is standing in for: a hero band with headline lines, then a section head and three card frames, with one hairline sweeping at the top.
@@ -404,5 +420,6 @@ Em dashes are gone from every user-facing string and the stiff "X — Y" sentenc
 
 - `npx tsc -b` exit 0, `pnpm build` exit 0 (674ms), `pnpm test --run` 52/52.
 - `docs/screenshots/polish/`: corporate, ev, contact, blog and pre-order at 1440 and 390, plus `loader-1440.png` captured with JS disabled so the static fallback stays on screen.
+- Mobile sheet driven in a real browser at 390×844 and 360×640: opens, locks both scroll roots, closes on link tap, Escape and the close button, and restores scrolling; titles checked across all public routes.
 - Checked in the browser at 390: no page scrolls horizontally, the Electric badges stay readable at two per row, the KYC form now comes before the "why register" aside on mobile, and the footer stacks the brand card above the panel with two link columns.
 - The scroll-driven progress line that was drafted for the top of the page did not animate here (scroll timelines report a root timeline but never advance, likely because Lenis owns the scroll), so it was removed rather than shipped broken.
