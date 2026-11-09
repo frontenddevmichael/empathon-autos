@@ -117,11 +117,6 @@ export function Footer() {
             <img src="/Empathon logo.png" alt="Empathon Autos" className={styles.logo} />
           </Link>
 
-          <p className={styles.tagline}>
-            Premium vehicle imports, delivered with trust.
-            <span className={styles.taglineMuted}>Trust · Fit · Drive.</span>
-          </p>
-
           <div className={styles.touch}>
             <p className={styles.touchTitle}>Stay in touch</p>
             <div className={styles.social}>
