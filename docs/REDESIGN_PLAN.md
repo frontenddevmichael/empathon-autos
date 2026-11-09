@@ -301,3 +301,51 @@ New shared component: `ui/SpecTable` — hairline rows, label in stone, value in
 - **The `lots` table is empty** (0 lots, 0 bids, 0 lot media, 0 faults), so `AuctionDetail` can only be captured in its "not found" state — those are the two `auction-detail-empty-*` screenshots. The restyled lot page has not been seen with real data; its pieces (gallery frame, `SpecTable`, sticky panel, hairline history) are the same ones verified on the vehicle detail page, but the assembled page is unverified.
 - 11 of 41 vehicles have media, all pointing at Google Drive URLs. Cards and the gallery render them; the rest show "Photo coming soon". Mileage is 0 on most rows and price is 0 on all of them, which displays as "Price on request".
 - `src/components/ui/Footer.tsx` and `Footer.module.css` were modified at 07:59 by something other than this work (a full redesign with an indigo gradient, a script font and an agent note at the top of the file). They are untouched here and **not** included in the phase commit; the footer in these screenshots is that in-progress version.
+
+---
+
+# Phase 6 — The remaining pages
+
+Eleven pages, one header pattern: a light band carrying a label, a single large headline and one sentence of description, then content. No photo heroes left on any of them — `PageHero` now survives only on Inventory, Auctions and the user dashboard, which were signed off in Phase 5. The `legal`, `Blog`, `BlogPost`, `Contact`, `Corporate`, `Electric`, `PreOrder`, `TrackOrder`, `About` and `KYCRegistration` markup was rebuilt around `Section` + `SectionHeader`, so no page in this phase uses an inline `style={{…}}` block or an icon as decoration.
+
+## Reading pages
+
+**Privacy and Terms** share `legal.module.css`: 720px column, 19px body at 1.7 line height, section headings at 18/600, the "Back to home" link reduced to text at the top. The only change to the TSX was dropping the arrow glyph.
+
+**BlogPost** is the same column: title, one meta line (author · date · read time), a 16:9 cover inside the column, then the body at 19px/1.75. The scroll-progress bar is gone — it was a `setState` on every scroll frame — as are the five SVG share icons, the initial-letter avatar and the related-story cards. Share is a row of underlined words (Copy link / X / LinkedIn / WhatsApp) and "Keep reading" is two hairline rows.
+
+**Blog** keeps a featured article and a 3-up grid, but with one photograph, a date and read time, and a title — no excerpt on the cards, no arrows, no "Request a topic" navy strip (the empty state already offers the same action).
+
+## Forms
+
+Contact, Pre-Order, Corporate, Electric and KYC all follow the skill's form spec: a single navy submit, labels above fields, one column on mobile, inline errors under the field that caused them, a form-level error for network or rate-limit failures, and a calm confirmation in place of the form instead of a toast. The `useToast` calls are gone from every public page; the success state names the person and the address the reply will go to.
+
+Contact and Corporate keep their Supabase `leads` inserts and the honeypot field exactly as they were; validation is added in front of them, not in place of them.
+
+## The rest
+
+**About** — header, one story photograph beside two paragraphs, the numbers band, the four process steps as numbered hairline rows, two "why" blocks, the four team portraits (the only other photographs on the page) and a navy closing band. The timeline's per-scroll `setState` progress line and the parallax quote band are gone.
+
+**Corporate** — header from the CMS, volume tiers as a navy four-column table, the eight sectors as an accordion (one open at a time, price on the row, benefits inside), four hairline "why" blocks, the client list as text, then the quote form. `LeadForm` still opens from "Request this package".
+
+**Electric** — header, brand filter as pill chips, the savings figures on navy, the model list as text entries with range, power and price, benefits as a two-column hairline list, then the enquiry form. The brand logos, the eight benefit icons, the savings icons and the model thumbnails are gone: the CMS rows carry no image URLs, so the cards had been rendering broken images.
+
+**Pre-Order** — header, the pre-order fleet (which is empty in the data, so the section shows its one-line invitation), the four steps as numbered rows, then the request form.
+
+**Track Order** — one field and one button, then the reference, five summary rows and a five-step list where done and current steps are marked by a filled dot and a text tag. No icons, no toasts, no smooth-scroll jump.
+
+**KYC** — three fieldsets (Personal, Identification, Last details) with the native select now using the shared `Select`, a sticky "Why register" aside on desktop, consent error inline, and a full-page confirmation instead of a hero plus a toast. The old file had no CSS module at all; `KYCRegistration.module.css` is new.
+
+**404** — one line and one button.
+
+## Verification
+
+- `npx tsc -b` exit 0, `pnpm build` exit 0, `pnpm test --run` 52/52. No ESLint in the project.
+- `docs/screenshots/phase6/`: full-page captures at 1440 and 390 for about, corporate, ev, pre-order, contact, blog, blog/ev-guide, track-order, register, privacy, terms and the 404.
+- Checked at both widths: headers are a single column on mobile, every form stacks to one column at 390, the corporate accordion opens and closes, the KYC select keeps its native arrow, and no page scrolls horizontally.
+
+## Limitations and notes
+
+- The EV model images were rendering as broken images (the `ev_models` CMS rows have no `img` field). The media frame is now omitted when a row has no image, so the models read as text. Restoring photography there needs images added in the CMS.
+- `content_blocks` supplies most of the copy on Corporate and Electric, so wording such as "Fuel Savings" and "N25M per unit" comes from the database, not from these files.
+- `Footer.tsx`, `Footer.module.css` and `tokens.css` were being changed by something other than this work; they are untouched and not in this commit. The footer area is blank in most of these screenshots because that in-progress footer had not rendered at capture time.

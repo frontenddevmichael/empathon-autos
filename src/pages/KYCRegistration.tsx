@@ -1,16 +1,32 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { User, Shield, CheckCircle, ArrowRight } from 'lucide-react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
-import { Input, TextArea } from '@/components/ui/Input'
+import { Input, Select, TextArea } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
-import { Section } from '@/components/PageLayout'
-import { PageHero } from '@/components/ui/PageHero'
-import { useToast } from '@/context/ToastContext'
+import { Section } from '@/components/layout/Section'
+import { SectionHeader } from '@/components/ui/SectionHeader'
 import { config } from '@/lib/config'
+import styles from './KYCRegistration.module.css'
+
+type Errors = { fullName?: string; email?: string; phone?: string; idNumber?: string; consent?: string; form?: string }
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+const ID_OPTIONS = [
+  { value: 'nin', label: 'National ID (NIN)' },
+  { value: 'vin', label: "Voter's card (VIN)" },
+  { value: 'passport', label: 'International passport' },
+  { value: 'drivers', label: "Driver's licence" },
+]
+
+const WHY = [
+  'Bid in live auctions',
+  'Personalised vehicle recommendations',
+  'Priority access to new stock',
+  'A record of your bids and status',
+]
 
 export function KYCRegistration() {
-  const { showToast } = useToast()
   const [form, setForm] = useState({
     fullName: '',
     email: '',
@@ -24,272 +40,192 @@ export function KYCRegistration() {
     consent: false,
     honeypot: '',
   })
+  const [errors, setErrors] = useState<Errors>({})
   const [saving, setSaving] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+
+  const set = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
+    setForm(f => ({ ...f, [key]: value }))
+    if (errors[key as keyof Errors]) setErrors(p => ({ ...p, [key]: undefined }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (form.honeypot) return
-    if (!form.fullName || !form.email || !form.phone) {
-      showToast('Please fill in required fields', 'error')
-      return
-    }
-    if (!form.consent) {
-      showToast('Please agree to the terms and conditions', 'error')
-      return
-    }
+
+    const next: Errors = {}
+    if (!form.fullName.trim()) next.fullName = 'Please enter your full name.'
+    if (!form.email.trim()) next.email = 'Please enter your email.'
+    else if (!EMAIL_RE.test(form.email.trim())) next.email = 'That email address doesn\u2019t look right.'
+    if (!form.phone.trim()) next.phone = 'Please add a phone number.'
+    if (!form.idNumber.trim()) next.idNumber = 'Please enter your ID number.'
+    if (!form.consent) next.consent = 'Please agree to the terms to continue.'
+    setErrors(next)
+    if (Object.keys(next).length > 0) return
+
     if (!isSupabaseConfigured()) {
-      showToast('Registration is not available right now. Please try again later.', 'error')
+      setErrors({ form: 'Registration is unavailable right now. Please try again later.' })
       return
     }
 
     setSaving(true)
-    
-    // Store KYC data as a lead with type 'kyc-registration'
     const { error } = await supabase.from('leads').insert({
       type: 'enquiry',
-      name: form.fullName,
-      email: form.email,
-      phone: form.phone,
-      company: form.company || null,
-      message: `KYC Registration — Occupation: ${form.occupation || 'N/A'}, Address: ${form.address || 'N/A'}, ID Type: ${form.idType}, ID Number: ${form.idNumber || 'N/A'}, How heard: ${form.howHeard || 'N/A'}`,
+      name: form.fullName.trim(),
+      email: form.email.trim(),
+      phone: form.phone.trim(),
+      company: form.company.trim() || null,
+      message: `KYC Registration — Occupation: ${form.occupation.trim() || 'N/A'}, Address: ${form.address.trim() || 'N/A'}, ID Type: ${form.idType}, ID Number: ${form.idNumber.trim()}, How heard: ${form.howHeard.trim() || 'N/A'}`,
       source_page: '/register',
     })
-
     setSaving(false)
-    
-    if (error) {
-      showToast('Registration failed. Please try again.', 'error')
-      return
-    }
 
+    if (error) { setErrors({ form: 'Registration failed. Please try again.' }); return }
     setSubmitted(true)
-    showToast('Registration submitted successfully!')
   }
 
   if (submitted) {
     return (
-      <>
-        <PageHero
-          images={[{ url: '/heroimg2.jpg' }]}
-          label="Registration"
-          title="Welcome Aboard!"
-          subtitle="Your registration has been submitted successfully."
-          size="lg"
-        />
-        <Section>
-          <div style={{ textAlign: 'center', maxWidth: 500, margin: '0 auto' }}>
-            <div style={{ 
-              width: 80, 
-              height: 80, 
-              borderRadius: '50%', 
-              background: 'var(--success-light)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto var(--space-3)'
-            }}>
-              <CheckCircle size={40} style={{ color: 'var(--success)' }} />
-            </div>
-            <h2 style={{ marginBottom: 'var(--space-2)' }}>Registration Complete!</h2>
-            <p style={{ color: 'var(--stone)', marginBottom: 'var(--space-4)' }}>
-              Thank you for registering with {config.company.name}. Our team will review your information and reach out to you shortly.
-            </p>
-            <p style={{ color: 'var(--stone)', marginBottom: 'var(--space-4)', fontSize: 'var(--text-sm)' }}>
-              You can now participate in auctions and our team can contact you for corporate opportunities.
-            </p>
-            <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'center' }}>
-              <Link to="/auctions">
-                <Button>Browse Auctions <ArrowRight size={14} /></Button>
-              </Link>
-              <Link to="/">
-                <Button variant="secondary">Return Home</Button>
-              </Link>
-            </div>
+      <Section tone="paper" space="lg">
+        <div className={styles.done}>
+          <h1 className={styles.doneTitle}>You're registered.</h1>
+          <p className={styles.doneText}>
+            Thank you for registering with {config.company.name}. Our team will review your details and reach out shortly.
+          </p>
+          <div className={styles.doneActions}>
+            <Link to="/auctions"><Button>Browse auctions</Button></Link>
+            <Link to="/" className={styles.textLink}>Back to home</Link>
           </div>
-        </Section>
-      </>
+        </div>
+      </Section>
     )
   }
 
   return (
     <>
-      <PageHero
-        images={[{ url: '/heroimg3.jpg' }]}
-        label="Registration"
-        title="Register to Bid"
-        subtitle="Complete your KYC registration to participate in auctions and receive personalised offers."
-        size="lg"
-      />
+      <Section tone="paper" space="sm">
+        <SectionHeader
+          as="h1"
+          size="lg"
+          label="Registration"
+          title="Register to bid"
+          desc="Complete your KYC details to take part in auctions and receive personalised offers."
+        />
+      </Section>
 
-      <Section>
-        <div style={{ maxWidth: 700, margin: '0 auto' }}>
-          <div style={{ marginBottom: 'var(--space-4)' }}>
-            <h2 style={{ marginBottom: 'var(--space-1)' }}>Account Registration</h2>
-            <div className="section-divider" />
-            <p style={{ color: 'var(--stone)', marginTop: 'var(--space-1)' }}>
-              Fill in your details below. This information helps us verify your identity and provide you with the best service.
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} style={{ 
-            padding: 'var(--space-4)', 
-            background: 'var(--surface)', 
-            border: '1px solid var(--border)', 
-            borderRadius: 'var(--radius-xl)',
-            boxShadow: 'var(--shadow-sm)'
-          }}>
-            <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
+      <Section tone="paper" space="sm">
+        <div className={styles.layout}>
+          <form onSubmit={handleSubmit} className={styles.form} noValidate>
+            <div className={styles.honeypot} aria-hidden="true">
               <input tabIndex={-1} value={form.honeypot} onChange={e => setForm(f => ({ ...f, honeypot: e.target.value }))} />
             </div>
 
-            {/* Personal Information */}
-            <div style={{ marginBottom: 'var(--space-4)' }}>
-              <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: 'var(--space-2)', display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-                <User size={18} /> Personal Information
-              </h3>
-              <div className="formGrid2" style={{ gap: 'var(--space-2)' }}>
-                <Input 
-                  label="Full Name *" 
-                  value={form.fullName} 
-                  onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))} 
-                  required 
-                  placeholder="Enter your full name"
-                />
-                <Input 
-                  label="Email *" 
-                  type="email" 
-                  value={form.email} 
-                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))} 
-                  required 
-                  placeholder="your@email.com"
-                />
-                <Input 
-                  label="Phone *" 
-                  type="tel" 
-                  value={form.phone} 
-                  onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} 
-                  required 
-                  placeholder="+234 xxx xxx xxxx"
-                />
-                <Input 
-                  label="Company / Organisation" 
-                  value={form.company} 
-                  onChange={e => setForm(f => ({ ...f, company: e.target.value }))} 
-                  placeholder="Optional"
-                />
-              </div>
-            </div>
-
-            {/* Additional Details */}
-            <div style={{ marginBottom: 'var(--space-4)' }}>
-              <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: 'var(--space-2)' }}>Additional Details</h3>
-              <div className="formGrid2" style={{ gap: 'var(--space-2)' }}>
-                <Input 
-                  label="Occupation" 
-                  value={form.occupation} 
-                  onChange={e => setForm(f => ({ ...f, occupation: e.target.value }))} 
-                  placeholder="e.g. Business Owner"
-                />
-                <div>
-                  <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--stone)', marginBottom: 4, display: 'block' }}>
-                    ID Type
-                  </label>
-                  <select
-                    value={form.idType}
-                    onChange={e => setForm(f => ({ ...f, idType: e.target.value }))}
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      border: '1px solid var(--border)',
-                      borderRadius: 'var(--radius-md)',
-                      fontSize: 'var(--text-sm)',
-                      background: 'var(--surface)',
-                    }}
-                  >
-                    <option value="nin">National ID (NIN)</option>
-                    <option value="vin">Voter's Card (VIN)</option>
-                    <option value="passport">International Passport</option>
-                    <option value="drivers">Driver's License</option>
-                  </select>
-                </div>
-              </div>
-              <div style={{ marginTop: 'var(--space-2)' }}>
-                <Input 
-                  label="ID Number" 
-                  value={form.idNumber} 
-                  onChange={e => setForm(f => ({ ...f, idNumber: e.target.value }))} 
-                  placeholder="Enter your ID number"
-                />
-              </div>
-              <div style={{ marginTop: 'var(--space-2)' }}>
-                <TextArea 
-                  label="Address" 
-                  value={form.address} 
-                  onChange={e => setForm(f => ({ ...f, address: e.target.value }))} 
-                  rows={2}
-                  placeholder="Enter your address"
-                />
-              </div>
-            </div>
-
-            {/* How did you hear about us */}
-            <div style={{ marginBottom: 'var(--space-4)' }}>
-              <Input 
-                label="How did you hear about us?" 
-                value={form.howHeard} 
-                onChange={e => setForm(f => ({ ...f, howHeard: e.target.value }))} 
-                placeholder="e.g. Google, Social Media, Referral"
+            <fieldset className={styles.group}>
+              <legend className={styles.legend}>Personal</legend>
+              <Input
+                label="Full name"
+                value={form.fullName}
+                onChange={e => set('fullName', e.target.value)}
+                error={errors.fullName}
+                autoComplete="name"
               />
-            </div>
+              <div className={styles.row}>
+                <Input
+                  label="Email"
+                  type="email"
+                  value={form.email}
+                  onChange={e => set('email', e.target.value)}
+                  error={errors.email}
+                  autoComplete="email"
+                />
+                <Input
+                  label="Phone"
+                  type="tel"
+                  value={form.phone}
+                  onChange={e => set('phone', e.target.value)}
+                  error={errors.phone}
+                  autoComplete="tel"
+                />
+              </div>
+              <div className={styles.row}>
+                <Input
+                  label="Company (optional)"
+                  value={form.company}
+                  onChange={e => set('company', e.target.value)}
+                  autoComplete="organization"
+                />
+                <Input
+                  label="Occupation (optional)"
+                  value={form.occupation}
+                  onChange={e => set('occupation', e.target.value)}
+                  placeholder="e.g. Business owner"
+                />
+              </div>
+            </fieldset>
 
-            {/* Consent */}
-            <div style={{ marginBottom: 'var(--space-4)' }}>
-              <label style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-1-5)', cursor: 'pointer' }}>
+            <fieldset className={styles.group}>
+              <legend className={styles.legend}>Identification</legend>
+              <div className={styles.row}>
+                <Select
+                  label="ID type"
+                  options={ID_OPTIONS}
+                  value={form.idType}
+                  onChange={e => set('idType', e.target.value)}
+                />
+                <Input
+                  label="ID number"
+                  value={form.idNumber}
+                  onChange={e => set('idNumber', e.target.value)}
+                  error={errors.idNumber}
+                />
+              </div>
+              <TextArea
+                label="Address (optional)"
+                value={form.address}
+                onChange={e => set('address', e.target.value)}
+                rows={2}
+                autoComplete="street-address"
+              />
+            </fieldset>
+
+            <fieldset className={styles.group}>
+              <legend className={styles.legend}>Last details</legend>
+              <Input
+                label="How did you hear about us? (optional)"
+                value={form.howHeard}
+                onChange={e => set('howHeard', e.target.value)}
+                placeholder="e.g. Google, social media, referral"
+              />
+
+              <label className={styles.consent}>
                 <input
                   type="checkbox"
                   checked={form.consent}
-                  onChange={e => setForm(f => ({ ...f, consent: e.target.checked }))}
-                  style={{ marginTop: 4, width: 16, height: 16 }}
-                  required
+                  onChange={e => set('consent', e.target.checked)}
                 />
-                <span style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)', lineHeight: 1.6 }}>
-                  I agree to the <Link to="/terms" style={{ color: 'var(--navy)', textDecoration: 'underline' }}>Terms of Service</Link> and <Link to="/privacy" style={{ color: 'var(--navy)', textDecoration: 'underline' }}>Privacy Policy</Link>. 
-                  I consent to {config.company.name} processing my personal data for the purpose of auction participation and service delivery.
+                <span>
+                  I agree to the <Link to="/terms">Terms of Service</Link> and{' '}
+                  <Link to="/privacy">Privacy Policy</Link>, and consent to {config.company.name} processing my
+                  data for auction participation and service delivery.
                 </span>
               </label>
-            </div>
+              {errors.consent && <p className={styles.error} role="alert">{errors.consent}</p>}
+            </fieldset>
 
-            {/* Submit */}
-            <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'flex-end' }}>
-              <Link to="/">
-                <Button type="button" variant="ghost">Cancel</Button>
-              </Link>
-              <Button type="submit" loading={saving}>
-                <Shield size={16} /> Complete Registration
-              </Button>
-            </div>
+            {errors.form && <p className={styles.error} role="alert">{errors.form}</p>}
+
+            <Button type="submit" loading={saving} className={styles.submit}>Complete registration</Button>
           </form>
 
-          {/* Info Box */}
-          <div style={{ 
-            marginTop: 'var(--space-3)', 
-            padding: 'var(--space-3)', 
-            background: 'var(--navy-light)', 
-            borderRadius: 'var(--radius-lg)',
-            border: '1px solid rgba(0,51,102,0.1)'
-          }}>
-            <h4 style={{ fontSize: 'var(--text-sm)', marginBottom: 'var(--space-1)', color: 'var(--navy)' }}>
-              Why register?
-            </h4>
-            <ul style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)', lineHeight: 1.8, paddingLeft: 'var(--space-2)' }}>
-              <li>• Participate in live auctions and place bids</li>
-              <li>• Receive personalised vehicle recommendations</li>
-              <li>• Get priority access to new inventory</li>
-              <li>• Our team can reach out for corporate opportunities</li>
-              <li>• Track your bidding history and status</li>
+          <aside className={styles.aside}>
+            <p className={styles.asideLabel}>Why register</p>
+            <ul className={styles.why}>
+              {WHY.map(item => <li key={item}>{item}</li>)}
             </ul>
-          </div>
+            <p className={styles.asideText}>
+              Questions about what we ask for? <Link to="/contact">Talk to us</Link> before you submit.
+            </p>
+          </aside>
         </div>
       </Section>
     </>

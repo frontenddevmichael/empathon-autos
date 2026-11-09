@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
 import { Section } from '@/components/layout/Section'
 import styles from './legal.module.css'
 
@@ -26,7 +25,7 @@ export function Privacy() {
   return (
     <Section containerSize="narrow" space="md">
       <Link to="/" className={styles.back}>
-        <ArrowLeft size={14} /> Back to Home
+        Back to home
       </Link>
       <h1 className={styles.title}>Privacy Policy</h1>
       <p className={styles.updated}>Last updated: July 2026</p>
