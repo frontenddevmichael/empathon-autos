@@ -1,0 +1,26 @@
+.table {
+  margin: 0;
+  border-top: 1px solid var(--border);
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.label {
+  font-size: var(--text-sm);
+  color: var(--stone);
+}
+
+.value {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--ink);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

@@ -8,12 +8,12 @@ import { getLotDeadline, computeBidIncrement, SEVERITY_META, GRADE_META, firstNa
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
-import { AuctionTimer, auctionTimeColor } from '@/components/ui/AuctionTimer'
+import { AuctionTimer } from '@/components/ui/AuctionTimer'
+import { SpecTable } from '@/components/ui/SpecTable'
 import { Section } from '@/components/layout/Section'
 import { useToast } from '@/context/ToastContext'
 import { useAutoCloseLots } from '@/hooks/useAutoCloseLots'
 import type { Lot, Bid, LotMedia } from '@/types'
-import { Zap, ShoppingCart } from 'lucide-react'
 import styles from './AuctionDetail.module.css'
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -298,16 +298,7 @@ export function AuctionDetail() {
             </div>
 
             <div className={styles.panelSpaced}>
-              <table className={styles.specTable}>
-                <tbody>
-                  {specs.map(([label, val]) => (
-                    <tr key={label} className={styles.specRow}>
-                      <td className={styles.specLabel}>{label}</td>
-                      <td className={`${styles.specValue} tabular-nums`}>{val}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <SpecTable rows={specs.map(([label, value]) => ({ label, value }))} />
             </div>
 
             {(lot.condition_grade || (lot.faults && lot.faults.length > 0)) && (
@@ -315,10 +306,7 @@ export function AuctionDetail() {
                 <h2 className={styles.panelTitle}>Condition Report</h2>
                 {lot.condition_grade && GRADE_META[lot.condition_grade] && (
                   <div className={styles.gradeRow}>
-                    <span
-                      className={styles.gradeBadge}
-                      style={{ background: GRADE_META[lot.condition_grade].bg, color: GRADE_META[lot.condition_grade].color }}
-                    >
+                    <span className={styles.gradeBadge}>
                       {lot.condition_grade}
                     </span>
                     <span className={styles.gradeLabel}>{GRADE_META[lot.condition_grade].label}</span>
@@ -327,10 +315,9 @@ export function AuctionDetail() {
                 {(lot.faults && lot.faults.length > 0) ? (
                   <div className={styles.faults}>
                     {[...lot.faults].sort((a, b) => a.sort_order - b.sort_order).map(f => {
-                      const meta = SEVERITY_META[f.severity]
                       return (
                         <div key={f.id} className={styles.fault}>
-                          <span className={styles.faultBadge} style={{ background: meta.bg, color: meta.color }}>{meta.label}</span>
+                          <span className={styles.faultBadge}>{SEVERITY_META[f.severity].label}</span>
                           <div className={styles.faultBody}>
                             <p className={styles.faultTitle}>{f.title}</p>
                             {f.description && <p className={styles.faultDesc}>{f.description}</p>}
@@ -353,7 +340,7 @@ export function AuctionDetail() {
 
           {/* ── Bid panel ── */}
           <div>
-            <div className={styles.panel}>
+            <div className={`${styles.panel} ${styles.bidPanel}`}>
               <Badge variant={isOpen ? 'live' : lot.status === 'sold' ? 'sold' : 'draft'} label={isOpen ? 'Live' : lot.status} />
               <h1 className={styles.title}>{title}</h1>
               <p className={styles.subtitle}>{year ? `${year} · ` : ''}{formatMileage(mileage)}</p>
@@ -379,7 +366,7 @@ export function AuctionDetail() {
 
               <div className={styles.timerBlock}>
                 <p className={styles.timerLabel}>Time Remaining</p>
-                <p className={styles.timerValue} style={{ color: auctionTimeColor(timeLeft) }}>
+                <p className={styles.timerValue}>
                   <AuctionTimer closesAt={deadline} />
                 </p>
                 {isOpen && timeLeft <= 3 * 60_000 && (
@@ -396,7 +383,7 @@ export function AuctionDetail() {
                     }}
                     className={styles.buyNowButton}
                   >
-                    <ShoppingCart size={16} /> Buy Now — {formatPrice(buyNowPrice)}
+                    Buy now — {formatPrice(buyNowPrice)}
                   </Button>
                   <p className={styles.buyNowNote}>Skip the bidding — purchase immediately at this price</p>
                 </div>
@@ -437,9 +424,7 @@ export function AuctionDetail() {
                     placeholder="e.g. 85,000,000"
                     required
                   />
-                  <Button type="submit" loading={saving}>
-                    <Zap size={16} /> Place Bid
-                  </Button>
+                  <Button type="submit" loading={saving} size="lg">Place bid</Button>
                 </form>
               )}
 

@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import { ArrowLeft, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { formatPrice, formatMileage } from '@/lib/format'
 import type { Vehicle, VehicleMedia, LeadType } from '@/types'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
+import { SpecTable, type SpecRow } from '@/components/ui/SpecTable'
+import { VehicleCard } from '@/components/ui/VehicleCard'
+import { VehicleCardSkeleton } from '@/components/ui/Skeleton'
+import { Container } from '@/components/layout/Container'
 import { LeadForm } from '@/components/LeadForm'
-import { Section } from '@/components/PageLayout'
 import { config } from '@/lib/config'
 import styles from './VehicleDetail.module.css'
 
@@ -18,6 +21,18 @@ const statusBadge: Record<string, 'available' | 'pre-order' | 'sold' | 'draft' |
   'walk-in': 'available', 'pre-order': 'pre-order', 'sold': 'sold',
   'in-auction': 'live', 'draft': 'draft', 'published': 'available',
 }
+
+const statusLabel: Record<string, string> = {
+  'walk-in': 'Available',
+  'pre-order': 'Pre-order',
+  'sold': 'Sold',
+  'in-auction': 'In auction',
+  'draft': 'Coming soon',
+  'published': 'Available',
+}
+
+const titleCase = (value: string) =>
+  value.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
 
 export function VehicleDetail() {
   const { id } = useParams<{ id: string }>()
@@ -52,23 +67,31 @@ export function VehicleDetail() {
 
   if (loading) {
     return (
-      <Section>
-        <div className={styles.skeletonImage} />
-        <div className={styles.skeletonTitle} />
-        <div className={styles.skeletonSub} />
-      </Section>
+      <Container className={styles.wrap}>
+        <div className={styles.skeletonGrid}>
+          <div className={styles.skeletonFrame} />
+          <div>
+            <div className={styles.skeletonLine} />
+            <div className={styles.skeletonLineShort} />
+            <div className={styles.skeletonLine} />
+          </div>
+        </div>
+        <div className={styles.relatedGrid}>
+          {Array.from({ length: 3 }).map((_, i) => <VehicleCardSkeleton key={i} />)}
+        </div>
+      </Container>
     )
   }
 
   if (error || !vehicle) {
     return (
-      <Section>
-        <div className={styles.errorState}>
-          <h1>Vehicle not found</h1>
-          <p className={styles.errorText}>This vehicle may have been removed or the link is incorrect.</p>
-          <Link to="/inventory"><Button>Browse Inventory</Button></Link>
+      <Container className={styles.wrap}>
+        <div className={styles.notFound}>
+          <h1 className={styles.notFoundTitle}>Vehicle not found</h1>
+          <p className={styles.notFoundText}>This vehicle may have been removed, or the link is wrong.</p>
+          <Link to="/inventory"><Button>Browse inventory</Button></Link>
         </div>
-      </Section>
+      </Container>
     )
   }
 
@@ -82,14 +105,33 @@ export function VehicleDetail() {
     if (images.length < 2) return
     setActiveImg(i => (i + 1) % images.length)
   }
+
   const price = formatPrice(vehicle.price)
   const vehicleAlt = `${vehicle.make} ${vehicle.model}${vehicle.trim ? ` ${vehicle.trim}` : ''} ${vehicle.year}`
+  const specLine = [vehicle.year, formatMileage(vehicle.mileage), titleCase(vehicle.transmission), titleCase(vehicle.fuel_type)]
+    .filter(Boolean)
+    .join(' · ')
   const whatsappMsg = `Hi, I'm interested in the ${vehicleAlt} at Empathon Autos.`
 
   const DEFAULT_IMG = '/og-image.jpg'
   const vehicleTitle = `${vehicle.make} ${vehicle.model} ${vehicle.trim || ''} ${vehicle.year}`.trim()
   const vehicleDesc = vehicle.description?.slice(0, 200) || `${vehicleTitle} — ${formatPrice(vehicle.price)}, ${formatMileage(vehicle.mileage)}, ${vehicle.transmission}`
   const vehicleImg = activeImage?.url || DEFAULT_IMG
+
+  const specRows: (SpecRow | null)[] = [
+    { label: 'Make', value: vehicle.make },
+    { label: 'Model', value: vehicle.model },
+    vehicle.trim ? { label: 'Trim', value: vehicle.trim } : null,
+    { label: 'Year', value: vehicle.year },
+    { label: 'Mileage', value: formatMileage(vehicle.mileage) },
+    { label: 'Transmission', value: titleCase(vehicle.transmission) },
+    { label: 'Fuel', value: titleCase(vehicle.fuel_type) },
+    { label: 'Body', value: titleCase(vehicle.body_type) },
+    vehicle.colour ? { label: 'Colour', value: vehicle.colour } : null,
+    { label: 'Condition', value: titleCase(vehicle.condition) },
+    { label: 'Status', value: statusLabel[vehicle.status] ?? titleCase(vehicle.status) },
+  ]
+  const specs = specRows.filter((row): row is SpecRow => row !== null)
 
   // Schema.org JSON-LD structured data
   const jsonLd = {
@@ -99,10 +141,7 @@ export function VehicleDetail() {
     'description': vehicle.description || vehicleDesc,
     'image': vehicleImg,
     'url': `${config.seo.siteUrl}/inventory/${vehicle.id}`,
-    'brand': {
-      '@type': 'Brand',
-      'name': vehicle.make,
-    },
+    'brand': { '@type': 'Brand', 'name': vehicle.make },
     'model': vehicle.model,
     'vehicleConfiguration': vehicle.trim || undefined,
     'modelDate': vehicle.year.toString(),
@@ -146,157 +185,125 @@ export function VehicleDetail() {
         <link rel="canonical" href={`${config.seo.siteUrl}/inventory/${vehicle.id}`} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </Helmet>
-      <section className={`${styles.hero} ${images.length === 0 ? styles.heroPlain : ''}`}>
-        <div className={styles.heroBg}>
-          {activeImage ? (
-            <img src={activeImage.url} alt={vehicleAlt} className={styles.heroImage} />
-          ) : (
-            <div className={styles.noImage} />
-          )}
-          <div className={styles.heroOverlay} />
-          {images.length > 1 && (
-            <>
-              <button type="button" onClick={prevImage} className={`${styles.heroArrow} ${styles.arrowPrev}`} aria-label="Previous image">
-                <ChevronLeft size={22} />
-              </button>
-              <button type="button" onClick={nextImage} className={`${styles.heroArrow} ${styles.arrowNext}`} aria-label="Next image">
-                <ChevronRight size={22} />
-              </button>
-              <span className={styles.imageCounter}>{activeImg + 1} / {images.length}</span>
-            </>
-          )}
-        </div>
-        <div className={styles.heroContent}>
-          <Link to="/inventory" className={styles.heroBack}>
-            <ArrowLeft size={12} /> Back to Inventory
+
+      <article className={styles.page}>
+        <Container className={styles.wrap}>
+          <Link to="/inventory" className={styles.back}>
+            <ArrowLeft size={14} /> All vehicles
           </Link>
-          <Badge variant={statusBadge[vehicle.status] || 'draft'} />
-          <h1 className={styles.heroTitle}>{vehicle.make} {vehicle.model}</h1>
-          {vehicle.trim && <p className={styles.heroSub}>{vehicle.trim} &middot; {vehicle.year}</p>}
-          <p className={`${styles.heroPrice} tabular-nums`}>{price}</p>
-        </div>
-      </section>
 
-      <Section style={{ position: 'relative' }}>
-        {images.length > 1 && (
-          <div className={styles.thumbs}>
-            {images.map((img, i) => (
-              <button key={img.id} type="button" onClick={() => setActiveImg(i)} className={styles.thumbButton} aria-label={`View image ${i + 1}`}>
-                <img src={img.url} alt={`${vehicleAlt} view ${i + 1}`} className={`${styles.thumb} ${i === activeImg ? styles.thumbActive : ''}`} loading="lazy" />
-              </button>
-            ))}
-          </div>
-        )}
+          <div className={styles.body}>
+            <div className={styles.gallery}>
+              <div className={styles.frame}>
+                {activeImage ? (
+                  <img
+                    src={activeImage.url}
+                    alt={vehicleAlt}
+                    className={styles.mainImage}
+                    fetchPriority="high"
+                  />
+                ) : (
+                  <div className={styles.noImage}>Photo coming soon</div>
+                )}
+                {images.length > 1 && (
+                  <>
+                    <button type="button" onClick={prevImage} className={`${styles.arrow} ${styles.arrowPrev}`} aria-label="Previous image">
+                      <ChevronLeft size={20} />
+                    </button>
+                    <button type="button" onClick={nextImage} className={`${styles.arrow} ${styles.arrowNext}`} aria-label="Next image">
+                      <ChevronRight size={20} />
+                    </button>
+                    <span className={styles.counter}>{activeImg + 1} / {images.length}</span>
+                  </>
+                )}
+              </div>
 
-        <div className={styles.layout}>
-          <div>
-            <div className={styles.metaGrid}>
-              <div className={styles.metaItem}>
-                <span className={styles.metaLabel}>Mileage</span>
-                <span className={`${styles.metaValue} tabular-nums`}>{formatMileage(vehicle.mileage)}</span>
-              </div>
-              <div className={styles.metaItem}>
-                <span className={styles.metaLabel}>Transmission</span>
-                <span className={`${styles.metaValue} capitalize`}>{vehicle.transmission}</span>
-              </div>
-              <div className={styles.metaItem}>
-                <span className={styles.metaLabel}>Fuel</span>
-                <span className={`${styles.metaValue} capitalize`}>{vehicle.fuel_type}</span>
-              </div>
-              <div className={styles.metaItem}>
-                <span className={styles.metaLabel}>Condition</span>
-                <span className={`${styles.metaValue} capitalize`}>{vehicle.condition}</span>
-              </div>
-              <div className={styles.metaItem}>
-                <span className={styles.metaLabel}>Colour</span>
-                <span className={`${styles.metaValue} capitalize`}>{vehicle.colour}</span>
-              </div>
-              <div className={styles.metaItem}>
-                <span className={styles.metaLabel}>Body</span>
-                <span className={`${styles.metaValue} capitalize`}>{vehicle.body_type}</span>
-              </div>
-            </div>
-
-            {vehicle.description && (
-              <div className={styles.descBlock}>
-                <h3>About this vehicle</h3>
-                <p>{vehicle.description}</p>
-              </div>
-            )}
-
-            {vehicle.features && vehicle.features.length > 0 && (
-              <div className={styles.descBlock}>
-                <h3>Features</h3>
-                <div className={styles.featureGrid}>
-                  {vehicle.features.map((f, i) => <span key={i} className={styles.featureChip}>{f}</span>)}
+              {images.length > 1 && (
+                <div className={styles.thumbs}>
+                  {images.map((img, i) => (
+                    <button
+                      key={img.id}
+                      type="button"
+                      onClick={() => setActiveImg(i)}
+                      className={i === activeImg ? styles.thumbOn : styles.thumb}
+                      aria-label={`View image ${i + 1}`}
+                      aria-pressed={i === activeImg}
+                    >
+                      <img src={img.url} alt="" className={styles.thumbImg} loading="lazy" />
+                    </button>
+                  ))}
                 </div>
-              </div>
-            )}
-
-            <div className={styles.specs}>
-              <h3>Specifications</h3>
-              <div className={styles.specTable}>
-                {Object.entries({
-                  Make: vehicle.make, Model: vehicle.model, Trim: vehicle.trim || '—',
-                  Year: vehicle.year, Mileage: formatMileage(vehicle.mileage),
-                  Transmission: vehicle.transmission.charAt(0).toUpperCase() + vehicle.transmission.slice(1),
-                  'Fuel Type': vehicle.fuel_type.charAt(0).toUpperCase() + vehicle.fuel_type.replace('-', ' ').slice(1),
-                  Colour: vehicle.colour || '—',
-                  'Body Type': vehicle.body_type.charAt(0).toUpperCase() + vehicle.body_type.slice(1),
-                  Condition: vehicle.condition.replace('-', ' '),
-                  Status: vehicle.status.replace('-', ' '),
-                }).map(([key, val]) => (
-                  <div key={key} className={styles.specRow}>
-                    <span className={styles.specKey}>{key}</span>
-                    <span className={`${styles.specVal} tabular-nums`}>{val}</span>
-                  </div>
-                ))}
-              </div>
+              )}
             </div>
-          </div>
 
-          <aside className={styles.sidebar}>
-            <div className={styles.sidebarCard}>
-              <p className={`${styles.sidebarPrice} tabular-nums`}>{price}</p>
-              <p className={styles.sidebarMeta}>
-                {formatMileage(vehicle.mileage)} &middot; {vehicle.year} &middot; {vehicle.make}
-              </p>
-              <div className={styles.ctas}>
-                <Button onClick={() => setLeadType('enquiry')}>Enquire Now</Button>
-                <Button variant="secondary" onClick={() => setLeadType('test-drive')}>Book Test Drive</Button>
-                {vehicle.status === 'pre-order' && <Button variant="secondary" onClick={() => setLeadType('pre-order')}>Pre-Order</Button>}
+            <aside className={styles.buy}>
+              <div className={styles.buyHead}>
+                <Badge variant={statusBadge[vehicle.status] || 'draft'} label={statusLabel[vehicle.status]} />
+                <h1 className={styles.title}>{vehicle.make} {vehicle.model}</h1>
+                <p className={styles.specLine}>{specLine}</p>
+                <p className={styles.price}>{price}</p>
+              </div>
+
+              <div className={styles.actions}>
+                <Button size="lg" onClick={() => setLeadType('enquiry')}>Enquire</Button>
                 <a
                   href={config.whatsapp.getDeepLink(whatsappMsg)}
-                  target="_blank" rel="noopener noreferrer"
-                  className={styles.whatsappButton}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  <MessageCircle size={16} /> WhatsApp
+                  <Button variant="secondary" size="lg">WhatsApp</Button>
                 </a>
+                {vehicle.status === 'pre-order' && (
+                  <Button variant="ghost" size="lg" onClick={() => setLeadType('pre-order')}>Pre-order this vehicle</Button>
+                )}
               </div>
-            </div>
-          </aside>
-        </div>
+              <button type="button" className={styles.textAction} onClick={() => setLeadType('test-drive')}>
+                Book a test drive
+              </button>
+            </aside>
 
-        {similar.length > 0 && (
-          <div className={styles.similarSection}>
-            <h2 className={styles.similarTitle}>Similar Vehicles</h2>
-            <div className={styles.similarGrid}>
-              {similar.map(v => {
-                const img = v.media?.find(m => m.is_primary) ?? v.media?.[0]
-                return (
-                  <Link key={v.id} to={`/inventory/${v.id}`} className={styles.similarCard}>
-                    {img && <img src={img.url} alt={`${v.make} ${v.model} ${v.trim || ''} ${v.year}`.trim()} className={styles.similarImg} loading="lazy" />}
-                    <p className={styles.similarName}>{v.make} {v.model}</p>
-                    <p className={`${styles.similarPrice} tabular-nums`}>{formatPrice(v.price)}</p>
-                  </Link>
-                )
-              })}
+            <div className={styles.details}>
+              {vehicle.description && <p className={styles.description}>{vehicle.description}</p>}
+
+              {vehicle.features && vehicle.features.length > 0 && (
+                <section className={styles.section}>
+                  <h2 className={styles.sectionTitle}>Features</h2>
+                  <ul className={styles.features}>
+                    {vehicle.features.map((feature, i) => (
+                      <li key={`${feature}-${i}`} className={styles.feature}>{feature}</li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>Specifications</h2>
+                <SpecTable rows={specs} />
+              </section>
             </div>
           </div>
-        )}
+
+          {similar.length > 0 && (
+            <section className={styles.related}>
+              <h2 className={styles.relatedTitle}>More from {vehicle.make}</h2>
+              <div className={styles.relatedGrid}>
+                {similar.map(v => <VehicleCard key={v.id} vehicle={v} />)}
+              </div>
+            </section>
+          )}
+        </Container>
+
+        {/* Mobile: price and the primary action stay within thumb reach */}
+        <div className={styles.mobileBar}>
+          <div>
+            <p className={styles.mobilePrice}>{price}</p>
+            <p className={styles.mobileMeta}>{vehicle.year} · {formatMileage(vehicle.mileage)}</p>
+          </div>
+          <Button onClick={() => setLeadType('enquiry')}>Enquire</Button>
+        </div>
 
         <LeadForm open={leadType !== null} onClose={() => setLeadType(null)} type={leadType ?? 'enquiry'} vehicleId={vehicle.id} />
-      </Section>
+      </article>
     </>
   )
 }

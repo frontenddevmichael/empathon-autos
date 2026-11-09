@@ -253,3 +253,51 @@ Hero (photograph) → numbers (paper) → how to buy (navy, pinned) → featured
 - `docs/screenshots/phase4/`: `home-1440.png`, `home-390.png` (first fold, transparent nav), `home-1440-full.png` (1440×7935, whole page), `home-390-full.png` (390×8944), and `process-pinned-1440.png` — a mid-scroll capture proving the pinned index and the dimmed incoming step, since a full-page capture flattens sticky elements.
 - Checked in the DOM at both widths: sections alternate correctly, the numbers band collapses to 2×2 at 390px, no horizontal overflow, no console errors.
 - Deferred to Phase 5 by the pack: the `VehicleCard` itself still shows the saturated green "IN STOCK" pill, an empty grey image box and a year stranded on the price row. Only composition happened here.
+
+---
+
+# Phase 5 — Inventory, vehicle card, vehicle detail, auctions
+
+## Vehicle card
+
+One link, one photograph, three lines of type. 4:3 media at 20px radius, no border, no overlay, no hover cue; hover scales the image to 1.03 over 600ms and does nothing else. Name at 18/600 with the status pill on the same baseline, then **one spec line** in stone, then the price in tabular numerals. The photograph is absolutely positioned inside the frame so an image can never stretch the 4:3 box, and a failed image request falls back to "Photo coming soon" rather than a broken icon.
+
+**Spec-line fields** (all present on `Vehicle`): `year · mileage · transmission` — e.g. "2013 · 0 km · Automatic". `body_type`, `fuel_type`, `colour` and `condition` are held back for the detail page's spec table, which has room for them.
+
+`Badge` was restyled with it: every status is now a neutral hairline pill (Available / Pre-order / Sold / In auction) instead of a saturated green fill. The live auction badge is the only one with a red accent, and it carries a red dot.
+
+## Inventory
+
+A sticky bar under the nav holds the search field, one "Filters" pill with an active count, and the result count in stone. Chosen facets appear in the same bar as removable navy chips beside a "Clear all" link, so the current filter set is always visible. Opening "Filters" expands the facet panel beneath the bar — seven groups of pill chips (make, body, status, transmission, year, fuel, condition) with no "All" pill in each group: unfiltered is the absence of a choice, and clearing happens on the chip in the bar. Selected chips are navy fill; everything else is a warm pill.
+
+The grid is 3-up with a 32px column gap, two-up at tablet, single column on mobile; skeletons match the card; the empty state is one sentence plus one action; "Load more" is a quiet secondary pill. All search, filter and pagination logic is unchanged — the same states, the same Supabase query, the same `PAGE_SIZE` / `MAX_WITH_FILTERS` behaviour.
+
+On a phone the bar stays two rows (search + Filters, then the chips), and the result count moves to a small line above the grid instead of adding a third pinned row.
+
+The inline `style={{...}}` blocks in the help band are gone, along with the two icon+label buttons; it is now a hairline band with a sentence and two buttons.
+
+## Vehicle detail
+
+Gallery first: a 4:3 frame with arrows and a counter, then a thumbnail strip. No text sits on the photograph. Below it two columns — left: description, features as a two-column hairline list, and a hairline `SpecTable`; right: a sticky buy column with the status pill, name, one spec line, price, **Enquire** (primary) and **WhatsApp** (secondary), a quiet "Book a test drive" link and pre-order when the vehicle is a pre-order. Related vehicles are a 3-up row of the new card. On mobile the buy column becomes a normal block after the gallery and the action moves into a sticky bottom bar carrying the price.
+
+`LeadForm` behaviour is untouched. The shared `Modal` was brought to the skill: one soft shadow instead of four stacked ones, and a plain fade instead of scale/sheet transforms.
+
+New shared component: `ui/SpecTable` — hairline rows, label in stone, value in ink, tabular numerals, no boxes.
+
+## Auctions
+
+`AuctionLotCard` now uses the vehicle card's frame and rhythm: 4:3 media, title with the status badge, one spec line (year · mileage, or the closing date for past lots), then the bid label and amount in tabular numerals with the timer on the right. All bid/timer logic is unchanged. The Auctions tabs became a quiet segmented pill; the skeleton lost its shimmer gradient.
+
+`AuctionDetail` adopts the detail language: gallery with thumbnails and lightbox, `SpecTable` for the lot, then the sticky bid panel (price, reserve state, timer, Buy Now, bid form) and the bid history as hairline rows. The condition report lost its coloured grade and fault badges — labels only, in ink — because the skill allows red in exactly one place, the live badge; the timer no longer changes colour either.
+
+## Verification
+
+- `npx tsc -b` exit 0, `pnpm build` exit 0, `pnpm test --run` 52/52.
+- `docs/screenshots/phase5/`: inventory at 1440 and 390, the filter panel open, the bar pinned mid-scroll, vehicle detail at 1440 and 390, auctions at 1440 and 390.
+- Checked in the DOM at both widths: the card frame stays 4:3 with a real photograph, the sticky bar pins at 56px, the facet panel toggles, chip selection fills navy, and the mobile bar stays two rows.
+
+## Limitations and notes
+
+- **The `lots` table is empty** (0 lots, 0 bids, 0 lot media, 0 faults), so `AuctionDetail` can only be captured in its "not found" state — those are the two `auction-detail-empty-*` screenshots. The restyled lot page has not been seen with real data; its pieces (gallery frame, `SpecTable`, sticky panel, hairline history) are the same ones verified on the vehicle detail page, but the assembled page is unverified.
+- 11 of 41 vehicles have media, all pointing at Google Drive URLs. Cards and the gallery render them; the rest show "Photo coming soon". Mileage is 0 on most rows and price is 0 on all of them, which displays as "Price on request".
+- `src/components/ui/Footer.tsx` and `Footer.module.css` were modified at 07:59 by something other than this work (a full redesign with an indigo gradient, a script font and an agent note at the top of the file). They are untouched here and **not** included in the phase commit; the footer in these screenshots is that in-progress version.

@@ -11,7 +11,7 @@ interface AuctionLotCardProps {
   variant?: 'live' | 'past'
 }
 
-/** Shared auction tile used by the live and past-auction grids. */
+/** Shared auction tile — same frame, rhythm and type as the vehicle card. */
 export function AuctionLotCard({ lot, variant = 'live' }: AuctionLotCardProps) {
   const img = primaryLotImage(lot)
   const title = lotTitle(lot)
@@ -26,6 +26,14 @@ export function AuctionLotCard({ lot, variant = 'live' }: AuctionLotCardProps) {
     ? (winner ? `Won by ${winner}` : 'Sold')
     : lot.current_bid > 0 ? 'Reserve not met' : 'No winning bid'
 
+  const priceLabel = variant === 'live'
+    ? (hasBid ? 'Current bid' : 'Opening bid')
+    : pastLabel
+
+  const priceValue = variant === 'live'
+    ? formatPrice(hasBid ? lot.current_bid : lot.opening_bid)
+    : isSold ? formatPrice(lot.current_bid) : '—'
+
   return (
     <Link to={`/auctions/${lot.id}`} className={styles.link}>
       <article className={styles.card}>
@@ -36,15 +44,16 @@ export function AuctionLotCard({ lot, variant = 'live' }: AuctionLotCardProps) {
               alt={title}
               className={`${styles.image} ${variant === 'past' && !isSold ? styles.imageMuted : ''}`}
               loading="lazy"
+              decoding="async"
             />
           ) : (
-            <div className={styles.noImage}>No image</div>
+            <div className={styles.placeholder}>Photo coming soon</div>
           )}
         </div>
 
         <div className={styles.body}>
-          <div className={styles.header}>
-            <p className={styles.title}>{title}</p>
+          <div className={styles.head}>
+            <h3 className={styles.name}>{title}</h3>
             {variant === 'live'
               ? (isOpen ? <Badge variant="live" /> : <Badge variant="draft" label="Scheduled" />)
               : (isSold
@@ -52,26 +61,23 @@ export function AuctionLotCard({ lot, variant = 'live' }: AuctionLotCardProps) {
                 : <Badge variant="draft" label={lot.status === 'closed' ? 'Closed' : 'Unsold'} />)}
           </div>
 
-          <p className={styles.meta}>
-            {year ? `${year} · ` : ''}
+          <p className={styles.spec}>
             {variant === 'live'
-              ? formatMileage(lotMileage(lot))
-              : new Date(lot.closes_at).toLocaleDateString()}
+              ? [year, formatMileage(lotMileage(lot))].filter(Boolean).join(' · ')
+              : `Closed ${new Date(lot.closes_at).toLocaleDateString()}`}
           </p>
 
           <div className={styles.footer}>
             <div>
-              <p className={styles.label}>{variant === 'live' ? (hasBid ? 'Current bid' : 'Opening bid') : pastLabel}</p>
-              <p className={`${styles.price} ${variant === 'past' && !isSold ? styles.priceMuted : ''} tabular-nums`}>
-                {variant === 'live'
-                  ? formatPrice(hasBid ? lot.current_bid : lot.opening_bid)
-                  : isSold ? formatPrice(lot.current_bid) : '—'}
+              <p className={styles.label}>{priceLabel}</p>
+              <p className={`${styles.price} ${variant === 'past' && !isSold ? styles.priceMuted : ''}`}>
+                {priceValue}
               </p>
             </div>
             <p className={styles.timer}>
               {variant === 'live'
                 ? (isOpen ? <AuctionTimer closesAt={lot.closes_at} /> : 'Bidding opens soon')
-                : 'View details'}
+                : ''}
             </p>
           </div>
         </div>

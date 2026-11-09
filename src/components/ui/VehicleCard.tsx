@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Vehicle } from '@/types'
-import { formatPrice } from '@/lib/format'
+import { formatPrice, formatMileage } from '@/lib/format'
 import { Badge } from './Badge'
 import styles from './VehicleCard.module.css'
 
@@ -10,49 +10,64 @@ const statusBadge: Record<string, 'available' | 'pre-order' | 'sold' | 'draft' |
   'in-auction': 'live', 'draft': 'draft', 'published': 'available',
 }
 
+const statusLabel: Record<string, string> = {
+  'walk-in': 'Available',
+  'pre-order': 'Pre-order',
+  'sold': 'Sold',
+  'in-auction': 'In auction',
+  'draft': 'Coming soon',
+  'published': 'Available',
+}
+
+const transmissionLabel: Record<string, string> = {
+  automatic: 'Automatic',
+  manual: 'Manual',
+  'semi-automatic': 'Semi-automatic',
+}
+
 interface VehicleCardProps {
   vehicle: Vehicle
 }
 
+/**
+ * The vehicle card. One link, one photograph, three lines of type.
+ * Hover does one thing: the image scales to 1.03 over 600ms.
+ */
 export function VehicleCard({ vehicle }: VehicleCardProps) {
-  const [imgLoaded, setImgLoaded] = useState(false)
-  const [imgError, setImgError] = useState(false)
+  const [broken, setBroken] = useState(false)
   const img = vehicle.media?.find(m => m.is_primary) ?? vehicle.media?.[0]
+  const spec = [vehicle.year || null, formatMileage(vehicle.mileage), transmissionLabel[vehicle.transmission]]
+    .filter(Boolean)
+    .join(' · ')
 
   return (
     <Link to={`/inventory/${vehicle.id}`} className={styles.link}>
       <article className={styles.card}>
-        {/* Image — the hero of the card */}
-        <div className={styles.imageWrap}>
-          {img && !imgError ? (
+        <div className={styles.media}>
+          {img && !broken ? (
             <img
               src={img.url}
               alt={`${vehicle.make} ${vehicle.model}${vehicle.trim ? ` ${vehicle.trim}` : ''} ${vehicle.year}`}
-              className={`${styles.image} ${imgLoaded ? styles.imageLoaded : styles.imageLoading}`}
+              className={styles.image}
               loading="lazy"
-              onLoad={() => setImgLoaded(true)}
-              onError={() => setImgError(true)}
+              decoding="async"
+              onError={() => setBroken(true)}
             />
           ) : (
-            <div className={styles.placeholder}>No image yet</div>
+            <div className={styles.placeholder}>Photo coming soon</div>
           )}
-          {/* Soft wash + detail cue revealed on hover */}
-          <div className={styles.overlay}>
-            <span className={styles.viewCue}>View details</span>
-          </div>
         </div>
 
-        {/* Metadata — minimal, quiet */}
-        <div className={styles.meta}>
-          <div className={styles.badgeRow}>
-            <Badge variant={statusBadge[vehicle.status] || 'draft'} />
+        <div className={styles.body}>
+          <div className={styles.head}>
+            <h3 className={styles.name}>{vehicle.make} {vehicle.model}</h3>
+            <Badge
+              variant={statusBadge[vehicle.status] || 'draft'}
+              label={statusLabel[vehicle.status]}
+            />
           </div>
-          <h3 className={styles.title}>{vehicle.make} {vehicle.model}</h3>
-          {vehicle.trim && <p className={styles.trim}>{vehicle.trim}</p>}
-          <div className={styles.footer}>
-            <span className={styles.price}>{formatPrice(vehicle.price)}</span>
-            {vehicle.year && <span className={styles.year}>{vehicle.year}</span>}
-          </div>
+          <p className={styles.spec}>{spec}</p>
+          <p className={styles.price}>{formatPrice(vehicle.price)}</p>
         </div>
       </article>
     </Link>

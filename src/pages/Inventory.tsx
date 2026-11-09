@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
-import { X, MessageCircle, HelpCircle, ChevronDown, SlidersHorizontal } from 'lucide-react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { useMounted } from '@/hooks/useMounted'
 import type { Vehicle, VehicleMedia } from '@/types'
@@ -53,6 +52,35 @@ const YEAR_RANGES = [
   { value: '0-2014', label: '2014 & Older' },
 ]
 
+interface FacetProps {
+  label: string
+  options: { value: string; label: string }[]
+  value: string
+  onChange: (value: string) => void
+}
+
+function Facet({ label, options, value, onChange }: FacetProps) {
+  return (
+    <div className={styles.facet} role="group" aria-label={label}>
+      <span className={styles.facetLabel}>{label}</span>
+      <div className={styles.chips}>
+        {/* No "All" pill: unfiltered is the absence of a choice, not a choice.
+            Removing a filter happens on its chip in the bar above. */}
+        {options.filter(option => option.value !== '').map(option => (
+          <button
+            key={option.value || 'all'}
+            type="button"
+            aria-pressed={value === option.value}
+            className={value === option.value ? styles.chipOn : styles.chip}
+            onClick={() => onChange(option.value)}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export function Inventory() {
   const mounted = useMounted()
@@ -71,10 +99,10 @@ export function Inventory() {
   const [yearRange, setYearRange] = useState('')
   const [priceRange, setPriceRange] = useState('')
   const [mileageRange, setMileageRange] = useState('')
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
-  const hasAnyFilter = make || bodyType || statusFilter || fuelType || transmission || condition || yearRange || priceRange || mileageRange || search
-  const activeFilterCount = [make, bodyType, statusFilter, fuelType, transmission, condition, yearRange, priceRange, mileageRange, search].filter(Boolean).length
+  const hasAnyFilter = Boolean(make || bodyType || statusFilter || fuelType || transmission || condition || yearRange || priceRange || mileageRange || search)
+  const activeFilterCount = [make, bodyType, statusFilter, fuelType, transmission, condition, yearRange, priceRange, mileageRange].filter(Boolean).length
   const maxResults = hasAnyFilter ? MAX_WITH_FILTERS : PAGE_SIZE
 
   // Reset pagination when filters change
@@ -89,7 +117,7 @@ export function Inventory() {
         const to = from + maxResults - 1
         let q = supabase.from('vehicles').select('*, media:vehicle_media(*)', { count: 'exact' })
           .neq('status', 'sold').neq('status', 'draft')
-        
+
         if (search) q = q.or(`make.ilike.%${search}%,model.ilike.%${search}%,trim.ilike.%${search}%`)
         if (make) q = q.eq('make', make)
         if (bodyType) q = q.eq('body_type', bodyType)
@@ -97,7 +125,7 @@ export function Inventory() {
         if (fuelType) q = q.eq('fuel_type', fuelType)
         if (transmission) q = q.eq('transmission', transmission)
         if (condition) q = q.eq('condition', condition)
-        
+
         // Parse year range
         if (yearRange) {
           const [minYear, maxYear] = yearRange.split('-').map(Number)
@@ -105,7 +133,7 @@ export function Inventory() {
             q = q.gte('year', minYear).lte('year', maxYear)
           }
         }
-        
+
         // Parse price range
         if (priceRange) {
           const [minPrice, maxPrice] = priceRange.split('-').map(Number)
@@ -113,7 +141,7 @@ export function Inventory() {
             q = q.gte('price', minPrice).lte('price', maxPrice)
           }
         }
-        
+
         // Parse mileage range
         if (mileageRange) {
           const [minMileage, maxMileage] = mileageRange.split('-').map(Number)
@@ -121,7 +149,7 @@ export function Inventory() {
             q = q.gte('mileage', minMileage).lte('mileage', maxMileage)
           }
         }
-        
+
         const { data, count } = await q.order('created_at', { ascending: false }).range(from, to)
         if (!mounted.current) return
         if (append && data) {
@@ -153,6 +181,17 @@ export function Inventory() {
   }
   const hasMore = !loadedAll && vehicles.length < total
 
+  // Active filters as removable chips in the bar, so the state is always visible
+  const activeChips = [
+    make && { key: 'make', label: make, clear: () => setMake('') },
+    bodyType && { key: 'body', label: BODY_TYPES.find(b => b.value === bodyType)?.label ?? bodyType, clear: () => setBodyType('') },
+    statusFilter && { key: 'status', label: STATUS_OPTIONS.find(s => s.value === statusFilter)?.label ?? statusFilter, clear: () => setStatusFilter('') },
+    transmission && { key: 'transmission', label: TRANSMISSIONS.find(t => t.value === transmission)?.label ?? transmission, clear: () => setTransmission('') },
+    fuelType && { key: 'fuel', label: FUEL_TYPES.find(f => f.value === fuelType)?.label ?? fuelType, clear: () => setFuelType('') },
+    condition && { key: 'condition', label: condition.replace(/-/g, ' '), clear: () => setCondition('') },
+    yearRange && { key: 'year', label: YEAR_RANGES.find(y => y.value === yearRange)?.label ?? yearRange, clear: () => setYearRange('') },
+  ].filter((chip): chip is { key: string; label: string; clear: () => void } => Boolean(chip))
+
   return (
     <>
       <PageHero
@@ -165,205 +204,105 @@ export function Inventory() {
       />
 
       <Container className={styles.content}>
-      <div className={`scroll-reveal ${styles.toolbar}`}>
-        <div className={styles.searchRow}>
-          <div className={styles.searchInput}>
-            <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by make, model, or trim..." />
-          </div>
-          <button 
-            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)} 
-            className={styles.filterToggle}
-          >
-            <SlidersHorizontal size={14} />
-            {showAdvancedFilters ? 'Fewer filters' : 'More filters'}
-            {activeFilterCount > 0 && <span className={styles.filterBadge}>{activeFilterCount}</span>}
-          </button>
-          {hasAnyFilter && (
-            <button onClick={clearAll} className={styles.clearBtn}>
-              <X size={12} /> Clear {activeFilterCount > 1 ? `(${activeFilterCount})` : ''}
+        <div className={styles.bar}>
+          <div className={styles.barRow}>
+            <div className={styles.searchInput}>
+              <Input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search make or model"
+                aria-label="Search vehicles"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setFiltersOpen(open => !open)}
+              className={filtersOpen ? styles.filterButtonOpen : styles.filterButton}
+              aria-expanded={filtersOpen}
+              aria-controls="inventory-filters"
+            >
+              {filtersOpen ? 'Hide filters' : 'Filters'}
+              {activeFilterCount > 0 && <span className={styles.filterCount}>{activeFilterCount}</span>}
             </button>
+            <p className={styles.resultCount}>
+              {loading ? 'Loading' : `${total} ${total === 1 ? 'vehicle' : 'vehicles'}`}
+            </p>
+          </div>
+
+          {activeChips.length > 0 && (
+            <div className={styles.activeRow}>
+              {activeChips.map(chip => (
+                <button key={chip.key} type="button" onClick={chip.clear} className={styles.activeChip}>
+                  {chip.label}
+                  <span aria-hidden="true">×</span>
+                </button>
+              ))}
+              <button type="button" onClick={clearAll} className={styles.clearAll}>Clear all</button>
+            </div>
           )}
         </div>
 
-        {/* Basic Filters */}
-        <div className={styles.filterRow}>
-          <div className={styles.filterGroup}>
-            <span className={styles.filterGroupLabel}>Make</span>
-            <select
-              value={make}
-              onChange={e => setMake(e.target.value)}
-              className={styles.filterSelect}
-              aria-label="Filter by make"
-            >
-              {MAKES.map(m => (
-                <option key={m} value={m === 'All Makes' ? '' : m}>{m}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.filterGroup}>
-            <span className={styles.filterGroupLabel}>Body</span>
-            <select
-              value={bodyType}
-              onChange={e => setBodyType(e.target.value)}
-              className={styles.filterSelect}
-              aria-label="Filter by body type"
-            >
-              {BODY_TYPES.map(t => (
-                <option key={t.value} value={t.value}>{t.label}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.filterGroup}>
-            <span className={styles.filterGroupLabel}>Status</span>
-            <select
-              value={statusFilter}
-              onChange={e => setStatusFilter(e.target.value)}
-              className={styles.filterSelect}
-              aria-label="Filter by status"
-            >
-              {STATUS_OPTIONS.map(s => (
-                <option key={s.value} value={s.value}>{s.label}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.filterGroup}>
-            <span className={styles.filterGroupLabel}>Transmission</span>
-            <select
-              value={transmission}
-              onChange={e => setTransmission(e.target.value)}
-              className={styles.filterSelect}
-              aria-label="Filter by transmission"
-            >
-              {TRANSMISSIONS.map(t => (
-                <option key={t.value} value={t.value}>{t.label}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Advanced Filters */}
-        {showAdvancedFilters && (
-          <div className={`${styles.filterRow} ${styles.advancedFilters}`}>
-            <div className={styles.filterGroup}>
-              <span className={styles.filterGroupLabel}>Year</span>
-              <select
-                value={yearRange}
-                onChange={e => setYearRange(e.target.value)}
-                className={styles.filterSelect}
-                aria-label="Filter by year"
-              >
-                {YEAR_RANGES.map(y => (
-                  <option key={y.value} value={y.value}>{y.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className={styles.filterGroup}>
-              <span className={styles.filterGroupLabel}>Fuel</span>
-              <select
-                value={fuelType}
-                onChange={e => setFuelType(e.target.value)}
-                className={styles.filterSelect}
-                aria-label="Filter by fuel type"
-              >
-                {FUEL_TYPES.map(f => (
-                  <option key={f.value} value={f.value}>{f.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className={styles.filterGroup}>
-              <span className={styles.filterGroupLabel}>Condition</span>
-              <select
-                value={condition}
-                onChange={e => setCondition(e.target.value)}
-                className={styles.filterSelect}
-                aria-label="Filter by condition"
-              >
-                {CONDITIONS.map(c => (
-                  <option key={c.value} value={c.value}>{c.label}</option>
-                ))}
-              </select>
-            </div>
+        {filtersOpen && (
+          <div id="inventory-filters" className={styles.panel}>
+            <Facet label="Make" options={MAKES.map(m => ({ value: m === 'All Makes' ? '' : m, label: m }))} value={make} onChange={setMake} />
+            <Facet label="Body" options={BODY_TYPES} value={bodyType} onChange={setBodyType} />
+            <Facet label="Status" options={STATUS_OPTIONS} value={statusFilter} onChange={setStatusFilter} />
+            <Facet label="Transmission" options={TRANSMISSIONS} value={transmission} onChange={setTransmission} />
+            <Facet label="Year" options={YEAR_RANGES} value={yearRange} onChange={setYearRange} />
+            <Facet label="Fuel" options={FUEL_TYPES} value={fuelType} onChange={setFuelType} />
+            <Facet label="Condition" options={CONDITIONS} value={condition} onChange={setCondition} />
           </div>
         )}
-      </div>
 
-      {!loading && total > 0 && (
-        <p className={styles.resultCount}>
-          Showing {vehicles.length} of {total} vehicle{total !== 1 ? 's' : ''}
-          {hasAnyFilter && ' — filters active'}
+        <p className={styles.gridCount}>
+          {loading ? 'Loading' : `${total} ${total === 1 ? 'vehicle' : 'vehicles'}`}
         </p>
-      )}
 
-      <div className={styles.grid}>
-        {loading ? (
-          Array.from({ length: 6 }).map((_, i) => <VehicleCardSkeleton key={i} />)
-        ) : vehicles.length === 0 ? (
-          <EmptyState
-            className={styles.emptyState}
-            title="No vehicles found"
-            message={hasAnyFilter
-              ? 'Try widening your search or clearing a few filters — there may be more to see.'
-              : "We're restocking the lot. Tell us what you're after and we'll hunt it down."}
-            action={hasAnyFilter
-              ? <Button variant="secondary" size="sm" onClick={clearAll}>Clear all filters</Button>
-              : <Link to="/pre-order"><Button size="sm" variant="secondary">Request a Vehicle</Button></Link>}
-          />
-        ) : (
-          vehicles.map(v => <VehicleCard key={v.id} vehicle={v} />)
-        )}
-      </div>
-
-      {/* Load More */}
-      {hasMore && !loading && (
-        <div className={styles.loadMore}>
-          <Button
-            variant="secondary"
-            size="md"
-            onClick={() => fetchVehicles(true)}
-            loading={loading}
-          >
-            <ChevronDown size={14} />
-            Load More ({total - vehicles.length} remaining)
-          </Button>
+        <div className={styles.grid}>
+          {loading ? (
+            Array.from({ length: 6 }).map((_, i) => <VehicleCardSkeleton key={i} />)
+          ) : vehicles.length === 0 ? (
+            <EmptyState
+              className={styles.emptyState}
+              title="No vehicles found"
+              message={hasAnyFilter
+                ? 'Try widening your search or clearing a few filters — there may be more to see.'
+                : "We're restocking the lot. Tell us what you're after and we'll hunt it down."}
+              action={hasAnyFilter
+                ? <Button variant="secondary" size="sm" onClick={clearAll}>Clear all filters</Button>
+                : <Link to="/pre-order"><Button size="sm" variant="secondary">Request a vehicle</Button></Link>}
+            />
+          ) : (
+            vehicles.map(v => <VehicleCard key={v.id} vehicle={v} />)
+          )}
         </div>
-      )}
 
-      {/* ── Need Help? Lead CTA ── */}
-      <div className={`scroll-reveal ${styles.leadCta}`}>
-        <div className={styles.leadCtaInner}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-            <div style={{ flex: 1, minWidth: 240 }}>
-              <p className={styles.leadCtaLabel}>Can't find what you're looking for?</p>
-              <p className={styles.leadCtaDesc}>
-                Tell us your preferences and we'll source the perfect vehicle for you —
-                or reach out on WhatsApp for a quick chat with our team.
-              </p>
-            </div>
-            <div style={{ display: 'flex', gap: 'var(--space-1-5)', flexWrap: 'wrap' }}>
-              <Link to="/contact">
-                <Button variant="primary" size="md">
-                  <HelpCircle size={15} style={{ marginRight: 4 }} />
-                  Send Enquiry
-                </Button>
-              </Link>
-              <a
-                href={config.whatsapp.getDeepLink("Hi Empathon Autos! I need help finding a vehicle.")}
-                target="_blank" rel="noopener noreferrer"
-              >
-                <Button variant="secondary" size="md">
-                  <MessageCircle size={15} style={{ marginRight: 4 }} />
-                  WhatsApp Us
-                </Button>
-              </a>
-            </div>
+        {hasMore && !loading && (
+          <div className={styles.more}>
+            <Button variant="secondary" onClick={() => fetchVehicles(true)} loading={loading}>
+              Load more
+            </Button>
+          </div>
+        )}
+
+        <div className={styles.help}>
+          <div>
+            <p className={styles.helpTitle}>Can&rsquo;t find what you&rsquo;re looking for?</p>
+            <p className={styles.helpText}>
+              Tell us the spec you want and we&rsquo;ll source it — or message us on WhatsApp for a quick answer.
+            </p>
+          </div>
+          <div className={styles.helpActions}>
+            <Link to="/contact"><Button>Send an enquiry</Button></Link>
+            <a
+              href={config.whatsapp.getDeepLink('Hi Empathon Autos! I need help finding a vehicle.')}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant="secondary">WhatsApp us</Button>
+            </a>
           </div>
         </div>
-      </div>
       </Container>
     </>
   )

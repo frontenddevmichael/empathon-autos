@@ -1,40 +1,41 @@
 .badge {
   display: inline-flex;
   align-items: center;
-  height: 26px;
+  gap: 6px;
+  height: 24px;
   padding: 0 10px;
   border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: transparent;
   font-size: var(--text-2xs);
-  font-weight: 700;
-  white-space: nowrap;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  white-space: nowrap;
+  color: var(--ink);
 }
 
-.available {
-  background: rgba(21,128,61,0.08);
-  color: var(--success);
-  border: 1px solid rgba(21,128,61,0.15);
-}
-
-.preOrder {
-  background: rgba(0,51,102,0.06);
-  color: var(--navy);
-  border: 1px solid rgba(0,51,102,0.12);
+/* Status is information, not decoration: one quiet style, no colour coding.
+   The live auction badge is the only place a red accent is allowed. */
+.available,
+.preOrder,
+.sold,
+.draft {
+  color: var(--ink);
 }
 
 .sold {
-  background: var(--stone);
-  color: white;
-}
-
-.draft {
-  background: var(--navy-a06);
   color: var(--stone);
 }
 
 .live {
-  background: var(--live);
-  color: var(--text-inverse);
-  border: 1px solid transparent;
+  color: var(--live);
+  border-color: var(--live);
+}
+.live::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
 }
