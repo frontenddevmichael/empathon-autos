@@ -60,9 +60,11 @@
   display: block;
   width: 176px;
   height: auto;
-  color: var(--text-primary);
-   filter: invert(1);
-     filter: brightness(0);
+  filter: brightness(0);
+}
+
+.logoImage{
+      filter: invert(1);
 }
 
 .touch {
