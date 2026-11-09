@@ -1,23 +1,18 @@
-import { useState, useRef, type FormEvent } from 'react'
-import { Check, Package, Ship, Search, Truck, ShieldCheck } from 'lucide-react'
+import { useState, type FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { Input } from '@/components/ui/Input'
-import { Section } from '@/components/PageLayout'
-import { useToast } from '@/context/ToastContext'
-import { RippleButton } from '@/components/RippleButton'
-import { SplitHeading } from '@/components/SplitHeading'
-import { HeroSection } from '@/components/HeroSection'
+import { Section } from '@/components/layout/Section'
+import { PageHero } from '@/components/ui/PageHero'
+import { Button } from '@/components/ui/Button'
 import { lookupOrder, validateReference, ORDER_STAGES } from '@/lib/mockOrders'
 import type { TrackedOrder } from '@/lib/mockOrders'
 import styles from './TrackOrder.module.css'
-
-const stageIcons = [Package, Package, Ship, ShieldCheck, Truck]
 
 function Timeline({ order }: { order: TrackedOrder }) {
   const current = order.stageIndex
   return (
     <ol className={styles.timeline} aria-label="Order progress">
       {ORDER_STAGES.map((stage, i) => {
-        const Icon = stageIcons[i]
         const done = i < current
         const isCurrent = i === current
         return (
@@ -26,16 +21,9 @@ function Timeline({ order }: { order: TrackedOrder }) {
             className={`${styles.step} ${done ? styles.stepDone : ''} ${isCurrent ? styles.stepCurrent : ''}`}
             aria-current={isCurrent ? 'step' : undefined}
           >
-            <div className={styles.stepTrack}>
-              <span className={styles.stepDot}>
-                {done ? <Check size={14} strokeWidth={3} /> : <Icon size={16} />}
-              </span>
-              {i < ORDER_STAGES.length - 1 && <span className={styles.stepLine} />}
-            </div>
-            <div className={styles.stepLabel}>
-              <span className={styles.stepTitle}>{stage}</span>
-              {isCurrent && <span className={styles.stepTag}>In progress</span>}
-            </div>
+            <span className={styles.dot} aria-hidden="true" />
+            <span className={styles.stage}>{stage}</span>
+            <span className={styles.tag}>{done ? 'Done' : isCurrent ? 'In progress' : ''}</span>
           </li>
         )
       })}
@@ -44,120 +32,102 @@ function Timeline({ order }: { order: TrackedOrder }) {
 }
 
 export function TrackOrder() {
-  const { showToast } = useToast()
   const [reference, setReference] = useState('')
   const [error, setError] = useState('')
   const [order, setOrder] = useState<TrackedOrder | null>(null)
-  const resultRef = useRef<HTMLDivElement>(null)
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     const value = reference.trim()
     if (!value) {
-      setError('Please enter an order reference')
-      showToast('Please enter an order reference', 'error')
+      setError('Please enter an order reference.')
+      setOrder(null)
       return
     }
     if (!validateReference(value)) {
-      setError('That doesn\u2019t look right. Use the format EA-XXXXXX (e.g. EA-202418).')
-      showToast('Invalid reference format', 'error')
+      setError('That doesn\u2019t look right. Use the format EA-XXXXXX (for example EA-202418).')
       setOrder(null)
       return
     }
     setError('')
-    const result = lookupOrder(value)
-    setOrder(result)
-    requestAnimationFrame(() => {
-      resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-    })
+    setOrder(lookupOrder(value))
   }
 
   return (
     <>
-      <HeroSection
-        images={[
-          { url: '/heroimg.jpg' },
-          { url: '/heroimg2.jpg' },
-        ]}
-        label="Track Order"
-        title="Where's My Vehicle?"
-        subtitle="Enter the order reference we sent you and follow your vehicle from sourcing all the way to your driveway."
-        deco="car"
+      <PageHero
+        label="Track order"
+        title="Where's my vehicle?"
+        subtitle="Enter the reference from your order confirmation and follow the car from sourcing to your driveway."
+        images={[{ url: '/heroimg.jpg' }, { url: '/heroimg2.jpg' }]}
+        overlay="left"
       />
 
-      <Section style={{ position: 'relative' }}>
-        <div className={styles.lookup} style={{ maxWidth: 640, margin: '0 auto' }}>
-          <SplitHeading as="h2" style={{ marginBottom: 'var(--space-2)', textAlign: 'center' }}>
-            Track Your Order
-          </SplitHeading>
-          <div className="section-divider section-divider-center" />
-          <p style={{ color: 'var(--stone)', marginBottom: 'var(--space-3)', textAlign: 'center' }}>
-            Your reference looks like <strong style={{ color: 'var(--ink)', fontFamily: 'var(--font-mono)' }}>EA-XXXXXX</strong> and is on your order confirmation.
-          </p>
+      <Section tone="paper" space="sm">
+        <div className={styles.lookup}>
           <form onSubmit={handleSubmit} className={styles.form} noValidate>
             <Input
-              label="Order Reference"
+              label="Order reference"
               placeholder="EA-XXXXXX"
               value={reference}
               onChange={e => { setReference(e.target.value); if (error) setError('') }}
               error={error || undefined}
-              aria-describedby={error ? 'track-error' : undefined}
             />
-            <RippleButton type="submit" variant="primary" magnetic>
-              <Search size={16} style={{ marginRight: 8 }} aria-hidden="true" />
-              Track Order
-            </RippleButton>
+            <Button type="submit">Track order</Button>
           </form>
-          {!order && !error && (
-            <p className={styles.hint}>
-              Don&apos;t have a reference? Try <button type="button" className={styles.sample} onClick={() => setReference('EA-202418')}>EA-202418</button> to see the flow.
-            </p>
-          )}
+          <p className={styles.hint}>
+            Don't have a reference? Try{' '}
+            <button type="button" className={styles.sample} onClick={() => { setReference('EA-202418'); setError(''); setOrder(lookupOrder('EA-202418')) }}>
+              EA-202418
+            </button>{' '}
+            to see the flow.
+          </p>
         </div>
 
         {order && (
-          <div ref={resultRef} className={`scroll-reveal ${styles.result}`} style={{ maxWidth: 960, margin: 'var(--space-5) auto 0' }}>
-            <div className={styles.resultHeader}>
+          <div className={`scroll-reveal ${styles.result}`}>
+            <div className={styles.resultHead}>
               <div>
-                <p className={styles.refLabel}>Order Reference</p>
-                <p className={styles.refValue} style={{ fontFamily: 'var(--font-mono)' }}>{order.reference}</p>
+                <p className={styles.label}>Reference</p>
+                <p className={styles.reference}>{order.reference}</p>
               </div>
-              <div style={{ textAlign: 'right' }}>
-                <p className={styles.refLabel}>Current Status</p>
-                <p className={styles.refStatus}>{order.stage}</p>
+              <div>
+                <p className={styles.label}>Status</p>
+                <p className={styles.status}>{order.stage}</p>
               </div>
             </div>
 
             <div className={styles.resultGrid}>
-              <div className={styles.summary}>
-                <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: 'var(--space-2)' }}>Order Summary</h3>
-                <dl className={styles.details}>
-                  <div>
-                    <dt>Vehicle</dt>
-                    <dd>{order.vehicle.make} {order.vehicle.model}</dd>
-                  </div>
-                  <div>
-                    <dt>Colour</dt>
-                    <dd>{order.vehicle.colour}</dd>
-                  </div>
-                  <div>
-                    <dt>Year</dt>
-                    <dd>{order.vehicle.year}</dd>
-                  </div>
-                  <div>
-                    <dt>Order Placed</dt>
-                    <dd>{order.placedDate}</dd>
-                  </div>
-                  <div>
-                    <dt>Estimated Pickup</dt>
-                    <dd>{order.estimatedPickup}</dd>
-                  </div>
-                </dl>
-              </div>
+              <dl className={styles.details}>
+                <div>
+                  <dt>Vehicle</dt>
+                  <dd>{order.vehicle.make} {order.vehicle.model}</dd>
+                </div>
+                <div>
+                  <dt>Colour</dt>
+                  <dd>{order.vehicle.colour}</dd>
+                </div>
+                <div>
+                  <dt>Year</dt>
+                  <dd>{order.vehicle.year}</dd>
+                </div>
+                <div>
+                  <dt>Order placed</dt>
+                  <dd>{order.placedDate}</dd>
+                </div>
+                <div>
+                  <dt>Estimated pickup</dt>
+                  <dd>{order.estimatedPickup}</dd>
+                </div>
+              </dl>
               <Timeline order={order} />
             </div>
           </div>
         )}
+
+        <p className={styles.footnote}>
+          Reference not working? <Link to="/contact">Contact us</Link> and we'll look it up.
+        </p>
       </Section>
     </>
   )

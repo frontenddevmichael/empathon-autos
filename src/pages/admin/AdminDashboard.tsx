@@ -65,7 +65,7 @@ export function AdminDashboard() {
   const statCards = [
     { icon: Car, label: 'Total Vehicles', value: stats.totalVehicles, sub: `${stats.inStock} in stock, ${stats.preOrder} pre-order`, color: 'var(--navy)', bg: 'rgba(0,51,102,0.06)' },
     { icon: TrendingUp, label: 'In Stock', value: stats.inStock, sub: `${((stats.inStock / (stats.totalVehicles || 1)) * 100).toFixed(0)}% of fleet`, color: 'var(--success)', bg: 'rgba(21,128,61,0.08)' },
-    { icon: Users, label: 'Leads', value: stats.totalLeads, sub: `${stats.newLeads} new`, color: 'var(--gold)', bg: 'rgba(208,208,208,0.25)' },
+    { icon: Users, label: 'Leads', value: stats.totalLeads, sub: `${stats.newLeads} new`, color: 'var(--navy)', bg: 'rgba(208,208,208,0.25)' },
     { icon: Gavel, label: 'Active Auctions', value: stats.activeLots, sub: 'currently live', color: 'var(--live)', bg: 'rgba(197,48,48,0.08)' },
   ]
 

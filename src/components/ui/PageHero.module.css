@@ -1,0 +1,177 @@
+.hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  background: var(--navy-deep);
+  color: var(--text-inverse);
+}
+
+.sm { min-height: clamp(280px, 34vh, 380px); }
+.md { min-height: clamp(380px, 48vh, 540px); }
+.lg { min-height: clamp(520px, 64vh, 720px); }
+
+/* ── Background media ── */
+.media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 65% center;
+  opacity: 0;
+  transition: opacity 1.4s var(--ease-out);
+}
+
+.imageActive { opacity: 1; }
+
+/* ── Scrims — one hue, three compositions ── */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.overlayLeft {
+  background:
+    linear-gradient(
+      to right,
+      rgba(6, 20, 40, 0.92) 0%,
+      rgba(6, 20, 40, 0.72) 34%,
+      rgba(6, 20, 40, 0.3) 62%,
+      rgba(6, 20, 40, 0) 82%
+    ),
+    linear-gradient(to bottom, rgba(6, 20, 40, 0.32) 0%, transparent 30%, rgba(6, 20, 40, 0.45) 100%);
+}
+
+.overlayBottom {
+  background: linear-gradient(
+    to top,
+    rgba(6, 20, 40, 0.94) 0%,
+    rgba(6, 20, 40, 0.68) 38%,
+    rgba(6, 20, 40, 0.24) 70%,
+    rgba(6, 20, 40, 0.2) 100%
+  );
+}
+
+.overlayCenter {
+  background:
+    radial-gradient(ellipse at 50% 60%, rgba(6, 20, 40, 0.35) 0%, rgba(6, 20, 40, 0.78) 100%),
+    linear-gradient(to bottom, rgba(6, 20, 40, 0.55) 0%, rgba(6, 20, 40, 0.35) 100%);
+}
+
+/* ── Content ── */
+.content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  /* PageLayout already offsets the fixed nav, so no nav-height here */
+  padding: var(--space-6) var(--container-pad);
+}
+
+.center .content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  margin-bottom: var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-inverse-muted);
+}
+
+.eyebrowRule {
+  width: 24px;
+  height: 1px;
+  background: var(--border-inverse-strong);
+  flex-shrink: 0;
+}
+
+.title {
+  max-width: 18ch;
+  font-size: clamp(2.1rem, 5.2vw, 4rem);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  color: var(--text-inverse);
+  text-wrap: balance;
+}
+
+.center .title {
+  max-width: 22ch;
+}
+
+.subtitle {
+  max-width: 52ch;
+  margin-top: var(--space-2);
+  font-size: var(--text-lg);
+  line-height: 1.65;
+  color: var(--text-inverse-secondary);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.center .actions {
+  justify-content: center;
+}
+
+/* ── Band variant — image-free navy header ── */
+.band {
+  align-items: center;
+  background: var(--navy);
+}
+
+
+.band .eyebrow {
+  color: var(--text-inverse-secondary);
+}
+
+.band .eyebrowRule {
+  display: none;
+}
+
+.band.center .content {
+  padding-block: var(--space-6);
+}
+
+@media (max-width: 768px) {
+  .sm { min-height: 260px; }
+  .md { min-height: 340px; }
+  .lg { min-height: 460px; }
+
+  .content {
+    padding: var(--space-5) var(--container-pad);
+  }
+
+  .title {
+    font-size: clamp(1.9rem, 8vw, 2.6rem);
+    max-width: 100%;
+  }
+
+  .subtitle {
+    font-size: var(--text-base);
+    max-width: 100%;
+  }
+}

@@ -3,42 +3,16 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { useMounted } from '@/hooks/useMounted'
 import { useAutoCloseLots } from '@/hooks/useAutoCloseLots'
-import { formatPrice, formatMileage } from '@/lib/format'
-import { firstName } from '@/lib/auction'
-import { Card } from '@/components/ui/Card'
-import { Badge } from '@/components/ui/Badge'
-import { AuctionTimer } from '@/components/ui/AuctionTimer'
-import { Section } from '@/components/PageLayout'
-import styles from './Auctions.module.css'
-import { RippleButton } from '@/components/RippleButton'
-import { HeroSection } from '@/components/HeroSection'
-import { CarSilhouette } from '@/components/DecoSvgs'
+import { Section } from '@/components/layout/Section'
+import { PageHero } from '@/components/ui/PageHero'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { Button } from '@/components/ui/Button'
+import { AuctionLotCard } from '@/components/ui/AuctionLotCard'
 import type { Lot } from '@/types'
+import styles from './Auctions.module.css'
 
 const LIVE_STATUSES = ['scheduled', 'open', 'closing']
 const PAST_STATUSES = ['closed', 'sold', 'unsold']
-
-function lotTitle(l: Lot): string {
-  if (l.title) return l.title
-  const own = [l.make, l.model].filter(Boolean).join(' ')
-  if (own) return own
-  if (l.vehicles) return `${l.vehicles.make} ${l.vehicles.model}`
-  return 'Untitled lot'
-}
-
-function lotYear(l: Lot): number | string | null {
-  if (l.year) return l.year
-  return l.vehicles?.year || null
-}
-
-function lotMileage(l: Lot): number {
-  return l.mileage || l.vehicles?.mileage || 0
-}
-
-function primaryImage(l: Lot): string | undefined {
-  return l.media?.find(m => m.is_primary)?.url ?? l.media?.[0]?.url ?? l.vehicles?.media?.find(m => m.is_primary)?.url ?? l.vehicles?.media?.[0]?.url
-}
 
 export function Auctions() {
   const mounted = useMounted()
@@ -87,9 +61,8 @@ export function Auctions() {
   const pastCount = pastLots.length
 
   return (
-    <Section style={{ position: 'relative' }}>
-      <CarSilhouette className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-2)', right: 'var(--space-3)', opacity: 0.06 }} size={96} />
-      <HeroSection
+    <>
+      <PageHero
         images={[
           { url: '/heroimg.jpg' },
           { url: '/heroimg2.jpg' },
@@ -97,136 +70,78 @@ export function Auctions() {
         label="Auction"
         title="Live Auctions"
         subtitle="Real-time bidding on premium vehicles. Place your bid, win your drive."
-        deco="circle"
+        size="lg"
       />
-      <div className="section-divider" />
 
-      <div className={styles.tabs} role="tablist" aria-label="Auction tabs">
-        <button
-          role="tab"
-          aria-selected={tab === 'live'}
-          className={`${styles.tab} ${tab === 'live' ? styles.tabActive : ''}`}
-          onClick={() => setTab('live')}
-        >
-          Live &amp; Upcoming<span className={styles.tabCount}>{liveCount}</span>
-        </button>
-        <button
-          role="tab"
-          aria-selected={tab === 'past'}
-          className={`${styles.tab} ${tab === 'past' ? styles.tabActive : ''}`}
-          onClick={() => setTab('past')}
-        >
-          Past Auctions<span className={styles.tabCount}>{pastCount}</span>
-        </button>
-      </div>
+      <Section space="sm">
+        <div className={styles.tabs} role="tablist" aria-label="Auction tabs">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'live'}
+            className={`${styles.tab} ${tab === 'live' ? styles.tabActive : ''}`}
+            onClick={() => setTab('live')}
+          >
+            Live &amp; Upcoming<span className={styles.tabCount}>{liveCount}</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'past'}
+            className={`${styles.tab} ${tab === 'past' ? styles.tabActive : ''}`}
+            onClick={() => setTab('past')}
+          >
+            Past Auctions<span className={styles.tabCount}>{pastCount}</span>
+          </button>
+        </div>
 
-      {loading ? (
-        <div className={styles.grid}>
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} style={{ aspectRatio: '4/3', background: 'var(--border)', borderRadius: 'var(--radius-lg)', animation: 'shimmer 1.5s ease-in-out infinite' }} />
-          ))}
-        </div>
-      ) : fetchError ? (
-        <div className={styles.empty}>
-          <p style={{ color: 'var(--error)', marginBottom: 'var(--space-2)' }}>{fetchError}</p>
-          <RippleButton variant="secondary" size="sm" onClick={fetchLots}>Try Again</RippleButton>
-        </div>
-      ) : tab === 'live' ? (
-        liveLots.length === 0 ? (
-          <EmptyState
-            art="auction"
-            title="No Live Auctions Right Now"
-            message="We're preparing the next round of lots. While you wait, the full collection is ready to explore."
-            action={
-              <Link to="/inventory">
-                <RippleButton size="sm" variant="secondary">Browse Inventory</RippleButton>
-              </Link>
-            }
-          />
-        ) : (
-          <div className={`scroll-reveal reveal-scale ${styles.grid} stagger-fade-in`}>
-            {liveLots.map(lot => {
-              const img = primaryImage(lot)
-              const isOpen = lot.status === 'open' || lot.status === 'closing'
-              const hasBid = lot.current_bid > 0
-              const title = lotTitle(lot)
-              const year = lotYear(lot)
-              return (
-                <Link key={lot.id} to={`/auctions/${lot.id}`} className={styles.link}>
-                  <Card hoverable style={{ padding: 0 }}>
-                    <div style={{ aspectRatio: '4/3', background: 'var(--paper-warm)', overflow: 'hidden' }}>
-                      {img ? <img src={img} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--stone-light)', fontSize: 'var(--text-sm)' }}>No image</div>}
-                    </div>
-                    <div style={{ padding: 'var(--space-2)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <p style={{ fontWeight: 600 }}>{title}</p>
-                        {isOpen ? <Badge variant="live" /> : <Badge variant="draft" label="Scheduled" />}
-                      </div>
-                      <p style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)' }}>{year ? `${year} · ` : ''}{formatMileage(lotMileage(lot))}</p>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'var(--space-1)' }}>
-                        <div>
-                          <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>{hasBid ? 'Current bid' : 'Opening bid'}</p>
-                          <p className="tabular-nums" style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--navy)' }}>
-                            {formatPrice(hasBid ? lot.current_bid : lot.opening_bid)}
-                          </p>
-                        </div>
-                        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>{isOpen ? <AuctionTimer closesAt={lot.closes_at} /> : 'Bidding opens soon'}</p>
-                      </div>
-                    </div>
-                  </Card>
-                </Link>
-              )
-            })}
+        {loading ? (
+          <div className={styles.grid} aria-busy="true" aria-label="Loading auctions">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className={styles.skeleton} />
+            ))}
           </div>
-        )
-      ) : (
-        pastLots.length === 0 ? (
-          <EmptyState
-            art="auction"
-            title="No Past Auctions Yet"
-            message="Once the first lot closes, its results — winning bid and final price — will appear here."
-            action={
-              <RippleButton size="sm" variant="secondary" onClick={() => setTab('live')}>View Live Auctions</RippleButton>
-            }
-          />
-        ) : (
-          <div className={`scroll-reveal reveal-left ${styles.grid} stagger-fade-in`}>
-            {pastLots.map(lot => {
-              const img = primaryImage(lot)
-              const title = lotTitle(lot)
-              const year = lotYear(lot)
-              const winner = lot.status === 'sold' ? firstName(lot.winner_name) : null
-              return (
-                <Link key={lot.id} to={`/auctions/${lot.id}`} className={styles.link}>
-                  <Card hoverable style={{ padding: 0 }}>
-                    <div style={{ aspectRatio: '4/3', background: 'var(--paper-warm)', overflow: 'hidden' }}>
-                      {img ? <img src={img} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: lot.status !== 'sold' ? 'grayscale(0.4)' : undefined }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--stone-light)', fontSize: 'var(--text-sm)' }}>No image</div>}
-                    </div>
-                    <div style={{ padding: 'var(--space-2)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <p style={{ fontWeight: 600 }}>{title}</p>
-                        {lot.status === 'sold' ? <Badge variant="sold" /> : <Badge variant="draft" label={lot.status === 'closed' ? 'Closed' : 'Unsold'} />}
-                      </div>
-                      <p style={{ fontSize: 'var(--text-sm)', color: 'var(--stone)' }}>{year ? `${year} · ` : ''}{new Date(lot.closes_at).toLocaleDateString()}</p>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'var(--space-1)' }}>
-                        <div>
-                          <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>
-                            {lot.status === 'sold' ? (winner ? `Won by ${winner}` : 'Sold') : lot.current_bid > 0 ? 'Reserve not met' : 'No winning bid'}
-                          </p>
-                          <p className="tabular-nums" style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: lot.status === 'sold' ? 'var(--navy)' : 'var(--stone)' }}>
-                            {lot.status === 'sold' ? formatPrice(lot.current_bid) : '—'}
-                          </p>
-                        </div>
-                        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--stone)' }}>View details</p>
-                      </div>
-                    </div>
-                  </Card>
-                </Link>
-              )
-            })}
+        ) : fetchError ? (
+          <div className={styles.empty}>
+            <p className={styles.errorText}>{fetchError}</p>
+            <Button variant="secondary" size="sm" onClick={fetchLots}>Try Again</Button>
           </div>
-        )
-      )}
-    </Section>
+        ) : tab === 'live' ? (
+          liveLots.length === 0 ? (
+            <EmptyState
+              title="No Live Auctions Right Now"
+              message="We're preparing the next round of lots. While you wait, the full collection is ready to explore."
+              action={
+                <Link to="/inventory">
+                  <Button size="sm" variant="secondary">Browse Inventory</Button>
+                </Link>
+              }
+            />
+          ) : (
+            <div className={`scroll-reveal ${styles.grid} stagger-fade-in`}>
+              {liveLots.map(lot => (
+                <AuctionLotCard key={lot.id} lot={lot} variant="live" />
+              ))}
+            </div>
+          )
+        ) : (
+          pastLots.length === 0 ? (
+            <EmptyState
+              title="No Past Auctions Yet"
+              message="Once the first lot closes, the winning bid and final price will show up here."
+              action={
+                <Button size="sm" variant="secondary" onClick={() => setTab('live')}>View Live Auctions</Button>
+              }
+            />
+          ) : (
+            <div className={`scroll-reveal ${styles.grid} stagger-fade-in`}>
+              {pastLots.map(lot => (
+                <AuctionLotCard key={lot.id} lot={lot} variant="past" />
+              ))}
+            </div>
+          )
+        )}
+      </Section>
+    </>
   )
 }

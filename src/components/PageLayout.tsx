@@ -1,30 +1,36 @@
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
+import { Section as LayoutSection } from './layout/Section'
+import styles from './PageLayout.module.css'
 
-export function Section({ children, dark, className = '', style }: { children: ReactNode; dark?: boolean; className?: string; style?: React.CSSProperties }) {
+interface SectionProps {
+  children: ReactNode
+  dark?: boolean
+  className?: string
+  style?: CSSProperties
+}
+
+/**
+ * Legacy section wrapper kept for existing pages.
+ * Delegates to the shared Section primitive so tone, spacing and container
+ * width stay consistent with newer pages.
+ */
+export function Section({ children, dark, className = '', style }: SectionProps) {
   return (
-    <section
+    <LayoutSection
+      tone={dark ? 'navy' : 'transparent'}
       className={className}
-      style={{
-        padding: 'var(--section-y) var(--space-4)',
-        background: dark ? 'var(--navy)' : undefined,
-        color: dark ? 'white' : undefined,
-        ...style,
-      }}
+      style={style}
     >
-      <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-        {children}
-      </div>
-    </section>
+      {children}
+    </LayoutSection>
   )
 }
 
 export function PageLayout({ children }: { children: ReactNode }) {
   return (
     <>
-      <a id="main-content" tabIndex={-1} style={{ position: 'absolute', top: 0 }} />
-      <div style={{ paddingTop: 'var(--nav-height)' }}>
-        {children}
-      </div>
+      <a id="main-content" tabIndex={-1} className={styles.skipAnchor} />
+      <div className={styles.main}>{children}</div>
     </>
   )
 }

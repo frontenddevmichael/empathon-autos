@@ -2,8 +2,8 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-premium);
-  transition: all 300ms var(--ease-out);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 300ms var(--ease-out), border-color 300ms var(--ease-out);
 }
 
 .hoverable {
@@ -11,12 +11,5 @@
 }
 
 .hoverable:hover {
-  border-color: rgba(0,51,102,0.12);
-  box-shadow: var(--shadow-premium-hover);
-  transform: translateY(-4px) scale(1.01);
-}
-
-.hoverable:active {
-  transform: translateY(-2px) scale(0.99);
-  transition: 0.1s;
+  box-shadow: var(--shadow-md);
 }

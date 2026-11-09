@@ -1,53 +1,57 @@
+import styles from './LoadingScreen.module.css'
+
 /**
- * Full-page loading skeleton used as Suspense fallback for lazy routes.
- * Matches the visual structure of the page layout.
+ * Route-level Suspense fallback. It mirrors the shell that is about to appear
+ * (hero band, section head, card grid) instead of showing a branded splash.
+ * Everything is a static warm block; the only motion is the top progress line.
  */
-export function LoadingScreen({ height = '60vh' }: { height?: string }) {
+export function LoadingScreen() {
   return (
-    <div style={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 var(--space-4)' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
-        {/* Branded pulse animation */}
-        <div style={{ position: 'relative', width: 120, height: 120 }}>
-          <img
-            src="/Empathon logo.png"
-            alt="Empathon Autos"
-            width="120"
-            height="120"
-            style={{ position: 'relative', borderRadius: 20, zIndex: 1, objectFit: 'contain' }}
-          />
-          <div style={{
-            position: 'absolute', inset: -12,
-            borderRadius: '50%',
-            border: '2px solid rgba(0,51,102,0.08)',
-            animation: 'loadingRing 1.5s ease-in-out infinite',
-          }} />
+    <div className={styles.page} aria-busy="true" role="status" aria-label="Loading page">
+      <div className={styles.bar} aria-hidden="true" />
+
+      <div className={styles.hero}>
+        <div className={styles.heroInner}>
+          <div className={`${styles.block} ${styles.tag}`} />
+          <div className={`${styles.blockWhite} ${styles.heroTitle}`} />
+          <div className={`${styles.blockWhite} ${styles.heroTitleShort}`} />
+          <div className={`${styles.blockWhite} ${styles.heroSub}`} />
+        </div>
+      </div>
+
+      <div className={styles.body}>
+        <div className={styles.head}>
+          <div className={styles.headLines}>
+            <div className={`${styles.block} ${styles.label}`} />
+            <div className={`${styles.block} ${styles.title}`} />
+          </div>
+        </div>
+        <div className={styles.grid}>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className={styles.card}>
+              <div className={styles.image} />
+              <div className={`${styles.block} ${styles.line}`} />
+              <div className={`${styles.block} ${styles.lineShort}`} />
+            </div>
+          ))}
         </div>
       </div>
     </div>
   )
 }
 
-/**
- * Minimal admin skeleton for sidebar-heavy layouts.
- * Includes its own @keyframes so it works when rendered independently of LoadingScreen.
- */
+/** Minimal admin skeleton for sidebar-heavy layouts. */
 export function AdminSkeleton() {
   return (
-    <div style={{ height: '70vh', display: 'flex', gap: 16, padding: 'var(--space-4)' }}>
-      <style>{`
-        @keyframes loadingShimmer {
-          0%, 100% { opacity: 0.4; }
-          50% { opacity: 0.8; }
-        }
-      `}</style>
-      <div style={{ width: 200, display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <div className={styles.admin} aria-busy="true" aria-label="Loading">
+      <div className={styles.adminSide}>
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} style={{ height: 14, background: 'var(--border)', borderRadius: 4, animation: 'loadingShimmer 1.2s ease-in-out infinite', animationDelay: `${i * 0.08}s` }} />
+          <div key={i} className={`${styles.block} ${styles.adminLine}`} />
         ))}
       </div>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div className={styles.adminMain}>
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} style={{ height: 14, background: 'var(--border)', borderRadius: 4, animation: 'loadingShimmer 1.2s ease-in-out infinite', animationDelay: `${i * 0.05}s` }} />
+          <div key={i} className={`${styles.block} ${styles.adminLine}`} />
         ))}
       </div>
     </div>

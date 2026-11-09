@@ -1,9 +1,7 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { EmptyCarSearch, EmptyOpenBook, EmptyAuctionGavel } from '@/components/DecoSvgs'
+import type { ReactNode } from 'react'
 import styles from './EmptyState.module.css'
 
 interface EmptyStateProps {
-  art?: 'search' | 'book' | 'auction'
   title: string
   message?: string
   action?: ReactNode
@@ -11,36 +9,12 @@ interface EmptyStateProps {
 }
 
 /**
- * A designed empty state — monoline line art that draws itself on reveal,
- * one clear next action, never a blank page with plain text.
+ * A calm empty state: one line, one explanation, one next action.
+ * No illustration — the copy and the action carry it.
  */
-export function EmptyState({ art = 'search', title, message, action, className = '' }: EmptyStateProps) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true)
-          io.disconnect()
-        }
-      },
-      { threshold: 0.3 }
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [])
-
-  const Art = art === 'book' ? EmptyOpenBook : art === 'auction' ? EmptyAuctionGavel : EmptyCarSearch
-
+export function EmptyState({ title, message, action, className = '' }: EmptyStateProps) {
   return (
-    <div ref={ref} className={`${styles.root} ${visible ? styles.visible : ''} ${className}`}>
-      <div className={styles.art}>
-        <Art size={120} />
-      </div>
+    <div className={`${styles.root} ${className}`}>
       <h3 className={styles.title}>{title}</h3>
       {message && <p className={styles.message}>{message}</p>}
       {action && <div>{action}</div>}

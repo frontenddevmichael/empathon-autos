@@ -1,21 +1,26 @@
 .table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--text-sm);
+  margin: 0;
+  border-top: 1px solid var(--border);
 }
 
-.row:nth-child(even) { background: var(--bg); }
-
-.cell {
-  padding: var(--space-1) var(--space-2);
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block: 14px;
   border-bottom: 1px solid var(--border);
 }
 
 .label {
-  color: var(--text-secondary);
-  font-weight: 500;
-  width: 50%;
-  text-transform: capitalize;
+  font-size: var(--text-sm);
+  color: var(--stone);
 }
 
-.value { color: var(--text-primary); }
+.value {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--ink);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

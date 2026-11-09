@@ -38,52 +38,47 @@ const standaloneLinks: NavLink[] = [
   { to: '/blog', label: 'Blog' },
 ]
 
+const SCROLL_THRESHOLD = 24
+
 function LogoSvg() {
   const [imgErr, setImgErr] = useState(false)
   const onErr = useCallback(() => setImgErr(true), [])
   if (imgErr) {
     return (
-      <svg viewBox="0 0 34 34" fill="none" aria-hidden="true" style={{ flexShrink: 0, width: '100%', height: '100%' }}>
+      <svg viewBox="0 0 34 34" fill="none" aria-hidden="true" className={styles.logoFallback}>
         <rect width="34" height="34" rx="6" fill="var(--navy)" />
         <text x="17" y="22" textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize="16" fontWeight="800" fill="white" letterSpacing="-0.02">EA</text>
-        <path d="M6 26 Q17 30 28 26" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.3" />
       </svg>
     )
   }
-  return (
-    <img
-      src="/Empathon logo.png"
-      alt="Empathon Autos"
-      style={{ width: '100%', height: '100%', flexShrink: 0, objectFit: 'contain', display: 'block' }}
-      onError={onErr}
-    />
-  )
+  return <img src="/Empathon logo.png" alt="Empathon Autos" className={styles.logoImage} onError={onErr} />
 }
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
-  const [underlineStyle, setUnderlineStyle] = useState<React.CSSProperties>({})
   const { pathname } = useLocation()
   const menuRef = useRef<HTMLDivElement>(null)
   const hamburgerRef = useRef<HTMLButtonElement>(null)
-  const linksRef = useRef<HTMLDivElement>(null)
   const dropdownTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
 
   useEffect(() => {
-    let frame: number
+    // No rAF gate: the value only changes once per threshold cross, and this
+    // keeps the nav correct in background tabs where rAF is paused.
     const onScroll = () => {
-      cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(() => setScrolled(window.scrollY > 40))
+      setScrolled(prev => {
+        const next = window.scrollY > SCROLL_THRESHOLD
+        return next === prev ? prev : next
+      })
     }
+    onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(frame) }
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   useEffect(() => {
-    const t = setTimeout(() => setMobileOpen(false), 50)
-    return () => clearTimeout(t)
+    setActiveDropdown(null)
   }, [pathname])
 
   useEffect(() => {
@@ -100,7 +95,7 @@ export function Nav() {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMobileOpen(false)
     }
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { setMobileOpen(false); return }
+      if (e.key === 'Escape') { setMobileOpen(false); hamburgerRef.current?.focus(); return }
       if (e.key !== 'Tab' || !menuRef.current) return
       const items = Array.from(menuRef.current.querySelectorAll<HTMLElement>('a, button'))
       if (!items.length) return
@@ -126,45 +121,44 @@ export function Nav() {
 
   const isGroupActive = (group: NavGroup) => group.children.some(c => isActive(c.to))
 
-  const updateUnderline = useCallback((el: HTMLElement | null) => {
-    if (!el || !linksRef.current) {
-      setUnderlineStyle({ opacity: 0 })
-      return
-    }
-    const linksRect = linksRef.current.getBoundingClientRect()
-    const elRect = el.getBoundingClientRect()
-    setUnderlineStyle({
-      left: elRect.left - linksRect.left,
-      width: elRect.width,
-      opacity: 1,
-    })
-  }, [])
-
-  const handleGroupEnter = useCallback((label: string, el: HTMLElement) => {
+  const clearTimer = (label: string) => {
     const existing = dropdownTimers.current.get(label)
     if (existing) clearTimeout(existing)
+  }
+
+  const handleGroupEnter = useCallback((label: string) => {
+    clearTimer(label)
     setActiveDropdown(label)
-    updateUnderline(el)
-  }, [updateUnderline])
+  }, [])
 
   const handleGroupLeave = useCallback((label: string) => {
     const timer = setTimeout(() => {
       setActiveDropdown(prev => prev === label ? null : prev)
-      setUnderlineStyle({ opacity: 0 })
-    }, 120)
+    }, 140)
     dropdownTimers.current.set(label, timer)
   }, [])
 
-  const handleDropdownEnter = useCallback((label: string) => {
-    const existing = dropdownTimers.current.get(label)
-    if (existing) clearTimeout(existing)
-  }, [])
+  const openAndFocusFirstItem = (label: string, wrapper: HTMLElement) => {
+    setActiveDropdown(label)
+    requestAnimationFrame(() => {
+      wrapper.querySelector<HTMLElement>(`.${styles.dropdownItem}`)?.focus()
+    })
+  }
 
-  const handleDropdownLeave = useCallback((label: string) => {
-    handleGroupLeave(label)
-  }, [handleGroupLeave])
+  // Transparent only over the home hero, and never behind the open sheet
+  const overHero = pathname === '/' && !scrolled && !mobileOpen
 
-  const navClasses = [styles.nav, scrolled ? styles.scrolled : ''].filter(Boolean).join(' ')
+  const navClasses = [
+    styles.nav,
+    overHero ? styles.transparent : '',
+  ].filter(Boolean).join(' ')
+
+  // Mobile links stagger at 60ms as the sheet opens
+  const mobileDelay = (i: number) => ({
+    style: { transitionDelay: `${i * 60}ms` },
+    'data-open': mobileOpen,
+  }) as const
+  const groupLinkCount = navGroups.reduce((n, g) => n + g.children.length, 0)
 
   return (
     <>
@@ -175,21 +169,30 @@ export function Nav() {
             <LogoSvg />
           </Link>
 
-          <div className={styles.links} ref={linksRef}>
-            {/* Sliding underline indicator */}
-            <span className={styles.underlineIndicator} style={underlineStyle} />
-
+          <div className={styles.links}>
             {navGroups.map(group => (
               <div
                 key={group.label}
                 className={styles.groupWrapper}
-                onMouseEnter={(e) => handleGroupEnter(group.label, e.currentTarget.querySelector(`.${styles.groupTrigger}`)!)}
+                onMouseEnter={() => handleGroupEnter(group.label)}
                 onMouseLeave={() => handleGroupLeave(group.label)}
+                onBlur={(e) => {
+                  if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setActiveDropdown(null)
+                }}
               >
                 <button
+                  type="button"
                   className={`${styles.groupTrigger} ${isGroupActive(group) ? styles.groupActive : ''}`}
                   aria-expanded={activeDropdown === group.label}
                   aria-haspopup="true"
+                  onClick={() => setActiveDropdown(prev => prev === group.label ? null : group.label)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'ArrowDown') {
+                      e.preventDefault()
+                      openAndFocusFirstItem(group.label, e.currentTarget.parentElement as HTMLElement)
+                    }
+                    if (e.key === 'Escape') setActiveDropdown(null)
+                  }}
                 >
                   {group.label}
                   <ChevronDown size={14} className={`${styles.chevron} ${activeDropdown === group.label ? styles.chevronOpen : ''}`} />
@@ -197,8 +200,14 @@ export function Nav() {
 
                 <div
                   className={`${styles.dropdown} ${activeDropdown === group.label ? styles.dropdownOpen : ''}`}
-                  onMouseEnter={() => handleDropdownEnter(group.label)}
-                  onMouseLeave={() => handleDropdownLeave(group.label)}
+                  onMouseEnter={() => clearTimer(group.label)}
+                  onMouseLeave={() => handleGroupLeave(group.label)}
+                  onKeyDown={(e) => {
+                    if (e.key !== 'Escape') return
+                    e.preventDefault()
+                    setActiveDropdown(null)
+                    e.currentTarget.parentElement?.querySelector<HTMLElement>(`.${styles.groupTrigger}`)?.focus()
+                  }}
                   role="menu"
                 >
                   {group.children.map(child => (
@@ -208,6 +217,8 @@ export function Nav() {
                       className={`${styles.dropdownItem} ${isActive(child.to) ? styles.dropdownItemActive : ''}`}
                       role="menuitem"
                       tabIndex={activeDropdown === group.label ? 0 : -1}
+                      aria-current={isActive(child.to) ? 'page' : undefined}
+                      onClick={() => setActiveDropdown(null)}
                     >
                       {child.label}
                     </Link>
@@ -222,8 +233,6 @@ export function Nav() {
                 to={link.to}
                 className={`${styles.link} ${isActive(link.to) ? styles.active : ''}`}
                 aria-current={isActive(link.to) ? 'page' : undefined}
-                onMouseEnter={(e) => updateUnderline(e.currentTarget)}
-                onMouseLeave={() => setUnderlineStyle({ opacity: 0 })}
               >
                 {link.label}
               </Link>
@@ -231,20 +240,20 @@ export function Nav() {
           </div>
 
           <div className={styles.cta}>
-            <a href={`tel:${config.company.phone1.replace(/\s/g, '')}`} className={styles.pillButton} aria-label="Call us">
-              <Phone size={15} />
-              <span className={styles.pillLabel}>Call</span>
-            </a>
-            <a href={config.whatsapp.link} target="_blank" rel="noopener noreferrer" className={styles.pillButton} aria-label="Chat on WhatsApp">
-              <MessageCircle size={15} />
-              <span className={styles.pillLabel}>WhatsApp</span>
-            </a>
-            <Button as="a" href="/register" size="sm" variant="ghost">Register</Button>
-            <Button as="a" href="/contact" size="sm" variant="primary" magnetic className={styles.navContact}>Contact</Button>
+            <Link to="/register" className={styles.textLink}>Register</Link>
+            <Button
+              as="a"
+              href="/contact"
+              size="sm"
+              variant={overHero ? 'white' : 'primary'}
+            >
+              Enquire
+            </Button>
           </div>
 
           <button
             ref={hamburgerRef}
+            type="button"
             className={styles.hamburger}
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
@@ -256,88 +265,83 @@ export function Nav() {
             </span>
           </button>
         </div>
+      </nav>
 
-        <div
+      {/* The menu is a sibling of <nav>: the nav's backdrop-filter creates a
+          containing block, which would clip a fixed-position child. */}
+      <div
           ref={menuRef}
           id="site-mobile-nav"
           className={`${styles.mobileMenu} ${mobileOpen ? styles.mobileOpen : ''}`}
-          role="dialog" aria-modal="true" aria-label="Navigation"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation"
           aria-hidden={!mobileOpen}
         >
-        <div className={styles.mobileLinks}>
-          {navGroups.map((group, gi) => (
-            <div key={group.label} className={styles.mobileGroup}>
-              <span
-                className={styles.mobileGroupLabel}
-                style={{ animationDelay: `${gi * 80}ms` }}
+          <div className={styles.mobileLinks}>
+            {navGroups.map((group, gi) => (
+              <div key={group.label} className={styles.mobileGroup}>
+                <span className={styles.mobileGroupLabel}>{group.label}</span>
+                {group.children.map((child, ci) => (
+                  <Link
+                    key={child.to}
+                    to={child.to}
+                    className={`${styles.mobileLink} ${isActive(child.to) ? styles.mobileLinkActive : ''}`}
+                    tabIndex={mobileOpen ? 0 : -1}
+                    aria-current={isActive(child.to) ? 'page' : undefined}
+                    {...mobileDelay(gi * 3 + ci)}
+                  >
+                    {child.label}
+                  </Link>
+                ))}
+              </div>
+            ))}
+
+            <span className={styles.mobileDivider} />
+
+            {standaloneLinks.map((link, i) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={`${styles.mobileLink} ${isActive(link.to) ? styles.mobileLinkActive : ''}`}
+                tabIndex={mobileOpen ? 0 : -1}
+                aria-current={isActive(link.to) ? 'page' : undefined}
+                {...mobileDelay(groupLinkCount + i)}
               >
-                {group.label}
-              </span>
-              {group.children.map((child, ci) => (
-                <Link
-                  key={child.to}
-                  to={child.to}
-                  className={`${styles.mobileLink} ${isActive(child.to) ? styles.mobileLinkActive : ''}`}
-                  tabIndex={mobileOpen ? 0 : -1}
-                  style={{ animationDelay: `${(gi * 3 + ci + 1) * 60}ms` }}
-                >
-                  {child.label}
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style={{ opacity: 0.3, marginLeft: 'auto' }}>
-                    <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </Link>
-              ))}
-            </div>
-          ))}
+                {link.label}
+              </Link>
+            ))}
 
-          <span className={styles.mobileDivider} style={{ animationDelay: `${navGroups.length * 180}ms` }} />
-
-          {standaloneLinks.map((link, i) => (
             <Link
-              key={link.to}
-              to={link.to}
-              className={`${styles.mobileLink} ${isActive(link.to) ? styles.mobileLinkActive : ''}`}
+              to="/register"
+              className={styles.mobileLink}
               tabIndex={mobileOpen ? 0 : -1}
-              style={{ animationDelay: `${(navGroups.length * 3 + i + 1) * 60}ms` }}
+              {...mobileDelay(groupLinkCount + standaloneLinks.length)}
             >
-              {link.label}
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style={{ opacity: 0.3, marginLeft: 'auto' }}>
-                <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              Register
             </Link>
-          ))}
-
-          <Link
-            to="/register"
-            className={styles.mobileLink}
-            tabIndex={mobileOpen ? 0 : -1}
-            style={{ animationDelay: `${(navGroups.length + 2) * 100}ms`, color: 'var(--navy)' }}
-          >
-            Register to Bid
-          </Link>
-          <Link
-            to="/dashboard"
-            className={styles.mobileLink}
-            tabIndex={mobileOpen ? 0 : -1}
-            style={{ animationDelay: `${(navGroups.length + 3) * 100}ms`, color: 'var(--navy)' }}
-          >
-            My Dashboard
-          </Link>
-        </div>
-
-        <div className={styles.mobileCta}>
-          <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
-            <a href={`tel:${config.company.phone1.replace(/\s/g, '')}`} className={styles.mobileContactLink}>
-              <Phone size={18} /> Call Us
-            </a>
-            <a href={config.whatsapp.link} target="_blank" rel="noopener noreferrer" className={styles.mobileContactLink}>
-              <MessageCircle size={18} /> WhatsApp
-            </a>
+            <Link
+              to="/dashboard"
+              className={styles.mobileLink}
+              tabIndex={mobileOpen ? 0 : -1}
+              {...mobileDelay(groupLinkCount + standaloneLinks.length + 1)}
+            >
+              My Dashboard
+            </Link>
           </div>
-          <Button as="a" href="/contact" fullWidth>Contact</Button>
+
+          <div className={styles.mobileCta}>
+            <div className={styles.mobileContactRow}>
+              <a href={`tel:${config.company.phone1.replace(/\s/g, '')}`} className={styles.mobileContactLink}>
+                <Phone size={18} /> Call Us
+              </a>
+              <a href={config.whatsapp.link} target="_blank" rel="noopener noreferrer" className={styles.mobileContactLink}>
+                <MessageCircle size={18} /> WhatsApp
+              </a>
+            </div>
+            <Button as="a" href="/contact" fullWidth size="lg">Enquire</Button>
+          </div>
         </div>
-      </div>
-      </nav>
     </>
   )
 }

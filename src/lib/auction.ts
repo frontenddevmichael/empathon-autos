@@ -1,4 +1,4 @@
-import type { ConditionGrade, FaultSeverity } from '@/types'
+import type { ConditionGrade, FaultSeverity, Lot } from '@/types'
 
 /** Colors for fault severity chips. */
 export const SEVERITY_META: Record<FaultSeverity, { label: string; color: string; bg: string }> = {
@@ -48,4 +48,31 @@ export function firstName(name: string | null | undefined): string | null {
   const trimmed = name.trim()
   if (!trimmed) return null
   return trimmed.split(/\s+/)[0]
+}
+
+/** Display title for a lot — explicit title, then make/model, then linked vehicle. */
+export function lotTitle(lot: Lot): string {
+  if (lot.title) return lot.title
+  const own = [lot.make, lot.model].filter(Boolean).join(' ')
+  if (own) return own
+  if (lot.vehicles) return `${lot.vehicles.make} ${lot.vehicles.model}`
+  return 'Untitled lot'
+}
+
+/** Model year for a lot, falling back to the linked vehicle. */
+export function lotYear(lot: Lot): number | null {
+  return lot.year || lot.vehicles?.year || null
+}
+
+/** Mileage for a lot, falling back to the linked vehicle. */
+export function lotMileage(lot: Lot): number {
+  return lot.mileage || lot.vehicles?.mileage || 0
+}
+
+/** Primary lot image — lot media wins over the linked vehicle's media. */
+export function primaryLotImage(lot: Lot): string | undefined {
+  return lot.media?.find(m => m.is_primary)?.url
+    ?? lot.media?.[0]?.url
+    ?? lot.vehicles?.media?.find(m => m.is_primary)?.url
+    ?? lot.vehicles?.media?.[0]?.url
 }

@@ -37,3 +37,22 @@
 - Features must be a valid JSON array string
 - Condition grades: `A` = Excellent, `B` = Good, `C` = Fair, `D` = Poor
 - Lot status defaults to `scheduled` if not specified
+
+## Vehicle photos from Google Drive
+
+Inventory photos live in the Drive folder [`1PisOqp8v8cH4Xb5HSP4pmHx8DKsY0MdU`](https://drive.google.com/drive/folders/1PisOqp8v8cH4Xb5HSP4pmHx8DKsY0MdU) — one subfolder per car, named like `2017 Santafe- 242756` (the number is the VIN suffix).
+
+| File | Purpose |
+|------|---------|
+| `drive-folder-map.json` | Substring of a Drive folder name → vehicle UUID. Order matters: first match wins. |
+| `drive-image-map.json` | Generated: vehicle UUID → photo file IDs (what `--apply` reads). |
+
+```bash
+node scripts/wire-drive-images.mjs --list   # show the Drive tree
+node scripts/wire-drive-images.mjs --map    # rebuild data/drive-image-map.json
+node scripts/wire-drive-images.mjs --apply --prune            # hotlink Drive photos
+node scripts/wire-drive-images.mjs --apply --prune --link     # same (explicit)
+```
+
+The folder must be shared as **Anyone with the link — Viewer**. Without `--link` the script downloads each photo, converts HEIC/DNG to 1600px WebP and uploads it to the `vehicle-media` bucket (needs ImageMagick); with `--link` it stores `lh3.googleusercontent.com` URLs and writes no files.
+

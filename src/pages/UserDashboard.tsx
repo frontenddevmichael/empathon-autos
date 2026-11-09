@@ -6,7 +6,7 @@ import { formatPrice } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Section } from '@/components/PageLayout'
-import { HeroSection } from '@/components/HeroSection'
+import { PageHero } from '@/components/ui/PageHero'
 import { config } from '@/lib/config'
 
 interface BidHistory {
@@ -106,14 +106,14 @@ export function UserDashboard() {
 
   return (
     <>
-      <HeroSection
+      <PageHero
         images={[
           { url: '/heroimg3.jpg' },
         ]}
         label="Dashboard"
         title="Your Account"
         subtitle="Track your bids, manage your profile, and stay updated on auction activity."
-        deco="dots"
+        size="lg"
       />
 
       <Section>
@@ -125,7 +125,7 @@ export function UserDashboard() {
               background: 'var(--surface)', 
               border: '1px solid var(--border)', 
               borderRadius: 'var(--radius-xl)',
-              boxShadow: 'var(--shadow-premium)'
+              boxShadow: 'var(--shadow-sm)'
             }}>
               {/* User Info */}
               <div style={{ textAlign: 'center', marginBottom: 'var(--space-3)', paddingBottom: 'var(--space-3)', borderBottom: '1px solid var(--border)' }}>

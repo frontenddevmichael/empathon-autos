@@ -1,106 +1,473 @@
+/* Auction detail — same surface language as the vehicle detail page */
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-sm);
+  color: var(--stone);
+  margin-bottom: var(--space-3);
+  transition: color 200ms var(--ease-out);
+}
+.back:hover { color: var(--ink); }
+
 .layout {
   display: grid;
-  gap: var(--space-4);
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: clamp(2rem, 4vw, 3.5rem);
   align-items: start;
-  position: relative;
 }
 
-.image {
+/* ── Gallery ── */
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.mainImage {
   width: 100%;
-  aspect-ratio: 4/3;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
-  border-radius: var(--radius-lg);
+  border-radius: 24px;
+  background: var(--paper-warm);
+  cursor: zoom-in;
+  display: block;
 }
 
-.imagePlaceholder {
+.noImage {
   width: 100%;
-  aspect-ratio: 4/3;
-  background: var(--border);
-  border-radius: var(--radius-lg);
+  aspect-ratio: 4 / 3;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 24px;
+  background: var(--paper-warm);
+  color: var(--stone-light);
+  font-size: var(--text-sm);
+}
+
+.thumbs {
+  display: flex;
+  gap: var(--space-1);
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+.thumbs::-webkit-scrollbar { display: none; }
+
+.thumb,
+.thumbActive {
+  flex: 0 0 auto;
+  width: 88px;
+  aspect-ratio: 4 / 3;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--paper-warm);
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 200ms var(--ease-out), border-color 200ms var(--ease-out);
+}
+.thumb:hover { opacity: 0.85; }
+.thumbActive {
+  opacity: 1;
+  border-color: var(--ink);
+}
+
+.thumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Left column blocks ── */
+.panelSpaced {
+  margin-top: var(--space-5);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.panelTitle {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--stone);
 }
 
+.gradeRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-block: var(--space-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.gradeBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.gradeLabel {
+  font-size: var(--text-sm);
+  color: var(--stone);
+}
+
+.faults {
+  display: flex;
+  flex-direction: column;
+}
+
+.fault {
+  display: flex;
+  gap: var(--space-2);
+  padding-block: var(--space-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.faultBadge {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.faultBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.faultTitle {
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.faultDesc {
+  font-size: var(--text-sm);
+  color: var(--stone);
+  line-height: 1.55;
+}
+
+.faultProof {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--paper-warm);
+  cursor: zoom-in;
+  width: 96px;
+}
+
+.faultProofImg {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.muted {
+  font-size: var(--text-sm);
+  color: var(--stone);
+}
+
+/* ── Bid panel ── */
+.bidPanel {
+  position: sticky;
+  top: calc(var(--nav-height) + var(--space-4));
+  align-self: start;
+}
+
 .title {
-  font-size: var(--text-3xl);
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  color: var(--ink);
   margin-top: var(--space-1);
 }
 
 .subtitle {
-  font-size: var(--text-base);
-  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--stone);
+  font-variant-numeric: tabular-nums;
 }
 
-.timer {
+.priceBox {
   display: flex;
-  gap: var(--space-2);
-  margin-bottom: var(--space-3);
+  flex-direction: column;
+  gap: 2px;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+  margin-top: var(--space-1);
 }
+
+.priceLabel {
+  font-size: var(--text-xs);
+  color: var(--stone);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.priceValue {
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.priceNote {
+  font-size: var(--text-sm);
+  color: var(--stone);
+  font-variant-numeric: tabular-nums;
+}
+
+.reserve,
+.reserveMet,
+.reserveNot {
+  font-size: var(--text-sm);
+  color: var(--stone);
+  margin-top: 4px;
+}
+.reserveMet { color: var(--ink); }
 
 .timerBlock {
-  text-align: center;
-  padding: var(--space-1) var(--space-2);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  min-width: 56px;
-}
-
-.timerValue {
-  font-size: var(--text-xl);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.2;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
 }
 
 .timerLabel {
   font-size: var(--text-xs);
-}
-
-.ended {
-  color: var(--error);
-  font-weight: 600;
-  margin-bottom: var(--space-2);
-}
-
-.bidBox {
-  padding: var(--space-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  margin-bottom: var(--space-2);
-}
-
-.bidLabel {
-  font-size: var(--text-xs);
+  color: var(--stone);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 2px;
+  letter-spacing: 0.1em;
 }
 
-.bidAmount {
-  font-size: var(--text-2xl);
-  font-weight: 700;
+.timerValue {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 
-.bidOpening {
-  font-size: var(--text-xs);
+.endingSoon {
+  font-size: var(--text-sm);
+  color: var(--stone);
 }
 
-.bidRow {
+.buyNowBlock {
   display: flex;
-  gap: var(--space-1);
+  flex-direction: column;
+  gap: 6px;
 }
 
-.bidMin {
+.buyNowButton {
+  width: 100%;
+  justify-content: center;
+}
+
+.buyNowNote {
   font-size: var(--text-xs);
-  margin-top: 4px;
+  color: var(--stone);
 }
 
-@media (max-width: 768px) {
-  .layout { grid-template-columns: 1fr; }
+.bidForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+.formTitle {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+.bidForm :global(button[type='submit']) {
+  width: 100%;
+  justify-content: center;
+}
+
+.closedNote {
+  font-size: var(--text-sm);
+  color: var(--stone);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+}
+
+/* ── Bid history ── */
+.history {
+  margin-top: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.historyTitle {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+}
+
+.historyRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-block: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.historyAmount {
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.historyMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  font-size: var(--text-sm);
+  color: var(--stone);
+  text-align: right;
+}
+
+.historyTime {
+  font-size: var(--text-xs);
+  color: var(--stone-light);
+}
+
+/* ── Lightbox ── */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(6, 20, 40, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  cursor: zoom-out;
+}
+
+.lightboxImage {
+  max-width: 100%;
+  max-height: 92vh;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+/* ── States ── */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding-block: var(--space-6);
+}
+
+.emptyText {
+  color: var(--stone);
+}
+
+.skeletonImage {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 24px;
+  background: var(--paper-warm);
+}
+
+.skeletonLines {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: var(--space-3);
+}
+
+.skeletonLine {
+  height: 14px;
+  background: var(--paper-warm);
+  border-radius: var(--radius-sm);
+}
+
+.skeletonPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeletonBar {
+  height: 16px;
+  border-radius: var(--radius-sm);
+  background: var(--paper-warm);
+}
+
+.skeletonPrice {
+  height: 32px;
+  width: 50%;
+  border-radius: var(--radius-sm);
+  background: var(--paper-warm);
+}
+
+.skeletonCta {
+  height: 48px;
+  border-radius: var(--radius-full);
+  background: var(--paper-warm);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .bidPanel {
+    position: static;
+  }
+  .mainImage,
+  .noImage {
+    border-radius: 18px;
+  }
 }

@@ -1,0 +1,17 @@
+{
+  "_comment": "Maps a substring of a Drive subfolder name to a vehicle UUID. Order matters: the first matching key wins, so put the most specific key first. Verified against the VIN in each vehicle description where the folder name ends in a VIN suffix.",
+  "RX350 111819": "d788849f-ace2-408c-a43b-edb76589a6f7",
+  "2013 Lexus RX350": "d788849f-ace2-408c-a43b-edb76589a6f7",
+  "846374": "cb884274-4262-4fe4-aef8-acef809a849f",
+  "white GLE350–374": "cb884274-4262-4fe4-aef8-acef809a849f",
+  "Santafe- 242756": "ad75fb13-be8e-4a85-9cff-0865644c9df8",
+  "GLC 300 -362": "ef21b3a1-b4f9-4038-9263-63a433a38c54",
+  "2017 GLC300": "ef21b3a1-b4f9-4038-9263-63a433a38c54",
+  "2016 White GLE350": "538cd6a5-fe91-447c-b41c-f06d3df34fbc",
+  "2017 Black GLE 350": "d1615b33-70f4-4955-a9f8-01049101bcdd",
+  "2017 Black GLE 43": "e168e30b-c0dd-479f-a325-6bcb62aea4ac",
+  "GX 460": "5d48f9a7-5c04-46b6-bc65-a340252af28c",
+  "Black ML 350": "5bceffeb-dc14-4324-8f48-6ea55e684e45",
+  "grey ML 350": "06317e54-2f7e-410b-a874-7714b71aeddd",
+  "037": "6ef511b0-568e-410d-a966-ba5b60348d7e"
+}

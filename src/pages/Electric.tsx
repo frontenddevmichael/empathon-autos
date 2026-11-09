@@ -1,98 +1,114 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Battery, Zap, Gauge, Leaf, Plug, ShieldCheck as ShieldCheckIcon, Wind, PiggyBank, TrendingDown, Clock, Wrench, type LucideIcon } from 'lucide-react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { Input, TextArea } from '@/components/ui/Input'
-import { Section } from '@/components/PageLayout'
+import { Section } from '@/components/layout/Section'
 import { SectionHeader } from '@/components/ui/SectionHeader'
-import { useToast } from '@/context/ToastContext'
-import { RippleButton } from '@/components/RippleButton'
-import { HeroSection } from '@/components/HeroSection'
-import { ParallaxSection } from '@/components/ParallaxSection'
-import { Sparkle } from '@/components/DecoSvgs'
-import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
+import { Button } from '@/components/ui/Button'
+import { PageHero } from '@/components/ui/PageHero'
+import { useSiteContent, parseJsonContent, getTextContent } from '@/hooks/useSiteContent'
+import { resolveHeroImage } from '@/lib/heroImage'
 import styles from './Electric.module.css'
 
 const EV_BRANDS_FALLBACK = [
-  { name: 'Mercedes-Benz', logo: '/brands/mercedes.svg', models: 8, tagline: 'Luxury Electric Innovation' },
-  { name: 'BMW', logo: '/brands/bmw.svg', models: 5, tagline: 'Ultimate Electric Driving Machine' },
-  { name: 'Tesla', logo: '/brands/tesla.svg', models: 4, tagline: 'Leading the EV Revolution' },
+  { name: 'Mercedes-Benz', logo: '/brands/mercedes.svg', models: 8, tagline: 'Luxury electric innovation' },
+  { name: 'BMW', logo: '/brands/bmw.svg', models: 5, tagline: 'The ultimate electric driving machine' },
+  { name: 'Tesla', logo: '/brands/tesla.svg', models: 4, tagline: 'Leading the EV revolution' },
   { name: 'Audi', logo: '/brands/audi.svg', models: 3, tagline: 'Vorsprung durch Technik' },
-  { name: 'Porsche', logo: '/brands/porsche.svg', models: 2, tagline: 'Electric Performance' },
-  { name: 'Hyundai', logo: '/brands/hyundai.svg', models: 3, tagline: 'Smart Mobility Solutions' },
+  { name: 'Porsche', logo: '/brands/porsche.svg', models: 2, tagline: 'Electric performance' },
+  { name: 'Hyundai', logo: '/brands/hyundai.svg', models: 3, tagline: 'Smart mobility solutions' },
 ]
 
 const EV_MODELS_FALLBACK = [
-  { name: 'Mercedes-Benz EQS', range: '680 km', power: '516 hp', tag: 'Flagship Electric Saloon', price: '₦85M+', img: 'https://images.unsplash.com/photo-1636578929419-fc62088fd08f?w=900&q=80&fit=crop' },
-  { name: 'Mercedes-Benz EQE', range: '620 km', power: '288 hp', tag: 'Executive Electric Sedan', price: '₦65M+', img: 'https://images.unsplash.com/photo-1708903517532-03bea2418854?w=900&q=80&fit=crop' },
-  { name: 'BMW iX', range: '600 km', power: '516 hp', tag: 'Luxury Electric SUV', price: '₦70M+', img: 'https://images.unsplash.com/photo-1568559598349-dbf322d50a48?w=900&q=80&fit=crop' },
-  { name: 'Tesla Model S', range: '650 km', power: '670 hp', tag: 'Performance Sedan', price: '₦75M+', img: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=900&q=80&fit=crop' },
-  { name: 'Mercedes-Benz EQB', range: '440 km', power: '215 hp', tag: 'Electric Family SUV', price: '₦45M+', img: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=900&q=80&fit=crop' },
-  { name: 'BMW i4', range: '520 km', power: '335 hp', tag: 'Electric Gran Coupe', price: '₦55M+', img: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=900&q=80&fit=crop' },
+  { name: 'Mercedes-Benz EQS', range: '680 km', power: '516 hp', tag: 'Flagship electric saloon', price: '₦85M+', img: 'https://images.unsplash.com/photo-1636578929419-fc62088fd08f?w=900&q=80&fit=crop' },
+  { name: 'Mercedes-Benz EQE', range: '620 km', power: '288 hp', tag: 'Executive electric sedan', price: '₦65M+', img: 'https://images.unsplash.com/photo-1708903517532-03bea2418854?w=900&q=80&fit=crop' },
+  { name: 'BMW iX', range: '600 km', power: '516 hp', tag: 'Luxury electric SUV', price: '₦70M+', img: 'https://images.unsplash.com/photo-1568559598349-dbf322d50a48?w=900&q=80&fit=crop' },
+  { name: 'Tesla Model S', range: '650 km', power: '670 hp', tag: 'Performance sedan', price: '₦75M+', img: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=900&q=80&fit=crop' },
+  { name: 'Mercedes-Benz EQB', range: '440 km', power: '215 hp', tag: 'Electric family SUV', price: '₦45M+', img: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=900&q=80&fit=crop' },
+  { name: 'BMW i4', range: '520 km', power: '335 hp', tag: 'Electric gran coupé', price: '₦55M+', img: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=900&q=80&fit=crop' },
 ]
 
+const BRAND_LOGOS: Record<string, string> = {
+  'Mercedes-Benz': '/brands/mercedes.svg',
+  BMW: '/brands/bmw.svg',
+  Tesla: '/brands/tesla.svg',
+  Audi: '/brands/audi.svg',
+  Porsche: '/brands/porsche.svg',
+  Hyundai: '/brands/hyundai.svg',
+}
+
 const COST_SAVINGS_FALLBACK = [
-  { icon: TrendingDown, title: 'Fuel Savings', desc: 'Save up to ₦2M annually on fuel costs compared to petrol vehicles.', amount: '₦2M+/year' },
-  { icon: Wrench, title: 'Maintenance Savings', desc: '60% fewer moving parts means 60% less maintenance. No oil changes, fewer brake replacements.', amount: '₦500K+/year' },
-  { icon: Clock, title: 'Time Savings', desc: 'Charge overnight at home. No more trips to the petrol station. Wake up to a full battery.', amount: '100+ hrs/year' },
-  { icon: PiggyBank, title: 'Total Cost of Ownership', desc: 'Over 5 years, EVs cost 30-40% less to own than equivalent petrol luxury vehicles.', amount: '30-40% less' },
+  { title: 'Fuel', desc: 'Compared with a petrol equivalent over a year of Lagos driving.', amount: '₦2M+' },
+  { title: 'Maintenance', desc: 'Fewer moving parts, no oil changes and less brake wear.', amount: '₦500K+' },
+  { title: 'Time', desc: 'Charge overnight at home instead of queueing at a station.', amount: '100 hrs' },
+  { title: 'Five-year cost', desc: 'Total cost of ownership against an equivalent petrol luxury car.', amount: '30–40%' },
 ]
 
 const BENEFITS_FALLBACK = [
-  { icon: Battery, title: 'Long Real-World Range', desc: 'Modern EVs deliver 400–700 km on a single charge — plenty for Lagos and beyond.' },
-  { icon: Zap, title: 'Serious Performance', desc: 'Instant torque, whisper-quiet drivetrain, and 0–100 in under 5 seconds on flagship models.' },
-  { icon: Leaf, title: 'Zero Emissions', desc: 'No tailpipe emissions. Reduce your carbon footprint while enjoying luxury driving.' },
-  { icon: Gauge, title: 'Tech That Leads', desc: 'MBUX hyperscreen, over-the-air updates, and autonomous-ready driving aids.' },
-  { icon: Plug, title: 'Charging Made Simple', desc: 'Charge overnight at home or the office. We help you plan the setup.' },
-  { icon: ShieldCheckIcon, title: 'Battery Health & Warranty', desc: 'Verified battery health on every unit, with care guidance for years to come.' },
-  { icon: Wind, title: 'Quiet, Refined Ride', desc: 'No engine noise, no gearbox lag. Just smooth, near-silent acceleration.' },
-  { icon: PiggyBank, title: 'Long-Term Value', desc: 'Fewer moving parts, less maintenance, and strong resale demand in Nigeria.' },
+  { title: 'Long real-world range', desc: 'Most EVs do 400 to 700 km on a charge, which covers a week of Lagos driving.' },
+  { title: 'Serious performance', desc: 'Instant torque, a near-silent drivetrain, and 0 to 100 in under five seconds on the flagship models.' },
+  { title: 'Zero emissions', desc: 'No tailpipe emissions at all.' },
+  { title: 'Technology that leads', desc: 'Hyperscreens, over-the-air updates and driver assistance that keeps improving.' },
+  { title: 'Charging made simple', desc: 'Charge overnight at home or the office. We help you plan the setup.' },
+  { title: 'Battery health, verified', desc: 'Every unit ships with a battery health report and care guidance.' },
+  { title: 'A quiet, refined ride', desc: 'No engine noise and no gearbox lag. Just smooth acceleration.' },
+  { title: 'Long-term value', desc: 'Fewer moving parts and strong resale demand in Nigeria.' },
 ]
 
+type Errors = { name?: string; email?: string; phone?: string; form?: string }
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 export function Electric() {
-  const { showToast } = useToast()
   const [form, setForm] = useState({ name: '', email: '', phone: '', model: '', notes: '', honeypot: '' })
+  const [errors, setErrors] = useState<Errors>({})
   const [saving, setSaving] = useState(false)
+  const [sent, setSent] = useState(false)
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null)
 
   const { content: evContent } = useSiteContent('ev')
-
-  const ICON_MAP: Record<string, LucideIcon> = {
-    TrendingDown, Wrench, Clock, PiggyBank,
-    Battery, Zap, Leaf, Gauge, Plug,
-    ShieldCheck: ShieldCheckIcon, Wind,
-  }
-
-  const resolveIcon = (icon: unknown): LucideIcon => {
-    if (typeof icon === 'function') return icon as LucideIcon
-    if (typeof icon === 'string') return ICON_MAP[icon] || Battery
-    return Battery
-  }
 
   const evBrands = parseJsonContent(evContent, 'ev_brands', EV_BRANDS_FALLBACK)
   const evModels = parseJsonContent(evContent, 'ev_models', EV_MODELS_FALLBACK)
   const costSavings = parseJsonContent(evContent, 'cost_savings', COST_SAVINGS_FALLBACK)
   const benefits = parseJsonContent(evContent, 'benefits', BENEFITS_FALLBACK)
+  // CMS: page key "ev", title "hero_image".
+  const heroImage = resolveHeroImage('ev', getTextContent(evContent, 'hero_image'), '/hero-ev.jpg')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (form.honeypot) return
-    if (!form.name || !form.email || !form.phone) return
+
+    const next: Errors = {}
+    if (!form.name.trim()) next.name = 'Please enter your name.'
+    if (!form.email.trim()) next.email = 'Please enter your email.'
+    else if (!EMAIL_RE.test(form.email.trim())) next.email = 'That email address doesn\u2019t look right.'
+    if (!form.phone.trim()) next.phone = 'Please add a phone number.'
+    setErrors(next)
+    if (Object.keys(next).length > 0) return
+
     if (!isSupabaseConfigured()) {
-      showToast('Form is not available right now. Please try again later.', 'error')
+      setErrors({ form: 'The form is unavailable right now. Please call or email us instead.' })
       return
     }
     setSaving(true)
     const { error } = await supabase.from('leads').insert({
       type: 'ev-enquiry',
-      name: form.name, email: form.email, phone: form.phone,
-      message: `EV enquiry — Model: ${form.model || 'Any'}. ${form.notes || ''}`.trim(),
+      name: form.name.trim(),
+      email: form.email.trim(),
+      phone: form.phone.trim(),
+      message: `EV enquiry. Model: ${form.model.trim() || 'Any'}. ${form.notes.trim()}`.trim(),
       source_page: '/ev',
     })
     setSaving(false)
-    if (error) { showToast('Failed to submit', 'error'); return }
-    showToast('EV enquiry submitted — our team will reach out shortly')
+    if (error) { setErrors({ form: 'We couldn\u2019t submit that. Please try again.' }); return }
+    setSent(true)
+  }
+
+  const reset = () => {
     setForm({ name: '', email: '', phone: '', model: '', notes: '', honeypot: '' })
+    setErrors({})
+    setSent(false)
   }
 
   const filteredModels = selectedBrand
@@ -101,171 +117,188 @@ export function Electric() {
 
   return (
     <>
-      <HeroSection
-        images={[
-          { url: '/heroimg5.jpg' },
-          { url: '/heroimg.jpg' },
-        ]}
-        label="Electric Vehicles"
-        title="GO Electric. GO Green."
-        subtitle="Premium electric vehicles imported, prepped, and ready for Nigerian roads. Save money, save time, save the planet."
-        deco="circle"
+      <PageHero
+        label="Electric"
+        title="Electric cars, sourced properly."
+        subtitle="We import premium EVs, inspect them, and hand them over with a battery report and honest charging advice."
+        images={[{ url: heroImage }]}
+        overlay="left"
       />
 
-      {/* Brands — first thing users see */}
-      <ParallaxSection>
-        <Section className="scroll-reveal reveal-fade" style={{ position: 'relative' }}>
-          <SectionHeader
-            label="Our EV Partners"
-            title="Premium Electric Brands"
-            desc="We partner with the world's leading electric vehicle manufacturers to bring you the best selection of premium EVs."
-          />
-
-          <div className={`scroll-reveal stagger-fade-in ${styles.brandsGrid}`}>
-            {evBrands.map((brand) => (
+      <Section tone="paper" space="sm">
+        <SectionHeader
+          label="Our EV partners"
+          title="Brands we source"
+          desc="Pick a badge to narrow the models below."
+        />
+        <div className={styles.brandRow}>
+          {evBrands.map(brand => {
+            const logo = brand.logo || BRAND_LOGOS[brand.name]
+            const active = selectedBrand === brand.name
+            return (
               <button
                 key={brand.name}
-                onClick={() => setSelectedBrand(selectedBrand === brand.name ? null : brand.name)}
-                className={`${styles.brandCard} ${selectedBrand === brand.name ? styles.brandSelected : ''}`}
+                type="button"
+                aria-pressed={active}
+                className={`${styles.brandTile} ${active ? styles.brandTileOn : ''}`}
+                onClick={() => setSelectedBrand(active ? null : brand.name)}
               >
-                <img src={brand.logo} alt={brand.name} className={styles.brandLogo} loading="lazy" />
-                <p className={styles.brandName}>{brand.name}</p>
-                <p className={styles.brandTagline}>{brand.tagline}</p>
-                <p className={styles.brandCount}>{brand.models} models</p>
+                {logo ? (
+                  <img src={logo} alt="" className={styles.brandLogo} loading="lazy" />
+                ) : (
+                  <span className={styles.brandMark} aria-hidden="true">{brand.name.charAt(0)}</span>
+                )}
+                <span className={styles.brandText}>
+                  <span className={styles.brandName}>{brand.name}</span>
+                  {brand.models ? <span className={styles.brandCount}>{brand.models} models</span> : null}
+                </span>
               </button>
-            ))}
-          </div>
-        </Section>
-      </ParallaxSection>
+            )
+          })}
+        </div>
+      </Section>
 
-      {/* Cost Savings */}
-      <ParallaxSection>
-        <Section className="scroll-reveal reveal-scale" style={{ background: 'var(--navy-deep)', color: 'white', position: 'relative' }}>
-          <Sparkle className="deco-positioned" style={{ position: 'absolute', top: 'var(--space-3)', right: '18%', opacity: 0.12 }} size={36} />
-          <SectionHeader
-            label="Cost Savings"
-            title="Save Money with Electric"
-            desc="Electric vehicles aren't just better for the environment — they're better for your wallet. Here's how much you can save."
-            align="center"
-            dark
-          />
+      <Section tone="navy" space="sm">
+        <div className={styles.savingsHead}>
+          <p className={styles.kicker}>Running costs</p>
+          <h2 className={styles.savingsTitle}>What you save by going electric</h2>
+        </div>
+        <dl className={styles.savings}>
+          {costSavings.map(saving => (
+            <div key={saving.title} className={styles.saving}>
+              <dt className={styles.savingLabel}>{saving.title}</dt>
+              <dd className={styles.savingAmount}>{saving.amount}</dd>
+              <p className={styles.savingDesc}>{saving.desc}</p>
+            </div>
+          ))}
+        </dl>
+        <p className={styles.savingsNote}>
+          Estimates for a typical Lagos owner. <Link to="/contact">Ask us to work it out for your usage</Link>.
+        </p>
+      </Section>
 
-          <div className={`scroll-reveal stagger-fade-in ${styles.savingsGrid}`}>
-            {costSavings.map((saving) => (
-              <div key={saving.title} className={styles.savingCard}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
-                  <div className={styles.savingIcon}>
-                    {(() => { const Icon = resolveIcon(saving.icon); return <Icon size={22} /> })()}
+      <Section tone="paper" space="md">
+        <SectionHeader
+          label="Available models"
+          title={selectedBrand ? `${selectedBrand} models` : 'A taste of what we can source'}
+          desc={
+            selectedBrand
+              ? "Can't see the exact spec? Tell us what you want and we'll find it."
+              : 'Pick a brand above, or ask us about any model.'
+          }
+        />
+
+        {filteredModels.length === 0 ? (
+          <p className={styles.empty}>
+            No models listed for {selectedBrand}. <Link to="/contact">Tell us what you're after</Link> and we'll source it.
+          </p>
+        ) : (
+          <div className={`scroll-reveal stagger-fade-in ${styles.models}`}>
+            {filteredModels.map(m => (
+              <Link to="/contact" key={m.name} className={styles.model}>
+                {m.img && (
+                  <div className={styles.modelMedia}>
+                    <img src={m.img} alt="" loading="lazy" className={styles.modelImage} />
                   </div>
-                  <div>
-                    <p className={styles.savingTitle}>{saving.title}</p>
-                    <p className={styles.savingAmount}>{saving.amount}</p>
-                  </div>
-                </div>
-                <p className={styles.savingDesc}>{saving.desc}</p>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ textAlign: 'center', marginTop: 'var(--space-4)' }}>
-            <Link to="/contact">
-              <RippleButton size="md" variant="white">
-                Calculate Your Savings <ArrowRight size={16} />
-              </RippleButton>
-            </Link>
-          </div>
-        </Section>
-      </ParallaxSection>
-
-      {/* Models */}
-      <ParallaxSection>
-        <Section className="scroll-reveal reveal-left" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 'var(--space-2)' }}>
-            <SectionHeader
-              label="Available Models"
-              title="Explore Our EV Collection"
-              desc={selectedBrand
-                ? `Showing ${selectedBrand} models. Can't see your exact spec? Ask — we'll track it down.`
-                : 'A taste of what we can source. Click a brand above to filter, or ask about any model.'}
-            />
-            {selectedBrand && (
-              <button
-                onClick={() => setSelectedBrand(null)}
-                className={styles.filterChip}
-                style={{ marginBottom: 'var(--space-5)', flexShrink: 0 }}
-              >
-                Clear filter ×
-              </button>
-            )}
-          </div>
-
-          <div className={`scroll-reveal stagger-fade-in ${styles.modelsGrid}`}>
-            {filteredModels.map((m) => (
-              <div key={m.name} className={styles.modelCard}>
-                <img src={m.img} alt={m.name} loading="lazy" className={styles.modelImage} />
-                <div className={styles.modelContent}>
+                )}
+                <div className={styles.modelBody}>
                   <p className={styles.modelTag}>{m.tag}</p>
                   <h3 className={styles.modelName}>{m.name}</h3>
-                  <div className={styles.modelSpecs}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Battery size={13} /> {m.range}</span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Zap size={13} /> {m.power}</span>
-                  </div>
+                  <p className={styles.modelSpecs}>
+                    <span>{m.range}</span>
+                    <span>{m.power}</span>
+                  </p>
                   <p className={styles.modelPrice}>{m.price}</p>
-                  <div style={{ marginTop: 'var(--space-3)' }}>
-                    <Link to="/contact">
-                      <RippleButton size="sm" variant="secondary">Enquire Now <ArrowRight size={13} /></RippleButton>
-                    </Link>
-                  </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
-        </Section>
-      </ParallaxSection>
+        )}
+      </Section>
 
-      {/* Benefits */}
-      <ParallaxSection>
-        <Section className="scroll-reveal reveal-right" style={{ position: 'relative' }}>
-          <SectionHeader
-            label="Why Go Electric"
-            title="The Future Is Already Here"
-            desc="Electric vehicles are no longer the future — they're the smartest choice on the market today. Here's why."
-          />
-          <div className={`scroll-reveal stagger-fade-in ${styles.benefitsGrid}`}>
-            {benefits.map((b) => (
-              <div key={b.title} className={styles.benefitCard}>
-                {(() => { const Icon = resolveIcon(b.icon); return <Icon size={28} className={styles.benefitIcon} /> })()}
-                <h3 className={styles.benefitTitle}>{b.title}</h3>
-                <p className={styles.benefitDesc}>{b.desc}</p>
-              </div>
-            ))}
-          </div>
-        </Section>
-      </ParallaxSection>
+      <Section tone="warm" space="sm">
+        <SectionHeader
+          label="Why electric"
+          title="The case for it"
+          desc="The short version: fewer parts to service, cheaper running costs, and a much quieter morning."
+        />
+        <ul className={styles.benefits}>
+          {benefits.map(b => (
+            <li key={b.title} className={styles.benefit}>
+              <h3 className={styles.benefitTitle}>{b.title}</h3>
+              <p className={styles.benefitDesc}>{b.desc}</p>
+            </li>
+          ))}
+        </ul>
+      </Section>
 
-      {/* Contact Section */}
-      <Section className="scroll-reveal reveal-big" style={{ background: 'var(--paper-warm)', position: 'relative' }}>
-        <div style={{ maxWidth: 520, margin: '0 auto' }}>
+      <Section tone="paper" space="md">
+        <div className={styles.enquiry} id="enquiry">
           <SectionHeader
-            label="EV Enquiry"
+            label="EV enquiry"
             title="Interested in an EV?"
-            desc="Tell us which model you're after and we'll source it — with charging advice included."
-            align="center"
+            desc="Tell us the model you have in mind and we'll source it, charging advice included."
           />
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1-5)' }}>
-            <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
-              <input tabIndex={-1} value={form.honeypot} onChange={e => setForm(f => ({ ...f, honeypot: e.target.value }))} />
+
+          {sent ? (
+            <div className={styles.success} role="status">
+              <h2 className={styles.successTitle}>Enquiry received.</h2>
+              <p className={styles.successBody}>
+                Our team will reach you at {form.email} shortly with options and next steps.
+              </p>
+              <Button variant="secondary" size="sm" onClick={reset}>Send another enquiry</Button>
             </div>
-            <Input label="Full Name *" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required />
-            <Input label="Email *" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required />
-            <Input label="Phone *" type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} required />
-            <Input label="Model of Interest" value={form.model} onChange={e => setForm(f => ({ ...f, model: e.target.value }))} placeholder="e.g. Mercedes-Benz EQS 450" />
-            <TextArea label="Questions / Notes" value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={3} placeholder="Budget, colour, timing..." />
-            <RippleButton type="submit" loading={saving}>Request EV Enquiry</RippleButton>
-          </form>
+          ) : (
+            <form onSubmit={handleSubmit} className={styles.form} noValidate>
+              <div className={styles.honeypot} aria-hidden="true">
+                <input tabIndex={-1} value={form.honeypot} onChange={e => setForm(f => ({ ...f, honeypot: e.target.value }))} />
+              </div>
+              <div className={styles.formRow}>
+                <Input
+                  label="Name"
+                  value={form.name}
+                  onChange={e => { setForm(f => ({ ...f, name: e.target.value })); if (errors.name) setErrors(p => ({ ...p, name: undefined })) }}
+                  error={errors.name}
+                  autoComplete="name"
+                />
+                <Input
+                  label="Phone"
+                  type="tel"
+                  value={form.phone}
+                  onChange={e => { setForm(f => ({ ...f, phone: e.target.value })); if (errors.phone) setErrors(p => ({ ...p, phone: undefined })) }}
+                  error={errors.phone}
+                  autoComplete="tel"
+                />
+              </div>
+              <Input
+                label="Email"
+                type="email"
+                value={form.email}
+                onChange={e => { setForm(f => ({ ...f, email: e.target.value })); if (errors.email) setErrors(p => ({ ...p, email: undefined })) }}
+                error={errors.email}
+                autoComplete="email"
+              />
+              <Input
+                label="Model of interest"
+                value={form.model}
+                onChange={e => setForm(f => ({ ...f, model: e.target.value }))}
+                placeholder="e.g. Mercedes-Benz EQS 450"
+              />
+              <TextArea
+                label="Notes"
+                value={form.notes}
+                onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
+                rows={3}
+                placeholder="Budget, colour, timing…"
+              />
+              {errors.form && <p className={styles.formError} role="alert">{errors.form}</p>}
+              <Button type="submit" loading={saving} className={styles.submit}>Request enquiry</Button>
+            </form>
+          )}
         </div>
       </Section>
     </>
   )
 }
+
 export default Electric

@@ -1,276 +1,305 @@
-/* ── Volume pricing tiers — glass on navy, featured tier in white ── */
-.tiersGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-3);
-}
-.tier {
-  padding: var(--space-4);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: var(--radius-lg);
-  background: rgba(255,255,255,0.05);
-  text-align: center;
-  transition: transform 350ms var(--ease-out), border-color 350ms var(--ease-out), background 350ms var(--ease-out);
-}
-.tier:hover {
-  transform: translateY(-3px);
-  border-color: rgba(255,255,255,0.22);
-  background: rgba(255,255,255,0.08);
-}
-.tierUnits {
-  font-size: var(--text-2xl);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: white;
-  margin-bottom: var(--space-1);
-  font-variant-numeric: tabular-nums;
-}
-.tierDiscount {
-  font-size: var(--text-base);
-  font-weight: 600;
-  color: rgba(255,255,255,0.7);
-}
-.tierFeatured {
-  background: white;
-  border-color: white;
-}
-.tierFeatured:hover {
-  background: #f2f2f4;
-  border-color: white;
-}
-.tierFeatured .tierUnits,
-.tierFeatured .tierDiscount {
-  color: var(--navy);
+/* ── Tiers ── */
+.tiersHead {
+  margin-bottom: var(--space-4);
 }
 
-/* ── Sector cards ── */
-.sectorsGrid {
+.tiersLabel {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-inverse-muted);
+  margin-bottom: var(--space-1);
+}
+
+.tiersTitle {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+  color: var(--paper);
+}
+
+.tiers {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-3);
+  margin: 0;
 }
-.sectorCard {
-  display: flex;
-  flex-direction: column;
-  padding: var(--space-4);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  transition: transform 350ms var(--ease-out), border-color 350ms var(--ease-out), box-shadow 350ms var(--ease-out);
+
+.tier {
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  padding-top: var(--space-2);
 }
-.sectorCard:hover {
-  transform: translateY(-3px);
-  border-color: rgba(11,46,89,0.16);
-  box-shadow: var(--shadow-sm);
+
+.tierUnits {
+  font-size: var(--text-sm);
+  color: var(--text-inverse-muted);
+  margin-bottom: 4px;
 }
-.sectorIcon {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-md);
-  background: var(--navy-light);
-  color: var(--navy);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.sectorTitle {
+
+.tierDiscount {
+  margin: 0;
   font-size: var(--text-lg);
   font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--ink);
+  letter-spacing: -0.015em;
+  color: var(--paper);
 }
-.sectorDesc {
-  font-size: var(--text-sm);
-  color: var(--stone);
-  line-height: 1.7;
-  margin-bottom: var(--space-2);
+
+/* ── Sectors ── */
+.sectors {
+  border-top: 1px solid var(--border);
 }
-.sectorPrice {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--navy);
-  padding: var(--space-1-5);
-  background: var(--paper-warm);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--space-1);
+
+.sector {
+  border-bottom: 1px solid var(--border);
 }
-.sectorVolume {
-  font-size: var(--text-xs);
-  color: var(--navy);
-  font-weight: 600;
-  margin-bottom: var(--space-2);
-}
-.sectorToggle {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: var(--text-xs);
-  color: var(--navy);
-  font-weight: 600;
+
+.sectorRow {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto 24px;
+  align-items: baseline;
+  gap: var(--space-3);
+  width: 100%;
+  padding-block: var(--space-3);
   background: none;
   border: none;
+  text-align: left;
   cursor: pointer;
-  margin-bottom: var(--space-2);
-  padding: 0;
-  min-height: 0;
 }
-.sectorToggle:hover {
-  color: var(--navy-hover);
+
+.sectorIndex {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--stone);
+  font-variant-numeric: tabular-nums;
 }
-.benefitList {
+
+.sectorName {
+  font-size: var(--text-xl);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.sectorPrice {
+  font-size: var(--text-sm);
+  color: var(--stone);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.sectorToggle {
+  font-size: 1.125rem;
+  line-height: 1;
+  color: var(--stone);
+  text-align: right;
+}
+
+.sectorBody {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  margin-bottom: var(--space-2-5);
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: 0 var(--space-3) var(--space-4) 44px;
 }
-.benefitItem {
-  display: flex;
-  gap: var(--space-1);
+
+.sectorDesc {
+  font-size: var(--text-md);
+  line-height: 1.6;
+  color: var(--stone);
+  max-width: 56ch;
+}
+
+.sectorVolume {
+  font-size: var(--text-sm);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.benefits {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px var(--space-4);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.benefits li {
+  position: relative;
+  padding-left: 14px;
   font-size: var(--text-sm);
   color: var(--stone);
 }
-.benefitCheck {
-  color: var(--navy);
-  flex-shrink: 0;
-  margin-top: 3px;
+.benefits li::before {
+  content: '·';
+  position: absolute;
+  left: 2px;
+  color: var(--stone);
 }
 
-/* ── Why choose us ── */
-.whyGrid {
+/* ── Why ── */
+.why {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-3);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4) var(--space-3);
+  margin-top: var(--space-4);
 }
-.whyCard {
+
+.whyItem {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-2);
+}
+
+.whyTitle {
+  font-size: var(--text-md);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.whyDesc {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--stone);
+}
+
+/* ── Clients ── */
+.clientsLabel {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-bottom: var(--space-2);
+}
+
+.clients {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.client {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: var(--space-4);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  transition: transform 350ms var(--ease-out), border-color 350ms var(--ease-out), box-shadow 350ms var(--ease-out);
+  gap: 2px;
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-2);
 }
-.whyCard:hover {
-  transform: translateY(-3px);
-  border-color: rgba(11,46,89,0.16);
-  box-shadow: var(--shadow-sm);
+
+.clientName {
+  font-size: var(--text-lg);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--ink);
 }
-.whyIcon {
-  color: var(--navy);
-  margin-bottom: var(--space-1-5);
+
+.clientDesc {
+  font-size: var(--text-sm);
+  color: var(--stone);
 }
-.whyTitle {
-  font-size: var(--text-base);
+
+/* ── Quote form ── */
+.quote {
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  position: relative;
+  margin-top: var(--space-4);
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.submit {
+  align-self: flex-start;
+  margin-top: var(--space-1);
+}
+
+.formError {
+  font-size: var(--text-sm);
+  color: var(--error);
+}
+
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.successTitle {
+  font-size: var(--text-xl);
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--ink);
-  margin-bottom: 6px;
 }
-.whyDesc {
-  font-size: var(--text-sm);
+
+.successBody {
+  font-size: var(--text-md);
+  line-height: 1.6;
   color: var(--stone);
-  line-height: 1.7;
 }
 
-/* ── Trusted by — quiet wordmarks, no boxes ── */
-.trustGrid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  justify-content: center;
-  align-items: center;
-}
-.trustItem {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-.trustName {
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--stone);
-  transition: color 200ms var(--ease-out);
-}
-.trustName:hover {
-  color: var(--ink);
-}
-.trustDesc {
-  font-size: var(--text-xs);
-  color: var(--stone-light);
-}
-.trustLogo {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  filter: grayscale(1);
-  opacity: 0.65;
-  transition: opacity 300ms var(--ease-out), filter 300ms var(--ease-out);
-}
-.trustLogo:hover {
-  filter: grayscale(0);
-  opacity: 1;
-}
-.trustLogo img {
-  max-height: 36px;
-  max-width: 150px;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-}
-
-/* ── Tablet (769px–1024px) ── */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .sectorsGrid {
-    grid-template-columns: repeat(2, 1fr);
+@media (max-width: 980px) {
+  .tiers {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3) var(--space-3);
   }
-  .tiersGrid {
-    grid-template-columns: repeat(2, 1fr);
+  .why {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-/* ── Mobile (≤768px) ── */
-@media (max-width: 768px) {
-  .tiersGrid {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-2);
-  }
-  .sectorsGrid {
-    grid-template-columns: 1fr;
-    gap: var(--space-3);
-  }
-  .sectorCard {
-    padding: var(--space-3);
-  }
-  .whyGrid {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-2);
-  }
-  .whyCard {
-    padding: var(--space-3);
-  }
-  .tier {
-    padding: var(--space-3);
-  }
-  .tierUnits {
-    font-size: var(--text-xl);
-  }
-}
-
-/* ── Small Mobile (≤480px) ── */
-@media (max-width: 480px) {
-  .tiersGrid {
-    grid-template-columns: 1fr;
-    gap: var(--space-1-5);
-  }
-  .whyGrid {
+@media (max-width: 800px) {
+  .clients {
     grid-template-columns: 1fr;
   }
-  .sectorTitle {
-    font-size: var(--text-base);
+  .sectorRow {
+    grid-template-columns: 32px minmax(0, 1fr) 20px;
+    row-gap: 2px;
+  }
+  .sectorPrice {
+    grid-column: 2 / 3;
+  }
+  .sectorToggle {
+    grid-row: 1 / 2;
+    grid-column: 3 / 4;
+  }
+  .sectorBody {
+    padding-left: 32px;
+  }
+  .benefits {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .formRow {
+    grid-template-columns: 1fr;
   }
 }

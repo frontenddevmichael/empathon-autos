@@ -69,7 +69,7 @@ export function LeadForm({ open, onClose, type = 'enquiry', vehicleId, initialMe
 
     let message = form.message || ''
     if (selectedType === 'test-drive') {
-      message = `Test Drive Booking — Date: ${form.preferredDate}, Time: ${form.preferredTime}. ${message}`.trim()
+      message = `Test drive booking. Date: ${form.preferredDate}, Time: ${form.preferredTime}. ${message}`.trim()
     }
 
     setSaving(true)
@@ -81,7 +81,7 @@ export function LeadForm({ open, onClose, type = 'enquiry', vehicleId, initialMe
     })
     setSaving(false)
     if (error) { showToast('Failed to submit enquiry', 'error'); return }
-    showToast('Enquiry submitted — we\'ll be in touch shortly')
+    showToast('Enquiry submitted. We\'ll be in touch shortly')
     onClose()
     setForm({ name: '', email: '', phone: '', company: '', message: '', preferredDate: '', preferredTime: '' })
   }

@@ -1,24 +1,29 @@
+import type { ReactNode } from 'react'
 import styles from './SpecTable.module.css'
 
-interface SpecTableProps {
-  specs: Record<string, string | number | null | undefined>
+export interface SpecRow {
+  label: string
+  value: ReactNode
 }
 
-export function SpecTable({ specs }: SpecTableProps) {
-  const rows = Object.entries(specs).filter(([, v]) => v != null && v !== '')
+interface SpecTableProps {
+  rows: SpecRow[]
+  className?: string
+}
 
-  if (rows.length === 0) return null
-
+/**
+ * Hairline spec rows: label left in stone, value right in ink.
+ * No boxes, no zebra stripes — the rule is the only separator.
+ */
+export function SpecTable({ rows, className = '' }: SpecTableProps) {
   return (
-    <table className={styles.table}>
-      <tbody>
-        {rows.map(([key, value]) => (
-          <tr key={key} className={styles.row}>
-            <td className={`${styles.cell} ${styles.label}`}>{key.replace(/_/g, ' ')}</td>
-            <td className={`${styles.cell} ${styles.value}`}>{String(value)}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <dl className={`${styles.table} ${className}`.trim()}>
+      {rows.map(row => (
+        <div key={row.label} className={styles.row}>
+          <dt className={styles.label}>{row.label}</dt>
+          <dd className={styles.value}>{row.value}</dd>
+        </div>
+      ))}
+    </dl>
   )
 }

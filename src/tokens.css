@@ -22,34 +22,44 @@
   --success: #16a34a;
   --success-light: rgba(22,163,74,0.07);
   --live: #dc2626;
-  --live-light: rgba(220,38,38,0.07);
-  --secondary: #d0d0d0;
-  --secondary-muted: rgba(208,208,208,0.4);
-  
-  /* Premium Gold — reserved for tiny brand marks only */
-  --gold: #c4a265;
-  --gold-light: rgba(196,162,101,0.15);
-  --gold-dark: #a68a4b;
-  
-  --accent-warm: #c2410c;
-  --accent-warm-light: rgba(194,65,12,0.08);
 
-  /* ── Clay / Warm Neutrals ── */
-  --clay: #c8b89a;
-  --clay-deep: #a89070;
-  --clay-muted: rgba(200,184,154,0.25);
-  --clay-light: #f0ebe3;
-
-  /* ── Status Colors ── */
-  --green: #16a34a;
-  --blue-soft: #3b82f6;
-  --amber: #f59e0b;
+  /* Third-party brand colors */
+  --whatsapp: #25d366;
+  --whatsapp-hover: #1da851;
+  --whatsapp-shadow: rgba(37,211,102,0.28);
 
   /* ── Aliases ── */
   --bg: var(--paper);
+
+  /* ── Semantic Surface & Text ──
+     Components should reach for these, never raw hex/rgba. */
   --text-primary: var(--ink);
   --text-secondary: var(--stone);
-  --accent: var(--navy);
+  --text-tertiary: var(--stone-light);
+  --text-body: #424245;
+  --text-inverse: #ffffff;
+  --text-inverse-secondary: rgba(255,255,255,0.72);
+  --text-inverse-soft: rgba(255,255,255,0.6);
+  --text-inverse-muted: rgba(255,255,255,0.48);
+  --text-inverse-faint: rgba(255,255,255,0.3);
+  --surface-subtle: var(--paper-warm);
+  --surface-inverse: var(--navy-deep);
+  --border-strong: rgba(29,29,31,0.16);
+  --border-inverse: rgba(255,255,255,0.10);
+  --border-inverse-strong: rgba(255,255,255,0.20);
+
+  /* ── Brand navy tints — one hue, no ad-hoc rgba() ── */
+  --navy-a04: rgba(11,46,89,0.04);
+  --navy-a06: rgba(11,46,89,0.06);
+  --navy-a08: rgba(11,46,89,0.08);
+  --navy-a12: rgba(11,46,89,0.12);
+  --navy-a18: rgba(11,46,89,0.18);
+  --navy-a24: rgba(11,46,89,0.24);
+
+  /* ── Overlays for imagery ── */
+  --scrim-deep: rgba(6,20,40,0.92);
+  --scrim-mid: rgba(6,20,40,0.62);
+  --scrim-soft: rgba(6,20,40,0.28);
 
   /* ── Typography — DM Sans for display, Inter for body ── */
   --font-display: 'DM Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -63,6 +73,7 @@
   --leading-relaxed: 1.7;
 
   /* Letter Spacing */
+  --tracking-display: -0.03em;
   --tracking-tighter: -0.04em;
   --tracking-tight: -0.025em;
   --tracking-normal: 0;
@@ -73,7 +84,8 @@
   --text-2xs: 0.625rem;
   --text-xs: 0.75rem;
   --text-sm: 0.8125rem;
-  --text-base: 1rem;
+  --text-md: 0.875rem;
+  --text-base: 1.0625rem;
   --text-lg: 1.125rem;
   --text-xl: 1.375rem;
   --text-2xl: 1.5rem;
@@ -81,8 +93,8 @@
   --text-4xl: 2.25rem;
   --text-5xl: 2.75rem;
   --text-6xl: 3.5rem;
-  --text-display: clamp(3rem, 6vw, 5rem);
-  --text-h2: clamp(2rem, 3.5vw, 3.25rem);
+  --text-display: clamp(3rem, 7vw, 6rem);
+  --text-h2: clamp(2rem, 4vw, 3.5rem);
 
   /* ── Spacing ── */
   --space-0-5: 4px;
@@ -91,13 +103,12 @@
   --space-2: 16px;
   --space-2-5: 20px;
   --space-3: 24px;
+  --space-3-5: 32px;
   --space-4: 32px;
   --space-5: 48px;
   --space-6: 64px;
   --space-7: 96px;
   --space-8: 128px;
-  --space-9: 200px;
-  --space-10: 240px;
 
   /* ── Radii ── */
   --radius-xs: 4px;
@@ -108,45 +119,41 @@
   --radius-2xl: 28px;
   --radius-full: 9999px;
 
-  /* ── Shadows — one soft diffuse layer; depth comes from layering ── */
+  /* ── Shadows — one soft scale; nothing exceeds --shadow-lg ── */
   --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.03), 0 2px 8px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
-  --shadow-lg: 0 8px 30px rgba(0,0,0,0.06);
-  --shadow-xl: 0 12px 40px rgba(0,0,0,0.08);
-  --shadow-2xl: 0 20px 60px rgba(0,0,0,0.1);
-  --shadow-inner: inset 0 2px 4px rgba(0,0,0,0.04);
-  
-  /* Premium — single soft layer */
-  --shadow-premium: 0 4px 20px rgba(0,0,0,0.05);
-  
-  --shadow-premium-hover: 0 8px 30px rgba(0,0,0,0.08);
-  
-  /* Brand-Colored Shadows — extremely soft */
-  --shadow-navy: 0 4px 20px rgba(11,46,89,0.15);
-  
-  --shadow-gold: 0 4px 20px rgba(196,162,101,0.2);
-  
-  --shadow-glow: 0 0 20px rgba(11,46,89,0.1);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.08);
 
   /* ── Motion ── */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-bounce: cubic-bezier(0.34, 1.8, 0.64, 1);
 
   --transition-fast: 120ms var(--ease-out);
   --transition-base: 200ms var(--ease-out);
   --transition-smooth: 300ms var(--ease-out);
   --transition-slow: 500ms var(--ease-out);
-  --transition-spring: 500ms var(--ease-spring);
 
   /* ── Layout ── */
-  --nav-height: 64px;
+  --nav-height: 56px;
   --container-max: 1280px;
-  --container-narrow: 680px;
-  --section-gap: 80px;
-  --section-y: clamp(5rem, 10vw, 8.5rem);
+  --container-wide: 1440px;
+  --container-narrow: 720px;
+  --container-pad: clamp(1.25rem, 4vw, 2.5rem);
+  --section-y: clamp(6rem, 12vw, 10rem);
+
+  /* ── Nav surfaces — the only place glass is allowed ── */
+  --nav-glass: rgba(255,255,255,0.72);
+  --nav-glass-solid: rgba(255,255,255,0.92);
+  --nav-blur: blur(20px) saturate(180%);
+
+  /* ── Stacking order — never invent a z-index ── */
+  --z-base: 0;
+  --z-sticky: 100;
+  --z-nav: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -155,7 +162,7 @@ html {
   -webkit-text-size-adjust: 100%;
   /* Clip — not hidden — so it never creates a scroll container (which would
      break position:sticky). Guards against horizontal scroll from pre-reveal
-     transforms (reveal-left/right translateX offsets) and stray fixed widths. */
+     transforms and stray fixed widths. */
   overflow-x: clip;
 }
 body { overflow-x: clip; }
@@ -185,12 +192,12 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: var(--tracking-tight);
   color: var(--text-primary);
 }
-h1 { font-size: var(--text-5xl); letter-spacing: var(--tracking-tighter); font-weight: 700; }
-h2 { font-size: var(--text-4xl); letter-spacing: var(--tracking-tight); font-weight: 600; }
+h1 { font-size: var(--text-display); letter-spacing: var(--tracking-display); font-weight: 600; }
+h2 { font-size: var(--text-h2); letter-spacing: var(--tracking-tight); font-weight: 600; }
 h3 { font-size: var(--text-2xl); font-weight: 600; }
 h4 { font-size: var(--text-xl); font-weight: 600; }
 
-p { color: #424245; line-height: var(--leading-relaxed); }
+p { color: var(--text-body); line-height: var(--leading-relaxed); }
 
 ::selection { background: var(--navy); color: white; }
 
@@ -219,11 +226,9 @@ p { color: #424245; line-height: var(--leading-relaxed); }
     --space-6: 48px;
     --space-7: 64px;
     --space-8: 80px;
-    --space-9: 112px;
-    --space-10: 160px;
-    --nav-height: 56px;
     --container-max: 100%;
     --section-y: clamp(4rem, 14vw, 6rem);
+    --container-pad: 1.25rem;
   }
 }
 
@@ -238,8 +243,6 @@ p { color: #424245; line-height: var(--leading-relaxed); }
     --space-6: 40px;
     --space-7: 48px;
     --space-8: 64px;
-    --space-9: 80px;
-    --space-10: 112px;
     --section-y: clamp(3.5rem, 16vw, 4.5rem);
   }
 }
@@ -248,8 +251,6 @@ p { color: #424245; line-height: var(--leading-relaxed); }
 @media (min-width: 769px) and (max-width: 1024px) {
   :root {
     --container-max: 960px;
-    --space-9: 160px;
-    --space-10: 200px;
   }
 }
 

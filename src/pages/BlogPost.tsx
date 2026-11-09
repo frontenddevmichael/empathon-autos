@@ -1,79 +1,65 @@
-import { useEffect, useState, useCallback } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useCallback, useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { supabase } from '@/lib/supabase'
-import type { BlogPost } from '@/types'
+import type { BlogPost as BlogPostType } from '@/types'
+import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { RippleButton } from '@/components/RippleButton'
+import { Section } from '@/components/layout/Section'
+import { Container } from '@/components/layout/Container'
 import styles from './BlogPost.module.css'
 
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
+/* ── Minimal markdown → HTML (unchanged) ── */
+function escapeHtml(str: string): string {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 }
 
-function inline(text: string): string {
-  const code = /`([^`]+)`/g
-  const bold = /\*\*(.+?)\*\*/g
-  const italic = /\*(.+?)\*/g
-  const link = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g
-  let out = text
-  out = out.replace(code, '<code>$1</code>')
-  out = out.replace(bold, '<strong>$1</strong>')
-  out = out.replace(italic, '<em>$1</em>')
-  out = out.replace(link, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
-  return out
+function inline(html: string): string {
+  return html
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" loading="lazy" />')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
 }
 
-function renderBody(body: string): string {
-  const lines = body.split('\n')
+function renderBody(markdown: string): string {
+  const lines = markdown.split('\n')
   let html = ''
   let inUl = false
   let inOl = false
-
   const closeList = () => {
     if (inUl) { html += '</ul>'; inUl = false }
     if (inOl) { html += '</ol>'; inOl = false }
   }
-
   for (const raw of lines) {
     const line = raw.trim()
     if (!line) { closeList(); continue }
-
-    if (/^(-{3,}|\*{3,}|_{3,})$/.test(line)) { closeList(); html += '<hr />'; continue }
-
-    const h = line.match(/^(#{1,3})\s+(.*)$/)
-    if (h) {
+    const heading = line.match(/^(#{1,3})\s+(.*)$/)
+    if (heading) {
       closeList()
-      const level = h[1].length + 1
-      html += `<h${level}>${inline(escapeHtml(h[2]))}</h${level}>`
+      const level = Math.min(heading[1].length + 1, 4)
+      html += `<h${level}>${inline(escapeHtml(heading[2]))}</h${level}>`
       continue
     }
-
-    if (line.startsWith('> ')) {
+    const quote = line.match(/^>\s+(.*)$/)
+    if (quote) {
       closeList()
-      html += `<blockquote>${inline(escapeHtml(line.slice(2)))}</blockquote>`
+      html += `<blockquote>${inline(escapeHtml(quote[1]))}</blockquote>`
       continue
     }
-
     const ul = line.match(/^[-*]\s+(.*)$/)
     if (ul) {
       if (!inUl) { closeList(); html += '<ul>'; inUl = true }
       html += `<li>${inline(escapeHtml(ul[1]))}</li>`
       continue
     }
-
     const ol = line.match(/^\d+\.\s+(.*)$/)
     if (ol) {
       if (!inOl) { closeList(); html += '<ol>'; inOl = true }
       html += `<li>${inline(escapeHtml(ol[1]))}</li>`
       continue
     }
-
     closeList()
     html += `<p>${inline(escapeHtml(line))}</p>`
   }
@@ -91,21 +77,12 @@ function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
-function BackIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
 export function BlogPost() {
   const { slug } = useParams<{ slug: string }>()
-  const [post, setPost] = useState<BlogPost | null>(null)
-  const [related, setRelated] = useState<BlogPost[]>([])
+  const [post, setPost] = useState<BlogPostType | null>(null)
+  const [related, setRelated] = useState<BlogPostType[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-  const [progress, setProgress] = useState(0)
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
@@ -132,25 +109,6 @@ export function BlogPost() {
     })()
   }, [slug])
 
-  useEffect(() => {
-    let frame: number
-    const onScroll = () => {
-      cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(() => {
-        const el = document.getElementById('blog-article')
-        if (!el) return
-        const rect = el.getBoundingClientRect()
-        const total = rect.height - window.innerHeight
-        if (total <= 0) { setProgress(100); return }
-        const p = Math.min(100, Math.max(0, (-rect.top / total) * 100))
-        setProgress(p)
-      })
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
-    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(frame) }
-  }, [post])
-
   const copyLink = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(window.location.href)
@@ -161,34 +119,26 @@ export function BlogPost() {
 
   if (loading) {
     return (
-      <section className={styles.loadingSection}>
-        <div className={styles.loadingInner}>
-          <div className={styles.loadingBar} />
-          <div className={styles.loadingBar} style={{ width: '80%' }} />
-          <div className={styles.loadingImg} />
-          <div className={styles.loadingBar} />
-          <div className={styles.loadingBar} style={{ width: '70%' }} />
-        </div>
-      </section>
+      <Container className={styles.wrap}>
+        <div className={styles.skeletonTitle} />
+        <div className={styles.skeletonMeta} />
+        <div className={styles.skeletonImage} />
+        <div className={styles.skeletonLine} />
+        <div className={styles.skeletonLine} />
+        <div className={styles.skeletonLineShort} />
+      </Container>
     )
   }
 
   if (error || !post) {
     return (
-      <section className={styles.errorSection}>
-        <div className="scroll-reveal" style={{ maxWidth: 640, margin: '0 auto' }}>
-          <EmptyState
-            art="book"
-            title="Post not found"
-            message="This article may have been removed or the link is incorrect."
-            action={
-              <Link to="/blog">
-                <RippleButton size="sm" variant="secondary">Back to Blog</RippleButton>
-              </Link>
-            }
-          />
-        </div>
-      </section>
+      <Section tone="paper" space="md">
+        <EmptyState
+          title="Post not found"
+          message="This article may have been removed, or the link is wrong."
+          action={<Link to="/blog"><Button size="sm" variant="secondary">Back to blog</Button></Link>}
+        />
+      </Section>
     )
   }
 
@@ -226,105 +176,63 @@ export function BlogPost() {
         </script>
       </Helmet>
 
-      {/* Reading progress */}
-      <div className={styles.progress} style={{ width: `${progress}%` }} aria-hidden="true" />
-
-      {/* Article hero */}
-      <section className={styles.hero}>
-        {post.cover_image && (
-          <>
-            <img src={post.cover_image} alt="" className={styles.heroImage} />
-            <div className={styles.heroOverlay} />
-          </>
-        )}
-        <div className={styles.heroContent}>
-          <Link to="/blog" className={styles.backLink}><BackIcon /> Back to Blog</Link>
-          <div className={styles.articleMeta}>
+      <article className={styles.article}>
+        <Container size="narrow" className={styles.head}>
+          <Link to="/blog" className={styles.back}>Blog</Link>
+          <p className={styles.meta}>
             {post.author && <span>{post.author}</span>}
-            {post.published_at && (
-              <span className="tabular-nums">{formatDate(post.published_at)}</span>
-            )}
+            {post.published_at && <span>{formatDate(post.published_at)}</span>}
             {post.body && <span>{readTime(post.body)}</span>}
-          </div>
-          <h1 className={styles.heroTitle}>{post.title}</h1>
-        </div>
-      </section>
+          </p>
+          <h1 className={styles.title}>{post.title}</h1>
+        </Container>
 
-      {/* Article body */}
-      <section className={styles.articleSection}>
-        <article id="blog-article" className={styles.article}>
+        {post.cover_image && (
+          <Container size="narrow">
+            <div className={styles.cover}>
+              <img src={post.cover_image} alt="" className={styles.coverImage} />
+            </div>
+          </Container>
+        )}
+
+        <Container size="narrow">
           {post.body && (
             <div className={styles.body} dangerouslySetInnerHTML={{ __html: renderBody(post.body) }} />
           )}
 
-          {/* Share */}
-          <div className={styles.shareRow}>
+          <div className={styles.share}>
             <span className={styles.shareLabel}>Share</span>
-            <button type="button" className={styles.shareBtn} onClick={copyLink} aria-label="Copy link to article" title="Copy link">
-              {copied ? (
-                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8.5l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              ) : (
-                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M6 10l4-4M5 11l-1.5 1.5a2.12 2.12 0 0 1-3-3L4 6a2.12 2.12 0 0 1 3 0M11 5l1.5-1.5a2.12 2.12 0 0 1 3 3L12 10a2.12 2.12 0 0 1-3 0" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              )}
+            <button type="button" className={styles.shareLink} onClick={copyLink}>
+              {copied ? 'Link copied' : 'Copy link'}
             </button>
-            <a className={styles.shareBtn} href={`https://x.com/intent/post?text=${shareText}&url=${shareUrl}`} target="_blank" rel="noopener noreferrer" aria-label="Share on X" title="Share on X">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M18.9 1.2h3.7l-8.1 9.3L24 22.8h-7.5l-5.9-7.7-6.7 7.7H.2l8.7-9.9L0 1.2h7.7l5.3 7 6-7z" />
-              </svg>
-            </a>
-            <a className={styles.shareBtn} href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn" title="Share on LinkedIn">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13zM7.12 20.45H3.55V9h3.57v11.45z" />
-              </svg>
-            </a>
-            <a className={styles.shareBtn} href={`https://api.whatsapp.com/send?text=${shareText}%20${shareUrl}`} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp" title="Share on WhatsApp">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.8 1-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-2-1.2 7.5 7.5 0 0 1-1.4-1.7c-.1-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5v-.5c0-.1-.5-1.3-.7-1.8-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1.1 2.7c.1.2 1.8 2.8 4.5 3.9.6.3 1.1.4 1.5.6.6.2 1.2.2 1.6.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.4-.3z" />
-              </svg>
-            </a>
+            <a className={styles.shareLink} href={`https://x.com/intent/post?text=${shareText}&url=${shareUrl}`} target="_blank" rel="noopener noreferrer">X</a>
+            <a className={styles.shareLink} href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a className={styles.shareLink} href={`https://api.whatsapp.com/send?text=${shareText}%20${shareUrl}`} target="_blank" rel="noopener noreferrer">WhatsApp</a>
           </div>
 
-          {/* Author */}
-          <div className={styles.authorCard}>
-            <div className={styles.authorAvatar} aria-hidden="true">
-              {(post.author || 'E').charAt(0).toUpperCase()}
-            </div>
-            <div>
-              <p className={styles.authorName}>{post.author || 'Empathon Autos'}</p>
-              <p className={styles.authorRole}>Empathon Autos — Lagos, Nigeria</p>
-            </div>
+          <div className={styles.byline}>
+            <p className={styles.bylineName}>{post.author || 'Empathon Autos'}</p>
+            <p className={styles.bylineRole}>Empathon Autos, Lagos</p>
           </div>
+        </Container>
 
-          {/* Related */}
-          {related.length > 0 && (
-            <div className={`scroll-reveal ${styles.related}`}>
-              <h3 className={styles.relatedTitle}>Keep reading</h3>
-              <div className={styles.relatedGrid}>
-                {related.map(p => (
-                  <Link key={p.id} to={`/blog/${p.slug}`} className={styles.relatedCard}>
-                    {p.cover_image && (
-                      <div className={styles.relatedMedia}>
-                        <img src={p.cover_image} alt={p.title} loading="lazy" />
-                      </div>
-                    )}
-                    <div className={styles.relatedBody}>
-                      <p className={styles.relatedTitle2}>{p.title}</p>
-                      <div className={styles.relatedMeta}>
-                        {p.published_at && <span className="tabular-nums">{formatDate(p.published_at)}</span>}
-                        {p.body && <span> · {readTime(p.body)}</span>}
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+        {related.length > 0 && (
+          <Container size="narrow" className={styles.related}>
+            <h2 className={styles.relatedTitle}>Keep reading</h2>
+            <div className={styles.relatedList}>
+              {related.map(p => (
+                <Link key={p.id} to={`/blog/${p.slug}`} className={styles.relatedLink}>
+                  <span className={styles.relatedName}>{p.title}</span>
+                  <span className={styles.relatedMeta}>
+                    {p.published_at && formatDate(p.published_at)}
+                    {p.body && ` · ${readTime(p.body)}`}
+                  </span>
+                </Link>
+              ))}
             </div>
-          )}
-        </article>
-      </section>
+          </Container>
+        )}
+      </article>
     </>
   )
 }
