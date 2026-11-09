@@ -358,7 +358,21 @@ Feedback on the finished phases, applied across the site.
 
 ## Photo headers are back
 
-The plain headline bands were too quiet. Corporate, Electric, Pre-Order, Contact, Blog, Track Order and Register now open on a photograph again, with the same navy scrim and the label, headline and one sentence over it. Corporate and Electric read their image from the CMS `hero_image` block and fall back to `/heroimg2.jpg` and `/heroimg5.jpg`; the rest use the image the page used before the redesign. About keeps its plain band, as asked, and Privacy, Terms and the 404 stay text-only.
+The plain headline bands were too quiet. Corporate, Electric, Pre-Order, Contact, Blog, Track Order and Register now open on a photograph again, with the same navy scrim and the label, headline and one sentence over it. Corporate, Electric, Contact and Pre-Order read the image from their own CMS block (`page_key` + `hero_image`); the rest use fixed files. Blog shares `/heroimg3.jpg` with the Corporate header, which is deliberate; the other pages each have their own shot. About keeps its plain band, as asked, and Privacy, Terms and the 404 stay text-only.
+
+### Page-specific photographs
+
+Contact, Electric and Pre-Order used to share the same two photographs. Each now has its own file:
+
+| Page | File | CMS key |
+| --- | --- | --- |
+| Contact | `/hero-contact.jpg` | `contact` / `hero_image` |
+| Electric | `/hero-ev.jpg` | `ev` / `hero_image` |
+| Pre-Order | `/hero-preorder.jpg` | `pre-order` / `hero_image` |
+
+`src/lib/heroImage.ts` resolves them. The CMS value wins, except when a row still holds the path the site was seeded with (`/heroimg5.jpg` for Contact and Electric, `/heroimg4.jpg` or `/heroimg5.jpg` for Pre-Order). Those seeded values are treated as unset so the new photograph is used without a database migration; pick anything else in the admin panel and that value is used as-is. The content editor's quick templates include a hero-image row for each of the three pages.
+
+The three files are Unsplash photographs downloaded locally (the site already pulled model images from the same source), darkened slightly where the type needed the contrast. They are placeholders in the sense that any photograph can replace them through the CMS, but they are licensed for commercial use and need no attribution.
 
 ## No photography where it was only filling space
 
