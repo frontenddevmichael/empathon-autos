@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/Button'
 import { Section } from '@/components/layout/Section'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { config } from '@/lib/config'
-import { useSiteContent, parseJsonContent } from '@/hooks/useSiteContent'
+import { useSiteContent, parseJsonContent, getTextContent } from '@/hooks/useSiteContent'
+import { PageHero } from '@/components/ui/PageHero'
+import { resolveHeroImage } from '@/lib/heroImage'
 import styles from './About.module.css'
 
 interface TeamMember {
@@ -53,18 +55,21 @@ export function About() {
     { name: 'Saheed Akintunde', role: 'Team member', photo: '/team/Saheed Akintunde.jpeg' },
     { name: 'Tolani', role: 'Team member', photo: '/team/Tolani.jpeg' },
   ])
+  const heroTitle = getTextContent(aboutContent, 'hero_title') || 'Premium vehicles, sourced globally.'
+  const heroSubtitle = getTextContent(aboutContent, 'hero_subtitle') || 'Cars sourced from Tokyo, Dubai, Europe and the US, then brought to Nigerian driveways.'
+  const heroImage = resolveHeroImage('about', getTextContent(aboutContent, 'hero_image'), '/heroimg2.jpg')
+  const ctaTitle = getTextContent(aboutContent, 'cta_title') || 'Ready to find your next car?'
+  const ctaDesc = getTextContent(aboutContent, 'cta_desc') || "Buying your first car or building a fleet? We'll help. No pressure, just honest guidance."
 
   return (
     <>
-      <Section tone="paper" space="sm">
-        <SectionHeader
-          as="h1"
-          size="lg"
-          label="About"
-          title="Premium vehicles, sourced globally."
-          desc="Cars sourced from Tokyo, Dubai, Europe and the US, then brought to Nigerian driveways. No shortcuts, no surprises."
-        />
-      </Section>
+      <PageHero
+        label="About"
+        title={heroTitle}
+        subtitle={heroSubtitle}
+        images={[{ url: heroImage }]}
+        overlay="left"
+      />
 
       <Section tone="paper" space="sm">
         <div className={styles.story}>
@@ -112,7 +117,7 @@ export function About() {
         </ol>
       </Section>
 
-      <Section tone="paper" space="md">
+      <Section tone="warm" space="md">
         <SectionHeader label="Why Empathon" title="Built on trust, driven by quality" />
         <div className={styles.why}>
           {whyUs.map(block => (
@@ -149,10 +154,8 @@ export function About() {
 
       <Section tone="navy" space="md">
         <div className={styles.cta}>
-          <h2 className={styles.ctaTitle}>Ready to find your next car?</h2>
-          <p className={styles.ctaText}>
-            Buying your first car or building a fleet? We'll help. No pressure, just honest guidance.
-          </p>
+          <h2 className={styles.ctaTitle}>{ctaTitle}</h2>
+          <p className={styles.ctaText}>{ctaDesc}</p>
           <div className={styles.ctaActions}>
             <Link to="/inventory">
               <Button variant="white" size="md">Browse inventory</Button>

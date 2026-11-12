@@ -7,6 +7,7 @@
  * panel and that value is used as-is.
  */
 const SHIPPED_DEFAULTS: Record<string, string[]> = {
+  about: ['/heroimg.jpg'],
   contact: ['/heroimg5.jpg'],
   'pre-order': ['/heroimg4.jpg', '/heroimg5.jpg'],
   ev: ['/heroimg5.jpg', '/heroimg.jpg'],

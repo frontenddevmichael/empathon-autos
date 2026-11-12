@@ -206,6 +206,13 @@
   color: var(--stone);
 }
 
+/* ── Clients ── */
+.clientsStrip {
+  padding-bottom: clamp(2rem, 5vw, 3rem);
+  margin-bottom: clamp(2rem, 5vw, 3rem);
+  border-bottom: 1px solid var(--border);
+}
+
 /* ── Quote form ── */
 .quote {
   max-width: 620px;

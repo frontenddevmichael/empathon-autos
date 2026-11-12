@@ -234,21 +234,21 @@ export function Corporate() {
         </div>
       </Section>
 
-      {realClients.length > 0 && (
-        <Section tone="paper" space="sm">
-          <p className={styles.clientsLabel}>Trusted by</p>
-          <ul className={styles.clients}>
-            {realClients.map(c => (
-              <li key={c.name} className={styles.client}>
-                <span className={styles.clientName}>{c.name}</span>
-                {c.desc && <span className={styles.clientDesc}>{c.desc}</span>}
-              </li>
-            ))}
-          </ul>
-        </Section>
-      )}
-
       <Section tone="paper" space="md">
+        {realClients.length > 0 && (
+          <div className={styles.clientsStrip}>
+            <p className={styles.clientsLabel}>Trusted by</p>
+            <ul className={styles.clients}>
+              {realClients.map(c => (
+                <li key={c.name} className={styles.client}>
+                  <span className={styles.clientName}>{c.name}</span>
+                  {c.desc && <span className={styles.clientDesc}>{c.desc}</span>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div className={styles.quote} id="quote">
           <SectionHeader
             label="Corporate enquiry"
