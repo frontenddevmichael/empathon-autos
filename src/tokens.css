@@ -12,7 +12,7 @@
   --paper-light: #ffffff;
   --surface: #ffffff;
   --stone: #6e6e73;
-  --stone-light: #8e8e93;
+  --stone-light: #8e8e93; /* decorative only (scrollbar, icons) — fails AA as text */
   --border: rgba(29,29,31,0.08);
   --border-light: rgba(29,29,31,0.04);
 
@@ -35,8 +35,10 @@
      Components should reach for these, never raw hex/rgba. */
   --text-primary: var(--ink);
   --text-secondary: var(--stone);
-  --text-tertiary: var(--stone-light);
-  --text-body: #424245;
+  /* Tertiary shares the secondary neutral: the lighter stone fails AA on warm
+     paper. Hierarchy comes from size and weight, not from colour. */
+  --text-tertiary: var(--stone);
+  --text-body: #424245; /* documented body neutral — 9.6:1 on paper */
   --text-inverse: #ffffff;
   --text-inverse-secondary: rgba(255,255,255,0.72);
   --text-inverse-soft: rgba(255,255,255,0.6);
@@ -56,10 +58,11 @@
   --navy-a18: rgba(11,46,89,0.18);
   --navy-a24: rgba(11,46,89,0.24);
 
-  /* ── Overlays for imagery ── */
-  --scrim-deep: rgba(6,20,40,0.92);
-  --scrim-mid: rgba(6,20,40,0.62);
-  --scrim-soft: rgba(6,20,40,0.28);
+  /* ── Overlays for imagery ──
+     One hue for every photo scrim. Opacity stays at the call site so each
+     gradient can hold its own stops without inventing a new colour. */
+  --scrim-rgb: 6, 20, 40;
+  --white-rgb: 255, 255, 255;
 
   /* ── Typography — DM Sans for display, Inter for body ── */
   --font-display: 'DM Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -135,7 +138,7 @@
   --transition-slow: 500ms var(--ease-out);
 
   /* ── Layout ── */
-  --nav-height: 56px;
+  --nav-height: 86px;
   --container-max: 1280px;
   --container-wide: 1440px;
   --container-narrow: 720px;

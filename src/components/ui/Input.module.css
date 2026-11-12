@@ -35,7 +35,7 @@
   box-shadow: 0 0 0 2px var(--navy);
 }
 
-.input::placeholder { color: var(--stone-light); }
+.input::placeholder { color: var(--stone); }
 
 .textarea {
   height: auto;

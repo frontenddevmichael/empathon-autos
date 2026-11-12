@@ -39,7 +39,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--stone-light);
+  color: var(--stone);
   font-size: var(--text-sm);
 }
 

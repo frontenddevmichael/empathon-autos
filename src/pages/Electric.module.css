@@ -96,7 +96,7 @@
 }
 
 .saving {
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-top: 1px solid var(--border-inverse-strong);
   padding-top: var(--space-2);
 }
 
@@ -131,7 +131,7 @@
 
 .savingsNote a {
   color: var(--paper);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  border-bottom: 1px solid rgba(var(--white-rgb), 0.4);
   padding-bottom: 1px;
 }
 

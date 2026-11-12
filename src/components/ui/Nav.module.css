@@ -199,7 +199,7 @@
   transition: background 200ms var(--ease-out);
 }
 .hamburger:hover { background: var(--navy-a08); }
-.transparent .hamburger:hover { background: rgba(255, 255, 255, 0.12); }
+.transparent .hamburger:hover { background: var(--border-inverse); }
 
 .hamburgerInner {
   width: 18px;
