@@ -16,7 +16,7 @@ import { config } from '@/lib/config'
 const PAGE_SIZE = 12
 const MAX_WITH_FILTERS = 200
 
-const MAKES = ['All Makes', 'Toyota', 'Honda', 'Mercedes-Benz', 'BMW', 'Lexus', 'Ford', 'Hyundai', 'Nissan', 'Audi', 'Porsche', 'Volkswagen']
+const MAKES = ['All Makes', 'Toyota', 'Honda', 'Mercedes Benz', 'BMW', 'Lexus', 'Ford', 'Hyundai', 'Nissan', 'Audi', 'Porsche', 'Volkswagen']
 const BODY_TYPES = [
   { value: '', label: 'All Body Types' },
   { value: 'sedan', label: 'Sedan' }, { value: 'suv', label: 'SUV' },
@@ -129,7 +129,8 @@ export function Inventory() {
         // Parse year range
         if (yearRange) {
           const [minYear, maxYear] = yearRange.split('-').map(Number)
-          if (minYear && maxYear) {
+          // `0-2014` is a valid range — 0 is falsy, so test for a number, not truthiness.
+          if (Number.isFinite(minYear) && Number.isFinite(maxYear)) {
             q = q.gte('year', minYear).lte('year', maxYear)
           }
         }
@@ -137,7 +138,7 @@ export function Inventory() {
         // Parse price range
         if (priceRange) {
           const [minPrice, maxPrice] = priceRange.split('-').map(Number)
-          if (minPrice && maxPrice) {
+          if (Number.isFinite(minPrice) && Number.isFinite(maxPrice)) {
             q = q.gte('price', minPrice).lte('price', maxPrice)
           }
         }
@@ -145,7 +146,7 @@ export function Inventory() {
         // Parse mileage range
         if (mileageRange) {
           const [minMileage, maxMileage] = mileageRange.split('-').map(Number)
-          if (minMileage && maxMileage) {
+          if (Number.isFinite(minMileage) && Number.isFinite(maxMileage)) {
             q = q.gte('mileage', minMileage).lte('mileage', maxMileage)
           }
         }

@@ -13,7 +13,6 @@ const footerLinks: Record<string, FooterLink[]> = {
     { to: '/ev', label: 'Electric Vehicles' },
     { to: '/pre-order', label: 'Pre-Order' },
     { to: '/track-order', label: 'Track Order' },
-    { to: '/auctions', label: 'Auctions' },
     { to: '/corporate', label: 'Corporate Sales' },
   ],
   Company: [

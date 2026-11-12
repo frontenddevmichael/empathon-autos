@@ -43,7 +43,7 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  height: 30px;
+  height: 42px;
   transition: opacity 200ms var(--ease-out);
 }
 .logo:hover { opacity: 0.8; }
@@ -51,7 +51,7 @@
 .logoImage {
   height: 100%;
   width: auto;
-  max-width: 190px;
+  max-width: 250px;
   object-fit: contain;
   object-position: left center;
   /* The source mark is white; invert it for light surfaces. */

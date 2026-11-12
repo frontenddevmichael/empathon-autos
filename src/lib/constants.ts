@@ -51,7 +51,7 @@ export const STATUS_OPTIONS: { value: VehicleStatus | 'draft' | 'published'; lab
   { value: 'draft', label: 'Draft' },
 ]
 
-export const MAKES = ['Toyota', 'Honda', 'Mercedes-Benz', 'BMW', 'Lexus', 'Ford', 'Hyundai', 'Nissan'] as const
+export const MAKES = ['Toyota', 'Honda', 'Mercedes Benz', 'BMW', 'Lexus', 'Ford', 'Hyundai', 'Nissan'] as const
 
 export const BODY_TYPES = [
   { value: 'sedan', label: 'Sedan' },

@@ -21,7 +21,6 @@ const navGroups: NavGroup[] = [
     children: [
       { to: '/inventory', label: 'Inventory' },
       { to: '/pre-order', label: 'Pre-Order' },
-      { to: '/auctions', label: 'Auctions' },
     ],
   },
   {
