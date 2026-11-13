@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-import { formatPrice, formatMileage } from '@/lib/format'
+import { formatPrice, formatMileage, mileageLabel } from '@/lib/format'
 import type { Vehicle, VehicleMedia, LeadType } from '@/types'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -108,14 +108,16 @@ export function VehicleDetail() {
 
   const price = formatPrice(vehicle.price)
   const vehicleAlt = `${vehicle.make} ${vehicle.model}${vehicle.trim ? ` ${vehicle.trim}` : ''} ${vehicle.year}`
-  const specLine = [vehicle.year, formatMileage(vehicle.mileage), titleCase(vehicle.transmission), titleCase(vehicle.fuel_type)]
+  const specLine = [vehicle.year, mileageLabel(vehicle.mileage), titleCase(vehicle.transmission), titleCase(vehicle.fuel_type)]
     .filter(Boolean)
     .join(' · ')
   const whatsappMsg = `Hi, I'm interested in the ${vehicleAlt} at Empathon Autos.`
 
   const DEFAULT_IMG = '/og-image.jpg'
   const vehicleTitle = `${vehicle.make} ${vehicle.model} ${vehicle.trim || ''} ${vehicle.year}`.trim()
-  const vehicleDesc = vehicle.description?.slice(0, 200) || `${vehicleTitle}, ${formatPrice(vehicle.price)}, ${formatMileage(vehicle.mileage)}, ${vehicle.transmission}`
+  const vehicleDesc = vehicle.description?.slice(0, 200) || [vehicleTitle, formatPrice(vehicle.price), mileageLabel(vehicle.mileage), titleCase(vehicle.transmission)]
+    .filter(Boolean)
+    .join(', ')
   const vehicleImg = activeImage?.url || DEFAULT_IMG
 
   const specRows: (SpecRow | null)[] = [
@@ -123,7 +125,7 @@ export function VehicleDetail() {
     { label: 'Model', value: vehicle.model },
     vehicle.trim ? { label: 'Trim', value: vehicle.trim } : null,
     { label: 'Year', value: vehicle.year },
-    { label: 'Mileage', value: formatMileage(vehicle.mileage) },
+    vehicle.mileage > 0 ? { label: 'Mileage', value: formatMileage(vehicle.mileage) } : null,
     { label: 'Transmission', value: titleCase(vehicle.transmission) },
     { label: 'Fuel', value: titleCase(vehicle.fuel_type) },
     { label: 'Body', value: titleCase(vehicle.body_type) },
@@ -145,11 +147,13 @@ export function VehicleDetail() {
     'model': vehicle.model,
     'vehicleConfiguration': vehicle.trim || undefined,
     'modelDate': vehicle.year.toString(),
-    'mileageFromOdometer': {
-      '@type': 'QuantitativeValue',
-      'value': vehicle.mileage,
-      'unitCode': 'KMT',
-    },
+    ...(vehicle.mileage > 0 ? {
+      'mileageFromOdometer': {
+        '@type': 'QuantitativeValue',
+        'value': vehicle.mileage,
+        'unitCode': 'KMT',
+      },
+    } : {}),
     'vehicleTransmission': vehicle.transmission === 'automatic' ? 'Automatic' : vehicle.transmission === 'manual' ? 'Manual' : 'Semi-automatic',
     'fuelType': vehicle.fuel_type.charAt(0).toUpperCase() + vehicle.fuel_type.slice(1).replace('-', ' '),
     'vehicleColor': vehicle.colour || undefined,
@@ -297,7 +301,7 @@ export function VehicleDetail() {
         <div className={styles.mobileBar}>
           <div>
             <p className={styles.mobilePrice}>{price}</p>
-            <p className={styles.mobileMeta}>{vehicle.year} · {formatMileage(vehicle.mileage)}</p>
+            <p className={styles.mobileMeta}>{[vehicle.year, mileageLabel(vehicle.mileage)].filter(Boolean).join(' · ')}</p>
           </div>
           <Button onClick={() => setLeadType('enquiry')}>Enquire</Button>
         </div>

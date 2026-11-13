@@ -15,3 +15,12 @@ export function formatPrice(price: number): string {
 export function formatMileage(km: number): string {
   return `${km.toLocaleString()} km`
 }
+
+/**
+ * Mileage for display, or null when it was never recorded.
+ * A stored 0 means "not supplied" on this lot, so it is left out rather than
+ * printed as a real reading.
+ */
+export function mileageLabel(km: number): string | null {
+  return km > 0 ? formatMileage(km) : null
+}

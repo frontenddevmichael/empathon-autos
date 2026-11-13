@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Vehicle } from '@/types'
-import { formatPrice, formatMileage } from '@/lib/format'
+import { formatPrice, mileageLabel } from '@/lib/format'
 import { Badge } from './Badge'
 import styles from './VehicleCard.module.css'
 
@@ -36,7 +36,7 @@ interface VehicleCardProps {
 export function VehicleCard({ vehicle }: VehicleCardProps) {
   const [broken, setBroken] = useState(false)
   const img = vehicle.media?.find(m => m.is_primary) ?? vehicle.media?.[0]
-  const spec = [vehicle.year || null, formatMileage(vehicle.mileage), transmissionLabel[vehicle.transmission]]
+  const spec = [vehicle.year || null, mileageLabel(vehicle.mileage), transmissionLabel[vehicle.transmission]]
     .filter(Boolean)
     .join(' · ')
 

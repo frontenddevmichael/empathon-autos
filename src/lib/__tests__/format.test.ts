@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatPrice, formatMileage } from '../format'
+import { formatPrice, formatMileage, mileageLabel } from '../format'
 
 describe('formatPrice', () => {
   it('returns "Price on request" for zero', () => {
@@ -36,5 +36,15 @@ describe('formatMileage', () => {
 
   it('handles large mileage', () => {
     expect(formatMileage(999999)).toBe('999,999 km')
+  })
+})
+
+describe('mileageLabel', () => {
+  it('returns null when mileage was not recorded', () => {
+    expect(mileageLabel(0)).toBeNull()
+  })
+
+  it('returns the formatted value when mileage is real', () => {
+    expect(mileageLabel(15000)).toBe('15,000 km')
   })
 })
