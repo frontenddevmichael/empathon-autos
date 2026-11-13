@@ -216,6 +216,23 @@ export function BlogPost() {
           </div>
         </Container>
 
+        <Section tone="navy" space="md">
+          <div className={styles.cta}>
+            <h2 className={styles.ctaTitle}>Ready to see what&rsquo;s on the lot?</h2>
+            <p className={styles.ctaText}>
+              Browse current stock, or tell us the car you are after and we will source it.
+            </p>
+            <div className={styles.ctaActions}>
+              <Link to="/inventory">
+                <Button variant="white">Browse inventory</Button>
+              </Link>
+              <Link to="/contact">
+                <Button variant="ghostLight">Send an enquiry</Button>
+              </Link>
+            </div>
+          </div>
+        </Section>
+
         {related.length > 0 && (
           <Container size="narrow" className={styles.related}>
             <h2 className={styles.relatedTitle}>Keep reading</h2>

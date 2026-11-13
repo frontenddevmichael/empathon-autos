@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/Input'
 import { Section } from '@/components/layout/Section'
 import { PageHero } from '@/components/ui/PageHero'
 import { Button } from '@/components/ui/Button'
+import { config } from '@/lib/config'
 import { lookupOrder, validateReference, ORDER_STAGES } from '@/lib/mockOrders'
 import type { TrackedOrder } from '@/lib/mockOrders'
 import styles from './TrackOrder.module.css'
@@ -124,10 +125,28 @@ export function TrackOrder() {
             </div>
           </div>
         )}
+      </Section>
 
-        <p className={styles.footnote}>
-          Reference not working? <Link to="/contact">Contact us</Link> and we'll look it up.
-        </p>
+      <Section tone="navy" space="md">
+        <div className={styles.cta}>
+          <h2 className={styles.ctaTitle}>Something not moving?</h2>
+          <p className={styles.ctaText}>
+            If your reference is not working or a stage looks stuck, we will check it and come back to you.
+          </p>
+          <div className={styles.ctaActions}>
+            <Link to="/contact">
+              <Button variant="white">Contact us</Button>
+            </Link>
+            <a
+              href={config.whatsapp.getDeepLink('Hi Empathon Autos! I need help tracking my order.')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.ctaLink}
+            >
+              WhatsApp us
+            </a>
+          </div>
+        </div>
       </Section>
     </>
   )

@@ -250,9 +250,38 @@
 }
 .skeletonLineShort { width: 55%; }
 
+/* ── Closing CTA ── */
+.cta {
+  max-width: 640px;
+}
+
+.ctaTitle {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+  color: var(--paper);
+  margin-bottom: var(--space-2);
+  text-wrap: balance;
+}
+
+.ctaText {
+  font-size: var(--text-lg);
+  line-height: 1.6;
+  color: var(--text-inverse-muted);
+  margin-bottom: var(--space-3);
+}
+
+.ctaActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
 @media (max-width: 768px) {
   .body {
-    font-size: 1.0625rem;
+    font-size: var(--text-lg);
     line-height: 1.7;
   }
   .relatedLink {

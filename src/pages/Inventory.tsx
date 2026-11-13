@@ -10,47 +10,42 @@ import { PageHero } from '@/components/ui/PageHero'
 import { Container } from '@/components/layout/Container'
 import { VehicleCardSkeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { buildFacets, sortVehicles, type Facets, type FacetSource } from '@/lib/inventory'
 import styles from './Inventory.module.css'
 import { config } from '@/lib/config'
 
 const PAGE_SIZE = 12
 const MAX_WITH_FILTERS = 200
 
-const MAKES = ['All Makes', 'Toyota', 'Honda', 'Mercedes Benz', 'BMW', 'Lexus', 'Ford', 'Hyundai', 'Nissan', 'Audi', 'Porsche', 'Volkswagen']
-const BODY_TYPES = [
-  { value: '', label: 'All Body Types' },
-  { value: 'sedan', label: 'Sedan' }, { value: 'suv', label: 'SUV' },
-  { value: 'hatchback', label: 'Hatchback' }, { value: 'coupe', label: 'Coupe' },
-  { value: 'pickup', label: 'Pickup' }, { value: 'truck', label: 'Truck' },
-  { value: 'wagon', label: 'Wagon' }, { value: 'van', label: 'Van' },
-]
-const STATUS_OPTIONS = [
-  { value: '', label: 'All Statuses' },
-  { value: 'walk-in', label: 'In Stock' }, { value: 'pre-order', label: 'Pre-Order' },
-]
-const FUEL_TYPES = [
-  { value: '', label: 'All Fuel Types' },
-  { value: 'petrol', label: 'Petrol' }, { value: 'diesel', label: 'Diesel' },
-  { value: 'electric', label: 'Electric' }, { value: 'hybrid', label: 'Hybrid' },
-]
-const TRANSMISSIONS = [
-  { value: '', label: 'All Transmissions' },
-  { value: 'automatic', label: 'Automatic' }, { value: 'manual', label: 'Manual' },
-]
-const CONDITIONS = [
-  { value: '', label: 'All Conditions' },
-  { value: 'new', label: 'New' }, { value: 'used', label: 'Used' },
-  { value: 'certified-pre-owned', label: 'Certified Pre-Owned' },
-]
+const BODY_LABELS: Record<string, string> = {
+  sedan: 'Sedan', suv: 'SUV', hatchback: 'Hatchback', coupe: 'Coupe',
+  pickup: 'Pickup', truck: 'Truck', wagon: 'Wagon', van: 'Van',
+  convertible: 'Convertible',
+}
+const CONDITION_LABELS: Record<string, string> = {
+  new: 'New', used: 'Used', 'certified-pre-owned': 'Certified pre-owned',
+}
+const STATUS_LABELS: Record<string, string> = {
+  'walk-in': 'In stock', 'pre-order': 'Pre-order', reserved: 'Reserved',
+}
 const YEAR_RANGES = [
-  { value: '', label: 'All Years' },
-  { value: '2024-2026', label: '2024-2026 (Newest)' },
+  { value: '2024-2026', label: '2024-2026' },
   { value: '2022-2023', label: '2022-2023' },
   { value: '2020-2021', label: '2020-2021' },
   { value: '2018-2019', label: '2018-2019' },
   { value: '2015-2017', label: '2015-2017' },
-  { value: '0-2014', label: '2014 & Older' },
+  { value: '0-2014', label: '2014 & older' },
 ]
+const SORT_OPTIONS = [
+  { value: 'newest', label: 'Newest listed' },
+  { value: 'year', label: 'Year: newest' },
+  { value: 'price-asc', label: 'Price: low to high' },
+  { value: 'price-desc', label: 'Price: high to low' },
+]
+
+function capitalise(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1)
+}
 
 interface FacetProps {
   label: string
@@ -97,16 +92,34 @@ export function Inventory() {
   const [transmission, setTransmission] = useState('')
   const [condition, setCondition] = useState('')
   const [yearRange, setYearRange] = useState('')
-  const [priceRange, setPriceRange] = useState('')
-  const [mileageRange, setMileageRange] = useState('')
+  const [sort, setSort] = useState('newest')
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [facets, setFacets] = useState<Facets>({ makes: [], bodies: [], fuels: [], transmissions: [], conditions: [], statuses: [], years: [] })
 
-  const hasAnyFilter = Boolean(make || bodyType || statusFilter || fuelType || transmission || condition || yearRange || priceRange || mileageRange || search)
-  const activeFilterCount = [make, bodyType, statusFilter, fuelType, transmission, condition, yearRange, priceRange, mileageRange].filter(Boolean).length
-  const maxResults = hasAnyFilter ? MAX_WITH_FILTERS : PAGE_SIZE
+  const hasAnyFilter = Boolean(make || bodyType || statusFilter || fuelType || transmission || condition || yearRange || search)
+  const activeFilterCount = [make, bodyType, statusFilter, fuelType, transmission, condition, yearRange].filter(Boolean).length
+  // Sorting price or year has to happen after the fetch, so pull the full set
+  // (bounded by MAX_WITH_FILTERS) instead of one page.
+  const maxResults = hasAnyFilter || sort !== 'newest' ? MAX_WITH_FILTERS : PAGE_SIZE
+
+  // Facet options come from the cars on the lot, so a chip never leads to zero results.
+  useEffect(() => {
+    if (!isSupabaseConfigured()) return
+    let active = true
+    ;(async () => {
+      const { data } = await supabase
+        .from('vehicles')
+        .select('make,body_type,fuel_type,transmission,condition,status,year')
+        .neq('status', 'sold')
+        .neq('status', 'draft')
+      if (!active || !data) return
+      setFacets(buildFacets(data as FacetSource[]))
+    })()
+    return () => { active = false }
+  }, [])
 
   // Reset pagination when filters change
-  useEffect(() => { setLoadedAll(false) }, [search, make, bodyType, statusFilter, fuelType, transmission, condition, yearRange, priceRange, mileageRange])
+  useEffect(() => { setLoadedAll(false) }, [search, make, bodyType, statusFilter, fuelType, transmission, condition, yearRange, sort])
 
   const fetchVehicles = (append: boolean) => {
     if (!isSupabaseConfigured()) { setLoading(false); return }
@@ -135,28 +148,13 @@ export function Inventory() {
           }
         }
 
-        // Parse price range
-        if (priceRange) {
-          const [minPrice, maxPrice] = priceRange.split('-').map(Number)
-          if (Number.isFinite(minPrice) && Number.isFinite(maxPrice)) {
-            q = q.gte('price', minPrice).lte('price', maxPrice)
-          }
-        }
-
-        // Parse mileage range
-        if (mileageRange) {
-          const [minMileage, maxMileage] = mileageRange.split('-').map(Number)
-          if (Number.isFinite(minMileage) && Number.isFinite(maxMileage)) {
-            q = q.gte('mileage', minMileage).lte('mileage', maxMileage)
-          }
-        }
-
         const { data, count } = await q.order('created_at', { ascending: false }).range(from, to)
         if (!mounted.current) return
-        if (append && data) {
-          setVehicles(prev => [...prev, ...(data as unknown as (Vehicle & { media: VehicleMedia[] })[])])
-        } else if (data) {
-          setVehicles(data as unknown as (Vehicle & { media: VehicleMedia[] })[])
+        const rows = (data ?? []) as unknown as (Vehicle & { media: VehicleMedia[] })[]
+        if (append) {
+          setVehicles(prev => sortVehicles([...prev, ...rows], sort))
+        } else {
+          setVehicles(sortVehicles(rows, sort))
         }
         if (count !== null) {
           setTotal(count)
@@ -172,26 +170,41 @@ export function Inventory() {
   useEffect(() => {
     if (!isSupabaseConfigured()) { setLoading(false); return }
     fetchVehicles(false)
-  }, [search, make, bodyType, statusFilter, fuelType, transmission, condition, yearRange, priceRange, mileageRange])
+  }, [search, make, bodyType, statusFilter, fuelType, transmission, condition, yearRange, sort])
 
   const clearAll = () => {
     setSearch(''); setMake(''); setBodyType(''); setStatusFilter('')
     setFuelType(''); setTransmission(''); setCondition('')
-    setYearRange(''); setPriceRange(''); setMileageRange('')
-    setSearchParams({})
+    setYearRange(''); setSearchParams({})
   }
   const hasMore = !loadedAll && vehicles.length < total
 
   // Active filters as removable chips in the bar, so the state is always visible
   const activeChips = [
     make && { key: 'make', label: make, clear: () => setMake('') },
-    bodyType && { key: 'body', label: BODY_TYPES.find(b => b.value === bodyType)?.label ?? bodyType, clear: () => setBodyType('') },
-    statusFilter && { key: 'status', label: STATUS_OPTIONS.find(s => s.value === statusFilter)?.label ?? statusFilter, clear: () => setStatusFilter('') },
-    transmission && { key: 'transmission', label: TRANSMISSIONS.find(t => t.value === transmission)?.label ?? transmission, clear: () => setTransmission('') },
-    fuelType && { key: 'fuel', label: FUEL_TYPES.find(f => f.value === fuelType)?.label ?? fuelType, clear: () => setFuelType('') },
-    condition && { key: 'condition', label: condition.replace(/-/g, ' '), clear: () => setCondition('') },
+    bodyType && { key: 'body', label: BODY_LABELS[bodyType] ?? capitalise(bodyType), clear: () => setBodyType('') },
+    statusFilter && { key: 'status', label: STATUS_LABELS[statusFilter] ?? capitalise(statusFilter), clear: () => setStatusFilter('') },
+    transmission && { key: 'transmission', label: capitalise(transmission), clear: () => setTransmission('') },
+    fuelType && { key: 'fuel', label: capitalise(fuelType), clear: () => setFuelType('') },
+    condition && { key: 'condition', label: CONDITION_LABELS[condition] ?? capitalise(condition.replace(/-/g, ' ')), clear: () => setCondition('') },
     yearRange && { key: 'year', label: YEAR_RANGES.find(y => y.value === yearRange)?.label ?? yearRange, clear: () => setYearRange('') },
   ].filter((chip): chip is { key: string; label: string; clear: () => void } => Boolean(chip))
+
+  // Only facets with a real choice behind them. A field where every car shares
+  // one value (fuel, transmission, condition today) is not a filter.
+  const yearOptions = YEAR_RANGES.filter(range => {
+    const [minYear, maxYear] = range.value.split('-').map(Number)
+    return facets.years.some(year => year >= minYear && year <= maxYear)
+  })
+  const facetConfigs = [
+    { key: 'make', label: 'Make', value: make, onChange: setMake, options: facets.makes.map(m => ({ value: m, label: m })) },
+    { key: 'body', label: 'Body', value: bodyType, onChange: setBodyType, options: facets.bodies.map(b => ({ value: b, label: BODY_LABELS[b] ?? capitalise(b) })) },
+    { key: 'status', label: 'Status', value: statusFilter, onChange: setStatusFilter, options: facets.statuses.map(s => ({ value: s, label: STATUS_LABELS[s] ?? capitalise(s) })) },
+    { key: 'transmission', label: 'Transmission', value: transmission, onChange: setTransmission, options: facets.transmissions.map(t => ({ value: t, label: capitalise(t) })) },
+    { key: 'year', label: 'Year', value: yearRange, onChange: setYearRange, options: yearOptions },
+    { key: 'fuel', label: 'Fuel', value: fuelType, onChange: setFuelType, options: facets.fuels.map(f => ({ value: f, label: capitalise(f) })) },
+    { key: 'condition', label: 'Condition', value: condition, onChange: setCondition, options: facets.conditions.map(c => ({ value: c, label: CONDITION_LABELS[c] ?? capitalise(c.replace(/-/g, ' ')) })) },
+  ].filter(facet => facet.options.length > 1)
 
   return (
     <>
@@ -200,7 +213,7 @@ export function Inventory() {
         size="sm"
         align="center"
         label="Inventory"
-        title="Browse Our Collection"
+        title="Browse our collection"
         subtitle="Real cars. Real prices. Ready to drive."
       />
 
@@ -225,6 +238,18 @@ export function Inventory() {
               {filtersOpen ? 'Hide filters' : 'Filters'}
               {activeFilterCount > 0 && <span className={styles.filterCount}>{activeFilterCount}</span>}
             </button>
+            <label className={styles.sortWrap}>
+              <span className="sr-only">Sort by</span>
+              <select
+                className={styles.sort}
+                value={sort}
+                onChange={e => setSort(e.target.value)}
+              >
+                {SORT_OPTIONS.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </label>
             <p className={styles.resultCount}>
               {loading ? 'Loading' : `${total} ${total === 1 ? 'vehicle' : 'vehicles'}`}
             </p>
@@ -245,13 +270,15 @@ export function Inventory() {
 
         {filtersOpen && (
           <div id="inventory-filters" className={styles.panel}>
-            <Facet label="Make" options={MAKES.map(m => ({ value: m === 'All Makes' ? '' : m, label: m }))} value={make} onChange={setMake} />
-            <Facet label="Body" options={BODY_TYPES} value={bodyType} onChange={setBodyType} />
-            <Facet label="Status" options={STATUS_OPTIONS} value={statusFilter} onChange={setStatusFilter} />
-            <Facet label="Transmission" options={TRANSMISSIONS} value={transmission} onChange={setTransmission} />
-            <Facet label="Year" options={YEAR_RANGES} value={yearRange} onChange={setYearRange} />
-            <Facet label="Fuel" options={FUEL_TYPES} value={fuelType} onChange={setFuelType} />
-            <Facet label="Condition" options={CONDITIONS} value={condition} onChange={setCondition} />
+            {facetConfigs.map(facet => (
+              <Facet
+                key={facet.key}
+                label={facet.label}
+                options={facet.options}
+                value={facet.value}
+                onChange={facet.onChange}
+              />
+            ))}
           </div>
         )}
 
